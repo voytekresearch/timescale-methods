@@ -1,0 +1,7 @@
+numpy >= 1.21.0
+scipy >= 1.7.0
+matplotlib >= 3.4.2
+statsmodels >= 0.12.2
+tqdm >= 4.62.3
+fooof >= 1.0.0
+neurodsp @ git+https://github.com/neurodsp-tools/neurodsp.git@main
