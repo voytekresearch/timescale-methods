@@ -5,3 +5,4 @@ statsmodels >= 0.12.2
 tqdm >= 4.62.3
 fooof >= 1.0.0
 neurodsp @ git+https://github.com/neurodsp-tools/neurodsp.git@main
+pytest >= 6.2.5
