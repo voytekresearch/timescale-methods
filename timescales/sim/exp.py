@@ -32,6 +32,8 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
 
     Returns
     -------
+    probs : 1d array
+        Probability distribution of spikes.
     spikes : 1d or 2d array
         Sum of spike counts across neurons.
     """
@@ -55,7 +57,7 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
     if return_sum:
         spikes = spikes.sum(axis=0)
 
-    return spikes
+    return probs, spikes
 
 
 def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise=None):
@@ -84,24 +86,46 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
     """
 
     # Pad n_seconds to account for convolution
-    times = np.arange(0, int(n_seconds + (len(kernel) * 2)), 1/fs)
+    kern_len = len(kernel[0]) if kernel.ndim == 2 else len(kernel)
+    times = np.arange(0, int(n_seconds + (kern_len * 2)), 1/fs)
 
     if isi is None:
         mu = fs * .1  if mu is None else mu
         isi = np.round_(np.random.exponential(scale=mu, size=len(times))).astype(int)
 
     # Randomly sample isi's
-    last_ind = np.where(isi.cumsum() >= len(times))[0][0]
-    inds = isi[:last_ind].cumsum()
-
-    poisson = np.zeros(len(times), dtype=bool)
-    poisson[inds] = True
-
-    # Convolve the binary poisson array with the kernel
-    #   and scale to probabilities from 0-1
     n_samples = int(n_seconds * fs)
+    last_ind = np.where(isi.cumsum() >= n_samples)[0]
+    inds = isi.cumsum() if len(last_ind) == 0 else isi[:last_ind[0]].cumsum()
 
-    probs = np.convolve(poisson, kernel, 'valid')[:n_samples]
+    # If kernel is 2d, one kernel is expected per isi
+    if kernel.ndim == 2 and len(kernel) != len(inds):
+        raise ValueError('Mismatch between 2d kernel length and ISIs. '
+                         'Explicitly pass isi arg with length == 2d kernel.')
+
+    # Single kernel
+    if kernel.ndim == 1:
+        poisson = np.zeros(len(times), dtype=bool)
+        poisson[inds] = True
+
+        # Convolve the binary poisson array with the kernel
+        probs = np.convolve(poisson, kernel)[:n_samples]
+
+    # Multi-kernel
+    elif kernel.ndim == 2:
+
+        probs = np.zeros((len(inds), n_samples))
+
+        for kernel_ind, sample_ind in enumerate(inds):
+
+            poisson = np.zeros(len(times), dtype=bool)
+            poisson[sample_ind] = True
+
+            probs[kernel_ind] = np.convolve(poisson, kernel[kernel_ind])[:n_samples]
+
+        probs = probs.sum(axis=0)
+
+    # Scale probabilities from 0-1
     probs = (probs - np.min(probs)) / np.ptp(probs)
 
     # Add gaussian noise if requested
@@ -116,3 +140,21 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
                 probs[rand_inds] = .5
 
     return probs
+
+
+def exp_decay_func(delta_t, amplitude, tau, offset):
+    """Exponential function to fit to autocorrelation.
+
+    Parameters
+    ----------
+    delta_t : 1d array
+        Time lags, acf x-axis definition.
+    ampltidue : float
+        Height of the exponential.
+    tau : float
+        Timescale.
+    offset : float
+        Y-intercept of the exponential.
+    """
+
+    return amplitude * (np.exp(-(delta_t / tau)) + offset)
