@@ -61,7 +61,7 @@ def progress_bar(iterable, progress, n_to_run, pbar_desc='Fitting ACF'):
 
 
 def check_guess_and_bounds(corrs, guess, bounds):
-    """Check the dimensions of guess and bounds for fitting."""
+    """Check the dimensions of guess and bounds for 2d fitting."""
 
     # Ensure guess and bounds are zipable
     if isinstance(guess, list):
@@ -71,12 +71,12 @@ def check_guess_and_bounds(corrs, guess, bounds):
 
     if guess is None:
         guess = np.array([None] * len(corrs))
-    elif guess.ndims == 1 and corrs.ndim == 2:
+    elif guess.ndim == 1 and corrs.ndim == 2:
         guess = np.tile(guess, (len(corrs), 1))
 
     if bounds is None:
         bounds = np.array([None] * len(corrs))
-    elif guess.ndims == 1 and corrs.ndim == 2:
+    elif bounds.ndim == 1 and corrs.ndim == 2:
         bounds = np.tile(bounds, (len(corrs), 1))
 
     return guess, bounds

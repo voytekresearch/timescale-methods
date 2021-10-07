@@ -100,23 +100,13 @@ def fit_acf(corrs, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=Non
         guess, bounds = check_guess_and_bounds(corrs, guess, bounds)
 
         # Proxy function to organize args
-        global _proxy
-
-        def _proxy(args, maxfev):
-            corrs, guess, bounds = args
-            params = _fit_acf(corrs, guess, bounds, maxfev)
-            return params
-
         with Pool(processes=n_jobs) as pool:
-            mapping = pool.imap(partial(_proxy, maxfev=maxfev),
+            mapping = pool.imap(partial(_acf_proxy, maxfev=maxfev),
                                 zip(corrs, guess, bounds))
 
             params = list(progress_bar(mapping, progress, len(corrs)))
 
         params = np.array(params)
-
-    else:
-        params, _ = _fit_acf(corrs, guess=None, bounds=None, n_jobs=-1, maxfev=1000)
 
     return params
 
@@ -160,15 +150,9 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
         guess, bounds = check_guess_and_bounds(corrs, guess, bounds)
 
         with Pool(processes=n_jobs) as pool:
+
             # Proxy function to organize args
-            global _proxy
-
-            def _proxy(args, fs, maxfev):
-                corrs, guess, bounds = args
-                params = _fit_acf_cos(corrs, fs, guess, bounds, maxfev)
-                return params
-
-            mapping = pool.imap(partial(_proxy, fs=fs, maxfev=maxfev),
+            mapping = pool.imap(partial(_acf_cos_proxy, fs=fs, maxfev=maxfev),
                                 zip(corrs, guess, bounds))
 
             params = list(progress_bar(mapping, progress, len(corrs)))
@@ -181,11 +165,11 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
 def _fit_acf(corrs, guess=None, bounds=None, maxfev=1000):
     """Fit 1d ACF."""
 
+    target_tau = guess[1] if guess is not None else \
+        np.argmin(np.abs(corrs - np.max(corrs) * (1/np.exp(1))))
+
     if guess is None:
-        target_tau = np.argmin(np.abs(corrs - np.max(corrs) * (1/np.exp(1))))
         guess = [np.max(corrs), target_tau, 0.]
-    else:
-        target_tau = guess[1]
 
     if bounds is None:
         bounds = [
@@ -240,4 +224,16 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
 
     params = np.insert(params, 0, freq)
 
+    return params
+
+
+def _acf_proxy(args, maxfev):
+    corrs, guess, bounds = args
+    params = _fit_acf(corrs, guess, bounds, maxfev)
+    return params
+
+
+def _acf_cos_proxy(args, fs, maxfev):
+    corrs, guess, bounds = args
+    params = _fit_acf_cos(corrs, fs, guess, bounds, maxfev)
     return params

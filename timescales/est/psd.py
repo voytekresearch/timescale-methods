@@ -37,14 +37,13 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
 
     freqs, powers = compute_spectrum(spikes, fs, f_range=f_range)
 
-    if fooof_init is not None and spikes.ndim == 1:
+    if fooof_init is None:
+        fooof_init = {}
+
+    if spikes.ndim == 1:
         fm = FOOOF(aperiodic_mode='knee', verbose=False, **fooof_init)
-    elif fooof_init is not None and spikes.ndim == 2:
-        fg = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
-    elif and spikes.ndim == 1:
-        fm = FOOOF(aperiodic_mode='knee', verbose=False)
     elif spikes.ndim == 2:
-        fm = FOOOFGroup(aperiodic_mode='knee', verbose=False)
+        fm = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
 
     if spikes.ndim == 1:
         fm.fit(freqs, powers, f_range)
@@ -54,7 +53,7 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
 
         knee_freq, knee_tau = convert_knee_val(knee, exponent=exp)
     else:
-        fm.fit(freqs, powers, freq_rang, n_jobs, progress)
+        fm.fit(freqs, powers, f_range, n_jobs, progress)
 
         knees = fm.get_params('aperiodic', 'knee')
         exps = fm.get_params('aperiodic', 'exponent')

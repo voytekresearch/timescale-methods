@@ -1,0 +1,4 @@
+[run]
+omit =
+    timescales/tests/*
+    timescales/version.py
