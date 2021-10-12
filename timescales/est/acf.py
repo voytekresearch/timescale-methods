@@ -165,8 +165,11 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
 def _fit_acf(corrs, guess=None, bounds=None, maxfev=1000):
     """Fit 1d ACF."""
 
-    target_tau = guess[1] if guess is not None else \
-        np.argmin(np.abs(corrs - np.max(corrs) * (1/np.exp(1))))
+    if guess is not None:
+        target_tau = guess[1]
+    else:
+        inds = np.argsort(np.abs(corrs - np.max(corrs) * (1/np.exp(1))))
+        target_tau = inds[1] if inds[0] == 0 else inds[0]
 
     if guess is None:
         guess = [np.max(corrs), target_tau, 0.]
