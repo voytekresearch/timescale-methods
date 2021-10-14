@@ -7,7 +7,8 @@ from neurodsp.spectral import compute_spectrum
 from fooof import FOOOF, FOOOFGroup
 
 
-def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
+def fit_psd(spikes, fs, f_range, fooof_init=None, compute_spectrum_kwargs=None,
+            mode=None, n_jobs=-1, progress=None):
     """Fit a PSD, using SpecParam, and estimate tau.
 
     Parameters
@@ -20,6 +21,10 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
         Frequency range of interest.
     fooof_init : dict, optional, default: None
         Fooof initialization arguments.
+    compute_spectrum_kwargs : dict, optiona, default: None
+        Keyword arguments for compute_spectrum.
+    mode : {None, 'mean', 'median'}
+        How to combine 2d spectra.
     n_jobs : int
         Number of jobs to run in parralel, when spikes is 2d.
     progress : {None, 'tqdm', 'tqdm.notebook'}
@@ -35,17 +40,25 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
         Estimated timescales.
     """
 
-    freqs, powers = compute_spectrum(spikes, fs, f_range=f_range)
-
     if fooof_init is None:
         fooof_init = {}
 
-    if spikes.ndim == 1:
+    if compute_spectrum_kwargs is None:
+        compute_spectrum_kwargs = {}
+
+    freqs, powers = compute_spectrum(spikes, fs, f_range=f_range, **compute_spectrum_kwargs)
+
+    if mode == 'mean' and powers.ndim == 2:
+        powers = np.mean(powers, axis=0)
+    elif mode == 'median' and powers.ndim == 2:
+        powers = np.median(powers, axis=0)
+
+    if powers.ndim == 1:
         fm = FOOOF(aperiodic_mode='knee', verbose=False, **fooof_init)
-    elif spikes.ndim == 2:
+    elif powers.ndim == 2:
         fm = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
 
-    if spikes.ndim == 1:
+    if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
 
         knee = fm.get_params('aperiodic', 'knee')
