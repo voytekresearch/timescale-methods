@@ -180,8 +180,11 @@ def _fit_acf(corrs, guess=None, bounds=None, maxfev=1000):
             (2*np.max(corrs), target_tau * 10, 2)
         ]
 
-    params, _ = curve_fit(exp_decay_func, np.arange(1, len(corrs)+1), corrs,
-                          p0=guess, bounds=bounds, maxfev=maxfev)
+    try:
+        params, _ = curve_fit(exp_decay_func, np.arange(1, len(corrs)+1), corrs,
+                              p0=guess, bounds=bounds, maxfev=maxfev)
+    except RuntimeError:
+        params = np.nan
 
     return params
 
@@ -225,7 +228,10 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
                                                                      ve, vc, vce, True),
                           xs, corrs, p0=guess, bounds=bounds, maxfev=maxfev)
 
-    params = np.insert(params, 0, freq)
+    try:
+        params = np.insert(params, 0, freq)
+    except RuntimeError:
+        params = np.nan
 
     return params
 
