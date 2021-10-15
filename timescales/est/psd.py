@@ -22,7 +22,7 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, compute_spectrum_kwargs=None,
     fooof_init : dict, optional, default: None
         Fooof initialization arguments.
     compute_spectrum_kwargs : dict, optiona, default: None
-        Keyword arguments for compute_spectrum.
+        Additional keyword arguments for compute_spectrum.
     mode : {None, 'mean', 'median'}
         How to combine 2d spectra.
     n_jobs : int
@@ -46,7 +46,7 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, compute_spectrum_kwargs=None,
     if compute_spectrum_kwargs is None:
         compute_spectrum_kwargs = {}
 
-    freqs, powers = compute_spectrum(spikes, fs, f_range=f_range, **compute_spectrum_kwargs)
+    freqs, powers = compute_spectrum(spikes, fs, **compute_spectrum_kwargs)
 
     if mode == 'mean' and powers.ndim == 2:
         powers = np.mean(powers, axis=0)

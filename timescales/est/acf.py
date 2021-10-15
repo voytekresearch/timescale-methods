@@ -172,12 +172,12 @@ def _fit_acf(corrs, guess=None, bounds=None, maxfev=1000):
         target_tau = inds[1] if inds[0] == 0 else inds[0]
 
     if guess is None:
-        guess = [np.max(corrs), target_tau, 0.]
+        guess = [target_tau, np.max(corrs), 0.]
 
     if bounds is None:
         bounds = [
             (0, 0, -2),
-            (2*np.max(corrs), target_tau * 10, 2)
+            (target_tau * 10, 2*np.max(corrs), 2)
         ]
 
     try:
@@ -217,15 +217,15 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
             tau_guess = (pts[np.argmin(exp_est_bl[pts])] + inds[0]) / fs
 
         # Fit
-        guess = [tau_guess, 1, 1, 1, .5]
+        guess = [tau_guess, 1, 0, 1, 1, .5]
 
         bounds = [
-            (tau_guess * .1, .1, .1, .1, 0),
-            (tau_guess *  1, 10, 1,   1, 1)
+            (tau_guess * .1, 0, -.5, .1, .1, 0),
+            (tau_guess *  1, 1, .5,  1,  1, 1)
         ]
 
-    params, _ = curve_fit(lambda xs, t, g, ve, vc, vce : sim_acf_cos(xs, fs, freq, t, g,
-                                                                     ve, vc, vce, True),
+    params, _ = curve_fit(lambda xs, t, amp, off, g,  vc, vce : sim_acf_cos(xs, fs, freq, t, amp,
+                                                                            off, g, vc, vce, True),
                           xs, corrs, p0=guess, bounds=bounds, maxfev=maxfev)
 
     try:
