@@ -26,7 +26,7 @@ setup(
     maintainer = 'Ryan Hammonds',
     maintainer_email = 'rhammonds@ucsd.edu',
     url = 'https://github.com/voytekresearch/timescale-methods',
-    packages = find_packages(),
+    packages = find_packages('timescales', exclude=['test']),
     package_dir={'': 'timescales'},
     license = 'Apache License, 2.0',
     classifiers = [
