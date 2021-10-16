@@ -7,22 +7,24 @@ from neurodsp.spectral import compute_spectrum
 from fooof import FOOOF, FOOOFGroup
 
 
-def fit_psd(spikes, fs, f_range, fooof_init=None, compute_spectrum_kwargs=None,
-            mode=None, n_jobs=-1, progress=None):
+def fit_psd(freqs, powers, f_range, fooof_init=None,
+            knee_bounds=None, mode=None, n_jobs=-1, progress=None):
     """Fit a PSD, using SpecParam, and estimate tau.
 
     Parameters
     ----------
-    spikes : 1d or 2d array
-        Spike counts or probabilities.
-    fs : float
-        Sampling rate, in Hz.
+    freqs : 1d array
+        Frequencies at which the measure was calculated.
+    spectrum : 1d or 2d array
+        Power spectral density.
     f_range : tuple of (float, float)
         Frequency range of interest.
     fooof_init : dict, optional, default: None
         Fooof initialization arguments.
     compute_spectrum_kwargs : dict, optiona, default: None
         Additional keyword arguments for compute_spectrum.
+    knee_bounds : tuple of (float, float)
+        Aperiodic knee bounds bounds.
     mode : {None, 'mean', 'median'}
         How to combine 2d spectra.
     n_jobs : int
@@ -43,10 +45,13 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, compute_spectrum_kwargs=None,
     if fooof_init is None:
         fooof_init = {}
 
-    if compute_spectrum_kwargs is None:
-        compute_spectrum_kwargs = {}
-
-    freqs, powers = compute_spectrum(spikes, fs, **compute_spectrum_kwargs)
+    # Set aperiodic bounds
+    if knee_bounds is not None:
+        ap_bounds = ((-np.inf, knee_bounds[0], -np.inf),
+                     (np.inf, knee_bounds[1], np.inf))
+    else:
+        ap_bounds = ((-np.inf, -np.inf, -np.inf),
+                     (np.inf, np.inf, np.inf))
 
     if mode == 'mean' and powers.ndim == 2:
         powers = np.mean(powers, axis=0)
@@ -57,6 +62,8 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, compute_spectrum_kwargs=None,
         fm = FOOOF(aperiodic_mode='knee', verbose=False, **fooof_init)
     elif powers.ndim == 2:
         fm = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
+
+    fm._ap_bounds = ap_bounds
 
     if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
