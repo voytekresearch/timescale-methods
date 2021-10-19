@@ -217,12 +217,18 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
             tau_guess = (pts[np.argmin(exp_est_bl[pts])] + inds[0]) / fs
 
         # Fit
-        guess = [tau_guess, 1, 0, 1, 1, .5]
+        _guess = [tau_guess, 1, 0, 1, 1, .5]
 
-        bounds = [
+        _bounds = [
             (tau_guess * .1, 0, -.5, .1, .1, 0),
             (tau_guess *  1, 1, .5,  1,  1, 1)
         ]
+
+    if bounds is None:
+        bounds = _bounds
+
+    if guess is None:
+        guess = _guess
 
     params, _ = curve_fit(lambda xs, t, amp, off, g,  vc, vce : sim_acf_cos(xs, fs, freq, t, amp,
                                                                             off, g, vc, vce, True),

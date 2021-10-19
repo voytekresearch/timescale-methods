@@ -65,6 +65,9 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
 
     fm._ap_bounds = ap_bounds
 
+    if knee_bounds is not None:
+        fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None]
+
     if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
 
