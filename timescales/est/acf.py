@@ -66,13 +66,15 @@ def compute_acf(spikes, nlags, mode=None, n_jobs=-1, progress=None):
     return corrs
 
 
-def fit_acf(corrs, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):
+def fit_acf(corrs, fs, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):
     """Compute and fit ACF.
 
     Parameters
     ----------
     corrs : 1d or 2d array
         Autocorrelation coefficients.
+    fs : float
+        Sampling rate, in Hz.
     guess : list, optional, default: None
         Estimated parameters as [height, tau, offset].
     bounds : list, optional, default: None
@@ -92,7 +94,7 @@ def fit_acf(corrs, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=Non
     """
 
     if corrs.ndim == 1:
-        params = _fit_acf(corrs, guess, bounds, maxfev)
+        params = _fit_acf(corrs, fs, guess, bounds, maxfev)
     elif corrs.ndim == 2:
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
@@ -101,7 +103,8 @@ def fit_acf(corrs, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=Non
 
         # Proxy function to organize args
         with Pool(processes=n_jobs) as pool:
-            mapping = pool.imap(partial(_acf_proxy, maxfev=maxfev),
+
+            mapping = pool.imap(partial(_acf_proxy, fs=fs, maxfev=maxfev),
                                 zip(corrs, guess, bounds))
 
             params = list(progress_bar(mapping, progress, len(corrs)))
@@ -136,7 +139,7 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
     Returns
     -------
     params : 1d or 2d array
-        Fit params as [freq, tau, gamma, var_exp, var_cos, var_cos_exp].
+        Fit params as [tau, gamma, var_exp, var_cos, var_cos_exp, freq].
     """
 
     if corrs.ndim == 1:
@@ -149,9 +152,9 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
         # Ensure guess and bounds are zipable
         guess, bounds = check_guess_and_bounds(corrs, guess, bounds)
 
+        # Proxy function to organize args
         with Pool(processes=n_jobs) as pool:
 
-            # Proxy function to organize args
             mapping = pool.imap(partial(_acf_cos_proxy, fs=fs, maxfev=maxfev),
                                 zip(corrs, guess, bounds))
 
@@ -162,7 +165,7 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
     return params
 
 
-def _fit_acf(corrs, guess=None, bounds=None, maxfev=1000):
+def _fit_acf(corrs, fs, guess=None, bounds=None, maxfev=1000):
     """Fit 1d ACF."""
 
     if guess is not None:
@@ -174,15 +177,34 @@ def _fit_acf(corrs, guess=None, bounds=None, maxfev=1000):
     if guess is None:
         guess = [target_tau, np.max(corrs), 0.]
 
+    _bounds = [
+        (0, 0, -2),
+        (target_tau * 10, 2*np.max(corrs), 2)
+    ]
+
     if bounds is None:
-        bounds = [
-            (0, 0, -2),
-            (target_tau * 10, 2*np.max(corrs), 2)
-        ]
+        bounds = _bounds
+    else:
+        _bounds = np.array(_bounds)
+
+        xinds, yinds = np.where(bounds == None)
+        if len(xinds) != 0:
+            for x, y in zip(xinds, yinds):
+                bounds[x, y] = _bounds[x, y]
+
+        bounds = [tuple(b) for b in bounds.tolist()]
+
+    # If guess is outside of bounds,
+    #   set to midpoint of bounds
+    for ind, g in enumerate(guess):
+        if g <= bounds[0][ind] or g >= bounds[1][ind]:
+            guess[ind] = (bounds[0][ind] + bounds[1][ind]) / 2
 
     try:
-        params, _ = curve_fit(exp_decay_func, np.arange(1, len(corrs)+1), corrs,
-                              p0=guess, bounds=bounds, maxfev=maxfev)
+        params, _ = curve_fit(
+            lambda xs, t, amp, off : exp_decay_func(xs, fs, t, amp, off),
+            np.arange(1, len(corrs)+1), corrs, p0=guess, bounds=bounds, maxfev=maxfev
+        )
     except RuntimeError:
         params = np.nan
 
@@ -226,25 +248,41 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
 
     if bounds is None:
         bounds = _bounds
+    else:
+        _bounds = np.array(_bounds)
+
+        xinds, yinds = np.where(bounds == None)
+        if len(xinds) != 0:
+            for x, y in zip(xinds, yinds):
+                bounds[x, y] = _bounds[x, y]
+
+        bounds = [tuple(b) for b in bounds.tolist()]
 
     if guess is None:
         guess = _guess
 
-    params, _ = curve_fit(lambda xs, t, amp, off, g,  vc, vce : sim_acf_cos(xs, fs, freq, t, amp,
-                                                                            off, g, vc, vce, True),
-                          xs, corrs, p0=guess, bounds=bounds, maxfev=maxfev)
+    # If guess is outside of bounds,
+    #   set to midpoint of bounds
+    for ind, g in enumerate(guess):
+        if g <= bounds[0][ind] or g >= bounds[1][ind]:
+            guess[ind] = (bounds[0][ind] + bounds[1][ind]) / 2
 
     try:
-        params = np.insert(params, 0, freq)
+        params, _ = curve_fit(
+            lambda xs, t, amp, off, g,  vc, vce : sim_acf_cos(xs, fs, t, amp, off,
+                                                              g, vc, vce, freq, True),
+            xs, corrs, p0=guess, bounds=bounds, maxfev=maxfev
+        )
+        params = np.append(params, freq)
     except RuntimeError:
         params = np.nan
 
     return params
 
 
-def _acf_proxy(args, maxfev):
+def _acf_proxy(args, fs, maxfev):
     corrs, guess, bounds = args
-    params = _fit_acf(corrs, guess, bounds, maxfev)
+    params = _fit_acf(corrs, fs, guess, bounds, maxfev)
     return params
 
 

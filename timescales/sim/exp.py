@@ -140,13 +140,15 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
     return probs
 
 
-def exp_decay_func(delta_t, tau, amplitude, offset):
+def exp_decay_func(delta_t, fs, tau, amplitude, offset):
     """Exponential function to fit to autocorrelation.
 
     Parameters
     ----------
     delta_t : 1d array
         Time lags, acf x-axis definition.
+    fs : float
+        Sampling rate, in Hz.
     tau : float
         Timescale.
     ampltidue : float
@@ -155,4 +157,4 @@ def exp_decay_func(delta_t, tau, amplitude, offset):
         Y-intercept of the exponential.
     """
 
-    return amplitude * (np.exp(-(delta_t / tau)) + offset)
+    return amplitude * (np.exp(-(delta_t / (tau * fs))) + offset)
