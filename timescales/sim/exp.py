@@ -3,6 +3,7 @@
 import warnings
 
 import numpy as np
+from scipy.signal import convolve
 from neurodsp.sim import sim_synaptic_kernel
 
 
@@ -109,7 +110,7 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
         poisson[inds] = True
 
         # Convolve the binary poisson array with the kernel
-        probs = np.convolve(poisson, kernel)[:n_samples]
+        probs = convolve(poisson, kernel)[:n_samples]
 
     # Multi-kernel
     elif kernel.ndim == 2:

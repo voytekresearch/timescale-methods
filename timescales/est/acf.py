@@ -269,8 +269,8 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
 
     try:
         params, _ = curve_fit(
-            lambda xs, t, amp, off, g,  vc, vce : sim_acf_cos(xs, fs, t, amp, off,
-                                                              g, vc, vce, freq, True),
+            lambda xs, t, amp, off, g, vc, vce : sim_acf_cos(xs, fs, t, amp, off,
+                                                             g, vc, vce, freq, True),
             xs, corrs, p0=guess, bounds=bounds, maxfev=maxfev
         )
         params = np.append(params, freq)
