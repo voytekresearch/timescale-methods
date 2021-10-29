@@ -20,8 +20,8 @@ def test_sim_acf_cos(return_sum):
     var_cos = .5
     var_cos_exp = .5
 
-    acf = sim_acf_cos(xs, fs, freq, tau, amp, offset, cos_gamma,
-                      var_cos, var_cos_exp, return_sum=return_sum)
+    acf = sim_acf_cos(xs, fs, tau, amp, offset, cos_gamma,
+                     var_cos, var_cos_exp, freq, return_sum=return_sum)
 
     if return_sum:
         assert len(acf) == len(xs)
