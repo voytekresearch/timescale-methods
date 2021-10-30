@@ -23,7 +23,7 @@ def test_progress_bar(progress):
 @pytest.mark.parametrize('bounds_', [None, [0, 0, 0]])
 def test_check_guess_and_bounds(guess_, bounds_):
 
-    corrs = np.random.rand(2, 100)
+    corrs = np.random.rand(3, 100)
 
     guess, bounds = check_guess_and_bounds(corrs, guess_, bounds_)
 
