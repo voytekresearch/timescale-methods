@@ -3,11 +3,12 @@
 import warnings
 
 import numpy as np
+from scipy.signal import convolve
 from neurodsp.sim import sim_synaptic_kernel
 
 
 def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
-                        isi=None, var_noise=0., return_sum=True):
+                        isi=None, var_noise=None, return_sum=True):
     """Simulate a spiking autocorrelation as a synaptic kernel.
 
     Parameters
@@ -24,7 +25,7 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
         Mean of the isi exponential distribuion. Only used if isi is None.
     isi : 1d array, optional, default: None
         Interspike intervals to randomly sample from.
-    var_noise : float, optional, default: 0.
+    var_noise : float, optional, default: None
         Variance of gaussian noise to be added to spike probabilities.
         Larger values, approaching 1, will produce smaller spectral exponents.
     return_sum : bool, optional, default: True
@@ -109,7 +110,7 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
         poisson[inds] = True
 
         # Convolve the binary poisson array with the kernel
-        probs = np.convolve(poisson, kernel)[:n_samples]
+        probs = convolve(poisson, kernel)[:n_samples]
 
     # Multi-kernel
     elif kernel.ndim == 2:
@@ -133,28 +134,28 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
         n_rand = int(n_samples * var_noise)
         inds = np.arange(n_samples)
 
-        for _ in range(len(probs)):
-
-            if n_rand > 0:
-                rand_inds = np.random.choice(inds, n_rand, replace=False)
-                probs[rand_inds] = .5
+        if n_rand > 0:
+            rand_inds = np.random.choice(inds, n_rand, replace=False)
+            probs[rand_inds] = .5
 
     return probs
 
 
-def exp_decay_func(delta_t, amplitude, tau, offset):
+def exp_decay_func(delta_t, fs, tau, amplitude, offset):
     """Exponential function to fit to autocorrelation.
 
     Parameters
     ----------
     delta_t : 1d array
         Time lags, acf x-axis definition.
-    ampltidue : float
-        Height of the exponential.
+    fs : float
+        Sampling rate, in Hz.
     tau : float
         Timescale.
+    ampltidue : float
+        Height of the exponential.
     offset : float
         Y-intercept of the exponential.
     """
 
-    return amplitude * (np.exp(-(delta_t / tau)) + offset)
+    return amplitude * (np.exp(-(delta_t / (tau * fs))) + offset)

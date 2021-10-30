@@ -4,10 +4,11 @@ import pytest
 
 import numpy as np
 
+from fooof import FOOOF, FOOOFGroup
+from neurodsp.spectral import compute_spectrum
+
 from timescales.est.psd import fit_psd, convert_knee_val
 from timescales.sim import sim_spikes_synaptic
-
-from fooof import FOOOF, FOOOFGroup
 
 
 @pytest.mark.parametrize('ndim', [1, 2])
@@ -17,7 +18,6 @@ def test_fit_psd(ndim, init):
     n_seconds = 1
     fs = 1000
     tau = .01
-    nlags = 10
     n_neurons = 2
 
     probs, _ = sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=n_neurons, return_sum=True)
@@ -25,11 +25,13 @@ def test_fit_psd(ndim, init):
     if ndim == 2:
         probs = np.tile(probs, (2, 1))
 
+    freqs, powers = compute_spectrum(probs, fs)
+
     if init:
         fooof_init = {'max_n_peaks': 0}
-        fm, knee_freq, knee_tau = fit_psd(probs, fs, (1, 100), fooof_init=fooof_init)
+        fm, knee_freq, knee_tau = fit_psd(freqs, powers, (1, 100), fooof_init=fooof_init)
     else:
-        fm, knee_freq, knee_tau = fit_psd(probs, fs, (1, 100))
+        fm, knee_freq, knee_tau = fit_psd(freqs, powers, (1, 100))
 
     if np.isnan(knee_freq).any() or np.isnan(knee_tau).any():
         assert isinstance(fm, (FOOOF, FOOOFGroup))

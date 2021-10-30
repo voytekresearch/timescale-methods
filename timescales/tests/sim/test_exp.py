@@ -55,12 +55,13 @@ def test_sim_poisson_distribution():
 
 def test_exp_decay_func():
 
-    xs = np.arange(100)
+    xs = np.arange(1000)
+    fs = 1000
     amplitude = 1
     tau = .01
     offset = 0
 
-    exp = exp_decay_func(xs, amplitude, tau, offset)
+    exp = exp_decay_func(xs, fs, amplitude, tau, offset)
 
     assert exp.ndim == 1
     assert len(exp) == len(xs)

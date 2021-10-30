@@ -16,7 +16,7 @@ with open("requirements.txt") as requirements_file:
     install_requires = requirements_file.read().splitlines()
 
 setup(
-    name = 'timescale-methods',
+    name = 'timescales',
     version = __version__,
     description = 'Timescale simulation and estimation methods.',
     long_description = long_description,
@@ -27,7 +27,7 @@ setup(
     maintainer_email = 'rhammonds@ucsd.edu',
     url = 'https://github.com/voytekresearch/timescale-methods',
     packages = find_packages(),
-    package_dir={'': 'timescales'},
+    #package_dir={'': 'timescales'},
     license = 'Apache License, 2.0',
     classifiers = [
         'Development Status :: 5 - Production/Stable',

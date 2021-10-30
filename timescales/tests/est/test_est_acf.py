@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from timescales.est.acf import compute_acf, fit_acf, fit_acf_cos, _acf_proxy, _acf_cos_proxy
-from timescales.sim import sim_spikes_synaptic, sim_acf_cos
+from timescales.sim import sim_spikes_synaptic, sim_acf_cos, exp_decay_func
 
 
 @pytest.mark.parametrize('ndim_mode',
@@ -60,7 +60,7 @@ def test_fit_acf(ndim):
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
 
-    params = fit_acf(corrs, n_jobs=-1, maxfev=1000, progress=None)
+    params = fit_acf(corrs, fs, n_jobs=-1, maxfev=1000, progress=None)
 
     if ndim == 1:
         assert len(params) == 3
@@ -77,12 +77,13 @@ def test_fit_acf_cos(ndim):
     freq = 10
     tau = .1
     cos_gamma = 1
-    var_exp = 1
+    amp = 1
+    offset = 0
     var_cos = .5
     var_cos_exp = .5
 
-    corrs = sim_acf_cos(xs, fs, freq, tau, cos_gamma, var_exp, var_cos,
-                        var_cos_exp, return_sum=True)
+    corrs = sim_acf_cos(xs, fs, tau, amp, offset, cos_gamma, var_cos,
+                        var_cos_exp, freq, return_sum=True)
 
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
@@ -90,10 +91,10 @@ def test_fit_acf_cos(ndim):
     params = fit_acf_cos(corrs, fs, maxfev=1000, n_jobs=-1, progress=None)
 
     if ndim == 1:
-        assert len(params) == 6
+        assert len(params) == 7
     elif ndim == 2:
         assert (params[0] == params[1]).all()
-        assert len(params[0]) == 6
+        assert len(params[0]) == 7
 
 
 def test_proxies():
@@ -103,15 +104,17 @@ def test_proxies():
     freq = 10
     tau = .1
     cos_gamma = 1
-    var_exp = 1
+    amp = 1
+    offset = 0
     var_cos = .5
     var_cos_exp = .5
 
-    corrs = sim_acf_cos(xs, fs, freq, tau, cos_gamma, var_exp, var_cos,
-                        var_cos_exp, return_sum=True)
-
-    params = _acf_proxy([corrs, None, None], 1000)
+    sim_spikes_synaptic
+    corrs = exp_decay_func(np.arange(100), fs, .001, 1, 0)
+    params = _acf_proxy([corrs, None, None], fs, 1000)
     assert params is not None
 
-    params = _acf_cos_proxy([corrs, None, None], 1000, 1000)
+    corrs = sim_acf_cos(xs, fs, tau, amp, offset, cos_gamma,
+                            var_cos, var_cos_exp, freq, return_sum=True)
+    params = _acf_cos_proxy([corrs, None, None], fs, 1000)
     assert params is not None

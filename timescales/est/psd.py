@@ -7,19 +7,26 @@ from neurodsp.spectral import compute_spectrum
 from fooof import FOOOF, FOOOFGroup
 
 
-def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
+def fit_psd(freqs, powers, f_range, fooof_init=None,
+            knee_bounds=None, mode=None, n_jobs=-1, progress=None):
     """Fit a PSD, using SpecParam, and estimate tau.
 
     Parameters
     ----------
-    spikes : 1d or 2d array
-        Spike counts or probabilities.
-    fs : float
-        Sampling rate, in Hz.
+    freqs : 1d array
+        Frequencies at which the measure was calculated.
+    spectrum : 1d or 2d array
+        Power spectral density.
     f_range : tuple of (float, float)
         Frequency range of interest.
     fooof_init : dict, optional, default: None
         Fooof initialization arguments.
+    compute_spectrum_kwargs : dict, optiona, default: None
+        Additional keyword arguments for compute_spectrum.
+    knee_bounds : tuple of (float, float)
+        Aperiodic knee bounds bounds.
+    mode : {None, 'mean', 'median'}
+        How to combine 2d spectra.
     n_jobs : int
         Number of jobs to run in parralel, when spikes is 2d.
     progress : {None, 'tqdm', 'tqdm.notebook'}
@@ -35,17 +42,33 @@ def fit_psd(spikes, fs, f_range, fooof_init=None, n_jobs=-1, progress=None):
         Estimated timescales.
     """
 
-    freqs, powers = compute_spectrum(spikes, fs, f_range=f_range)
-
     if fooof_init is None:
         fooof_init = {}
 
-    if spikes.ndim == 1:
+    # Set aperiodic bounds
+    if knee_bounds is not None:
+        ap_bounds = ((-np.inf, knee_bounds[0], -np.inf),
+                     (np.inf, knee_bounds[1], np.inf))
+    else:
+        ap_bounds = ((-np.inf, -np.inf, -np.inf),
+                     (np.inf, np.inf, np.inf))
+
+    if mode == 'mean' and powers.ndim == 2:
+        powers = np.mean(powers, axis=0)
+    elif mode == 'median' and powers.ndim == 2:
+        powers = np.median(powers, axis=0)
+
+    if powers.ndim == 1:
         fm = FOOOF(aperiodic_mode='knee', verbose=False, **fooof_init)
-    elif spikes.ndim == 2:
+    elif powers.ndim == 2:
         fm = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
 
-    if spikes.ndim == 1:
+    fm._ap_bounds = ap_bounds
+
+    if knee_bounds is not None:
+        fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None]
+
+    if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
 
         knee = fm.get_params('aperiodic', 'knee')
