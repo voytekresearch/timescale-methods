@@ -5,8 +5,8 @@ from neurodsp.utils.data import create_times
 
 from .exp import exp_decay_func
 
-def sim_acf_cos(xs, fs, tau, amplitude, offset, cos_gamma,
-                var_cos, var_cos_exp, freq, return_sum=True):
+def sim_acf_cos(xs, fs, exp_tau, exp_amp, osc_tau, osc_amp,
+                osc_gamma,  offset, osc_freq):
     """Simulate an autocorrelation with an oscillitory component.
 
     Parameters
@@ -27,9 +27,6 @@ def sim_acf_cos(xs, fs, tau, amplitude, offset, cos_gamma,
         Variance of the damped cosine's exponential component.
     freq : float
         Frequency of the cosine component.
-    return_sum : bool, optional, default: True
-        Returns the sum of exponential and consine components when True. Or the two components
-        separately when False.
 
     Returns
     ------
@@ -39,14 +36,13 @@ def sim_acf_cos(xs, fs, tau, amplitude, offset, cos_gamma,
         Separate exponential and cosine compoents.
     """
 
-    exp = exp_decay_func(np.arange(1, len(xs)+1), fs, tau, amplitude, offset)
-    cos = sim_damped_oscillation(1, len(xs), freq, cos_gamma, var_cos, var_cos_exp)
+    xs = np.arange(1, len(xs) + 1)
 
-    if return_sum:
-        acf = exp + cos
-        return acf
+    exp = exp_amp * (np.exp(-(xs / (exp_tau * fs))))
+    osc = osc_amp * (np.exp(-(xs / osc_tau * fs) ** osc_gamma)) * \
+        np.cos(2 * np.pi * osc_freq * (xs/len(xs)))
 
-    return exp, cos
+    return exp + osc + offset
 
 
 def sim_damped_oscillation(n_seconds, fs, freq, gamma, var_cos, var_cos_exp):
