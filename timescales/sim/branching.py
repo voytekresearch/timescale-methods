@@ -33,7 +33,7 @@ def sim_branching_spikes(n_seconds, fs, tau, lambda_h, lambda_a=None, n_neurons=
     probs = sim_branching(n_seconds, fs, tau, lambda_h, lambda_a)
     probs = (probs - np.min(probs)) / np.ptp(probs)
 
-    spikes = np.zeros((n_neurons, n_samples))
+    spikes = np.zeros((n_neurons, n_samples), dtype=bool)
 
     for ind in range(n_neurons):
         spikes[ind] = (probs > np.random.rand(*probs.shape))
