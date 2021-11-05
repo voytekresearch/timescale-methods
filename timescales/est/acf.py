@@ -139,7 +139,7 @@ def fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000, n_jobs=-1, prog
     Returns
     -------
     params : 1d or 2d array
-        Fit params as [tau, gamma, var_exp, var_cos, var_cos_exp, freq].
+        Fit params as [exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, offset, osc_freq].
     """
 
     if corrs.ndim == 1:
@@ -239,11 +239,11 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
             tau_guess = (pts[np.argmin(exp_est_bl[pts])] + inds[0]) / fs
 
         # Fit
-        _guess = [tau_guess, 1, 0, 1, 1, .5]
+        _guess = [tau_guess, 1, .5, 1, 0, .5]
 
         _bounds = [
-            (tau_guess * .1, 0, -.5, .1, .1, 0),
-            (tau_guess *  1, 1, .5,  1,  1, 1)
+            (tau_guess * .01, 0, 0, 0, 0, 0),
+            (tau_guess *  1, 1, 1, 1, .1, 10)
         ]
 
     if bounds is None:
@@ -269,8 +269,9 @@ def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
 
     try:
         params, _ = curve_fit(
-            lambda xs, t, amp, off, g, vc, vce : sim_acf_cos(xs, fs, t, amp, off,
-                                                             g, vc, vce, freq, True),
+            lambda xs, exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, offset: \
+                sim_acf_cos(xs, fs, exp_tau, exp_amp, osc_tau, osc_amp,
+                            osc_gamma, offset, freq),
             xs, corrs, p0=guess, bounds=bounds, maxfev=maxfev
         )
         params = np.append(params, freq)

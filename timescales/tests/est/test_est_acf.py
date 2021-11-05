@@ -72,18 +72,18 @@ def test_fit_acf(ndim):
 @pytest.mark.parametrize('ndim', [1, 2])
 def test_fit_acf_cos(ndim):
 
-    xs = np.arange(100)
+    xs = np.arange(1000)
     fs = 1000
     freq = 10
-    tau = .1
-    cos_gamma = 1
-    amp = 1
+    exp_tau = .01
+    exp_amp = 1
+    osc_tau = .01
+    osc_amp = .5
+    osc_gamma = .01
+    osc_freq = 5
     offset = 0
-    var_cos = .5
-    var_cos_exp = .5
 
-    corrs = sim_acf_cos(xs, fs, tau, amp, offset, cos_gamma, var_cos,
-                        var_cos_exp, freq, return_sum=True)
+    corrs = sim_acf_cos(xs, fs, exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, offset, osc_freq)
 
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
@@ -99,22 +99,21 @@ def test_fit_acf_cos(ndim):
 
 def test_proxies():
 
-    xs = np.arange(100)
+    xs = np.arange(1000)
     fs = 1000
     freq = 10
-    tau = .1
-    cos_gamma = 1
-    amp = 1
+    exp_tau = .01
+    exp_amp = 1
+    osc_tau = .01
+    osc_amp = .5
+    osc_gamma = .01
+    osc_freq = 5
     offset = 0
-    var_cos = .5
-    var_cos_exp = .5
 
-    sim_spikes_synaptic
     corrs = exp_decay_func(np.arange(100), fs, .001, 1, 0)
     params = _acf_proxy([corrs, None, None], fs, 1000)
     assert params is not None
 
-    corrs = sim_acf_cos(xs, fs, tau, amp, offset, cos_gamma,
-                            var_cos, var_cos_exp, freq, return_sum=True)
+    corrs = sim_acf_cos(xs, fs, exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, offset, osc_freq)
     params = _acf_cos_proxy([corrs, None, None], fs, 1000)
     assert params is not None
