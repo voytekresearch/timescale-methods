@@ -91,24 +91,8 @@ class ACF:
 
         xs = np.arange(1, len(self.corrs)+1)
 
-        params = fit_acf_cos(self.corrs, self.fs, **fit_kwargs)
-
-        if 'sequential' not in fit_kwargs.keys():
-            fit_kwargs['sequential'] = True
-
-        if 'sequential' in fit_kwargs.keys() and fit_kwargs['sequential'] == True:
-            self.cos_params = params[0]
-            self.params = params[1]
-
-            cos = sim_osc(xs, self.fs, *self.cos_params)
-            exp = sim_exp(xs, self.fs, *self.params)
-
-            self.corrs_fit = cos + exp
-            self.corrs_fit_cos = cos
-            self.corrs_fit_exp = exp
-        else:
-            self.params = params
-            self.corrs_fit = sim_acf_cos(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
+        self.params = fit_acf_cos(self.corrs, self.fs, **fit_kwargs)
+        self.corrs_fit = sim_acf_cos(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
 
         self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
 
@@ -213,7 +197,7 @@ def fit_acf(corrs, fs, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress
     return params
 
 
-def fit_acf_cos(corrs, fs, sequential=True, guess=None, bounds=None,
+def fit_acf_cos(corrs, fs, guess=None, bounds=None,
                 maxfev=1000, n_jobs=-1, progress=None):
     """Fit an autocorraltion as the sum of exponential and cosine components.
 
@@ -223,12 +207,8 @@ def fit_acf_cos(corrs, fs, sequential=True, guess=None, bounds=None,
         Autocorrelation coefficients.
     fs : float
         Sampling rate, in Hz.
-    sequential : bool, optional, default:True
-        Whether to fit the damped cosine and exponential decay sequentially (True),
-        rather than simulataneously (False).
     guess : list or list of list, optional, default: None
-        Estimated parameters as [height, tau, offset], or as
-        [[cos_guess...], [exp_guess...]].
+        Estimated parameters as [height, tau, offset].
     bounds : list or list of list, optional, default: None
         Parameters bounds as [(*lower_bounds), (*upper_bounds)].
     n_jobs : int
@@ -246,28 +226,12 @@ def fit_acf_cos(corrs, fs, sequential=True, guess=None, bounds=None,
         Fit params as [exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, offset, osc_freq].
     """
 
-    if sequential and guess is not None:
-        osc_guess, exp_guess = guess[0], guess[1]
-    elif sequential:
-        osc_guess, exp_guess = None, None
-
-    if sequential and bounds is not None:
-        osc_bounds, exp_bounds = bounds[0], bounds[1]
-    elif sequential:
-        osc_bounds, exp_bounds = None, None
-
-    if corrs.ndim == 2:
-        n_jobs = cpu_count() if n_jobs == -1 else n_jobs
-
-    # 1D
-    if corrs.ndim == 1 and not sequential:
+    if corrs.ndim == 1:
         params = _fit_acf_cos(corrs, fs, guess, bounds, maxfev)
-    elif corrs.ndim == 1 and sequential:
-        cos_params, exp_params = _fit_acf_cos_seq(corrs, fs, osc_guess, osc_bounds,
-                                                  exp_guess, exp_bounds, maxfev)
-        params = (cos_params, exp_params)
-    # 2D
-    elif corrs.ndim == 2 and not sequential:
+
+    elif corrs.ndim == 2:
+
+        n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
         # Ensure guess and bounds are zipable
         guess, bounds = check_guess_and_bounds(corrs, guess, bounds)
@@ -281,20 +245,6 @@ def fit_acf_cos(corrs, fs, sequential=True, guess=None, bounds=None,
             params = list(progress_bar(mapping, progress, len(corrs)))
 
         params = np.array(params)
-
-    elif corrs.ndim == 2 and not sequential:
-
-        # Ensure guess and bounds are zipable
-        osc_guess, osc_bounds = check_guess_and_bounds(corrs, guess[0], bounds[0])
-        exp_guess, exp_bounds = check_guess_and_bounds(corrs, guess[1], bounds[1])
-
-        # Proxy function to organize args
-        with Pool(processes=n_jobs) as pool:
-
-            mapping = pool.imap(partial(_acf_cos_proxy, fs=fs, maxfev=maxfev),
-                                zip(corrs, osc_guess, osc_bounds, exp_guess, exp_bounds))
-
-            params = list(progress_bar(mapping, progress, len(corrs)))
 
     return params
 
@@ -343,41 +293,6 @@ def _fit_acf(corrs, fs, guess=None, bounds=None, maxfev=1000):
         params = np.nan
 
     return params
-
-
-def _fit_acf_cos_seq(corrs, fs, osc_guess=None, osc_bounds=None,
-                     exp_guess=None, exp_bounds=None, maxfev=1000):
-    """Fit 1d ACF with cosine, seqentially."""
-
-    xs = np.arange(1, len(corrs)+1)
-
-    # Fit a damped cosine and remove it from the acf
-    osc_bounds = [[1e-3, 0, .01, 0], [100, 10, .2, 10]] if osc_bounds is None else osc_bounds
-
-    osc_guess = [1, 1, .1, 1] if osc_guess is None else osc_guess
-
-    cos_params, _ = curve_fit(
-        lambda xs, osc_tau, osc_amp, osc_gamma, osc_freq : sim_osc(xs, fs, osc_tau, osc_amp,
-                                                                   osc_gamma, osc_freq),
-        np.arange(1, len(corrs)+1), corrs, p0=osc_guess, bounds=osc_bounds, maxfev=maxfev
-    )
-
-    cos_fit = sim_osc(xs, fs, *cos_params)
-
-    corrs_cos_rm = corrs - cos_fit
-
-    # Fit an exponential decay to the damped cosine removed acf
-    exp_bounds = [[1e-4, 1e-3, -.1], [5, 1, .1]] if exp_bounds is None else exp_bounds
-
-    exp_guess = [.1, 1, 0]
-
-    exp_params, _ = curve_fit(
-            lambda xs, t, amp, off : sim_exp(xs, fs, t, amp, off),
-            np.arange(1, len(corrs)+1), corrs_cos_rm, p0=exp_guess,
-            bounds=exp_bounds, maxfev=maxfev
-    )
-
-    return (cos_params, exp_params)
 
 
 def _fit_acf_cos(corrs, fs, guess=None, bounds=None, maxfev=1000):
@@ -455,14 +370,8 @@ def _acf_proxy(args, fs, maxfev):
     params = _fit_acf(corrs, fs, guess, bounds, maxfev)
     return params
 
+
 def _acf_cos_proxy(args, fs, maxfev):
     corrs, guess, bounds = args
     params = _fit_acf_cos(corrs, fs, guess, bounds, maxfev)
-    return params
-
-def _fit_acf_cos_seq_proxy(args, fs, maxfev):
-    corrs, osc_guess, osc_bounds, exp_guess, exp_bounds = args
-
-    params = _fit_acf_cos_seq(corrs, fs, osc_guess, osc_bounds, exp_guess, exp_bounds, maxfev)
-
     return params
