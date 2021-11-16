@@ -26,19 +26,3 @@ def test_sim_acf_cos():
     assert acf.max() >= 0
     assert acf.min() >= -1
     assert (acf[int(exp_tau * fs)] < 1) & (acf[int(exp_tau * fs)] > 0)
-
-
-def test_sim_damped_oscillation():
-
-    n_seconds = 10
-    fs = 1000
-    freq = 10
-    gamma = 1
-    var_cos = 1
-    var_cos_exp = 1
-
-    sig = sim_damped_oscillation(n_seconds, fs, freq, gamma, var_cos, var_cos_exp)
-
-    assert sig.max() <= 1
-    assert sig.min() >= -1
-    np.testing.assert_almost_equal(np.mean(sig), 0, 4)
