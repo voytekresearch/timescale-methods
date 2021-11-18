@@ -206,11 +206,17 @@ def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=100
         If mode is None, then a 2d array of these
     """
 
-    lags = np.arange(1, len(corrs)+1) if lags is None else lags
+
 
     if corrs.ndim == 1:
+
+        lags = np.arange(1, len(corrs)+1) if lags is None else lags
         params, guess, bounds = _fit_acf(corrs, lags, fs, guess, bounds, maxfev)
+
     elif corrs.ndim == 2:
+
+        lags = np.arange(1, len(corrs[0])+1) if lags is None else lags
+
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
         # Ensure guess and bounds are zipable
@@ -219,14 +225,14 @@ def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=100
         # Proxy function to organize args
         with Pool(processes=n_jobs) as pool:
 
-            mapping = pool.imap(partial(_acf_proxy, fs=fs, maxfev=maxfev),
-                                zip(corrs, lags, guess, bounds))
+            mapping = pool.imap(partial(_acf_proxy, lags=lags, fs=fs, maxfev=maxfev),
+                                zip(corrs, guess, bounds))
 
             params = list(progress_bar(mapping, progress, len(corrs)))
 
-        guess = np.array([i for i in params[1]])
-        bounds = np.array([i for i in params[2]])
-        params = np.array([i for i in params[0]])
+        guess = np.array([i[1] for i in params])
+        bounds = np.array([i[2] for i in params])
+        params = np.array([i[0] for i in params])
 
     return params, guess, bounds
 
@@ -262,12 +268,17 @@ def fit_acf_cos(corrs, fs, lags=None, guess=None, bounds=None,
         Fit params as [exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, osc_freq, offset].
     """
 
-    lags = np.arange(1, len(corrs)+1) if lags is None else lags
+
 
     if corrs.ndim == 1:
+
+        lags = np.arange(1, len(corrs)+1) if lags is None else lags
         params, guess, bounds = _fit_acf_cos(corrs, lags, fs, guess, bounds, maxfev)
         params = np.array(params)
+
     elif corrs.ndim == 2:
+
+        lags = np.arange(1, len(corrs[0])+1) if lags is None else lags
 
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
@@ -277,14 +288,14 @@ def fit_acf_cos(corrs, fs, lags=None, guess=None, bounds=None,
         # Proxy function to organize args
         with Pool(processes=n_jobs) as pool:
 
-            mapping = pool.imap(partial(_acf_cos_proxy, fs=fs, maxfev=maxfev),
-                                zip(corrs, lags, guess, bounds))
+            mapping = pool.imap(partial(_acf_cos_proxy, lags=lags, fs=fs, maxfev=maxfev),
+                                zip(corrs, guess, bounds))
 
             params = list(progress_bar(mapping, progress, len(corrs)))
 
-        guess = np.array([i for i in params[1]])
-        bounds = np.array([i for i in params[2]])
-        params = np.array([i for i in params[0]])
+        guess = np.array([i[1] for i in params])
+        bounds = np.array([i[2] for i in params])
+        params = np.array([i[0] for i in params])
 
     return params, guess, bounds
 
@@ -345,7 +356,7 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
         freq = int(np.argmax(p))
 
         # Tau estimation
-        inds = np.where(np.diff(np.sign(np.diff(corrs))) < 0)[0] + 1
+        inds = np.where(np.diff(np.sign(np.diff(corrs))) <= 0)[0] + 1
 
         if len(inds) == 0:
             inds = np.arange(len(corrs))
@@ -406,13 +417,13 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
     return params, guess, bounds
 
 
-def _acf_proxy(args, fs, maxfev):
-    corrs, lags, guess, bounds = args
+def _acf_proxy(args, lags, fs, maxfev):
+    corrs, guess, bounds = args
     params, guess, bounds = _fit_acf(corrs, lags, fs, guess, bounds, maxfev)
     return params, guess, bounds
 
 
-def _acf_cos_proxy(args, fs, maxfev):
-    corrs, lags, guess, bounds = args
+def _acf_cos_proxy(args, lags, fs, maxfev):
+    corrs, guess, bounds = args
     params, guess, bounds = _fit_acf_cos(corrs, lags, fs, guess, bounds, maxfev)
     return params, guess, bounds

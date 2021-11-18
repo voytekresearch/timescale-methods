@@ -4,7 +4,7 @@ import numpy as np
 
 import pytest
 
-from timescales.sim.exp import (sim_spikes_synaptic, sim_poisson_distribution, exp_decay_func,
+from timescales.sim.spikes import (sim_spikes_synaptic, sim_poisson_distribution,
     sim_synaptic_kernel)
 
 
@@ -51,20 +51,3 @@ def test_sim_poisson_distribution():
     assert probs.ndim  == 1
     assert probs.max() <= 1
     assert probs.min() >= 0
-
-
-def test_exp_decay_func():
-
-    xs = np.arange(1000)
-    fs = 1000
-    amplitude = 1
-    tau = .01
-    offset = 0
-
-    exp = exp_decay_func(xs, fs, amplitude, tau, offset)
-
-    assert exp.ndim == 1
-    assert len(exp) == len(xs)
-    assert np.argmax(exp) == 0
-    assert exp.max() <= 1
-    assert exp.min() >= 0

@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from timescales.est.acf import compute_acf, fit_acf, fit_acf_cos, _acf_proxy, _acf_cos_proxy
-from timescales.sim import sim_spikes_synaptic, sim_acf_cos, exp_decay_func
+from timescales.sim import sim_spikes_synaptic, sim_acf_cos, sim_exp_decay
 
 
 @pytest.mark.parametrize('ndim_mode',
@@ -54,19 +54,26 @@ def test_fit_acf(ndim):
     nlags = 10
     n_neurons = 2
 
+    # Fit spikes
     probs, _ = sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=n_neurons, return_sum=True)
     corrs = compute_acf(probs, nlags, n_jobs=-1, progress=None)
 
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
 
-    params = fit_acf(corrs, fs, n_jobs=-1, maxfev=1000, progress=None)
+    params, _, _ = fit_acf(corrs, fs, n_jobs=-1, maxfev=1000, progress=None)
 
     if ndim == 1:
         assert len(params) == 3
     elif ndim == 2:
         assert (params[0] == params[1]).all()
         assert len(params[0]) == 3
+
+    # Fit exponential decay
+    corrs = sim_exp_decay(np.arange(1, 1000), fs, tau, 1)
+    params, _, _ = fit_acf(corrs, fs, n_jobs=-1, progress=None)
+    assert abs(params[0] - tau) < (tau * .1)
+
 
 
 @pytest.mark.parametrize('ndim', [1, 2])
@@ -88,7 +95,7 @@ def test_fit_acf_cos(ndim):
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
 
-    params = fit_acf_cos(corrs, fs, maxfev=1000, n_jobs=-1, progress=None)
+    params, _, _ = fit_acf_cos(corrs, fs, maxfev=1000, n_jobs=-1, progress=None)
 
     if ndim == 1:
         assert len(params) == 7
@@ -110,10 +117,10 @@ def test_proxies():
     osc_freq = 5
     offset = 0
 
-    corrs = exp_decay_func(np.arange(100), fs, .001, 1, 0)
-    params = _acf_proxy([corrs, None, None], fs, 1000)
+    corrs = sim_exp_decay(xs, fs, .001, 1, 0)
+    params = _acf_proxy([corrs, None, None], xs, fs, 1000)
     assert params is not None
 
     corrs = sim_acf_cos(xs, fs, exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, offset, osc_freq)
-    params = _acf_cos_proxy([corrs, None, None], fs, 1000)
+    params = _acf_cos_proxy([corrs, None, None], xs, fs, 1000)
     assert params is not None
