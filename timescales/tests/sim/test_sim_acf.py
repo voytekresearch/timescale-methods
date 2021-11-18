@@ -2,8 +2,6 @@
 
 import numpy as np
 
-import pytest
-
 from timescales.sim.acf import sim_acf_cos, sim_damped_cos, sim_exp_decay
 
 

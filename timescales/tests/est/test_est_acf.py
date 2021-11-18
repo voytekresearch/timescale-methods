@@ -3,8 +3,62 @@
 import pytest
 import numpy as np
 
-from timescales.est.acf import compute_acf, fit_acf, fit_acf_cos, _acf_proxy, _acf_cos_proxy
+from timescales.est import ACF, compute_acf, fit_acf, fit_acf_cos
+from timescales.est.acf import _acf_proxy, _acf_cos_proxy
 from timescales.sim import sim_spikes_synaptic, sim_acf_cos, sim_exp_decay
+
+
+
+def test_ACF_init():
+    corrs = np.random.rand(100)
+    lags = np.arange(1, 101)
+    fs = 100
+    acf = ACF(corrs, lags, fs)
+
+    assert (acf.corrs == corrs).all()
+    assert (acf.lags == lags).all()
+    assert acf.fs == fs
+
+@pytest.mark.parametrize('from_psd', [True, False])
+def test_ACF_compute_acf(from_psd):
+
+    sig = np.random.rand(1000)
+    fs = 100
+    start = 100
+    win_len = 100
+
+    acf = ACF()
+    acf.compute_acf(sig, fs, start, win_len, from_psd=from_psd)
+
+    assert acf.corrs is not None
+    assert abs(np.mean(acf.corrs)) < .25
+
+
+def test_ACF_fit():
+    lags = np.arange(1, 101)
+    tau = .01
+    amp = 1
+    fs = 100
+    corrs = sim_exp_decay(lags, fs, tau, amp)
+    acf = ACF(corrs, lags, fs)
+    acf.fit()
+
+    assert (acf.params[0] - tau) < (tau * .1)
+    assert acf.rsq > .5
+
+def test_ACF_fit_cos():
+    lags = np.arange(1, 101)
+    tau = .01
+    fs = 100
+
+    corrs = sim_acf_cos(lags, fs, .01, 1, .25, .5, .01, 5, 0)
+
+
+    acf = ACF(corrs, lags, fs)
+    acf.fit_cos()
+
+    assert (acf.params[0] - tau) < (tau * .1)
+    assert acf.rsq > .5
 
 
 @pytest.mark.parametrize('ndim_mode',
@@ -46,13 +100,20 @@ def test_compute_acf(ndim_mode):
 
 
 @pytest.mark.parametrize('ndim', [1, 2])
-def test_fit_acf(ndim):
+@pytest.mark.parametrize('bounds', [True, None])
+def test_fit_acf(ndim, bounds):
 
     n_seconds = 1
     fs = 1000
     tau = .01
     nlags = 10
     n_neurons = 2
+
+    if bounds is True:
+        bounds = [
+            (.01, 0, 0, 0, 0, 0, -.5),
+            (1  ,  1, 1, 1, .1, 10, .5)
+        ]
 
     # Fit spikes
     probs, _ = sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=n_neurons, return_sum=True)
@@ -61,7 +122,10 @@ def test_fit_acf(ndim):
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
 
-    params, _, _ = fit_acf(corrs, fs, n_jobs=-1, maxfev=1000, progress=None)
+    if bounds:
+        bounds = [[.001, 0, None], [1, 1, None]]
+
+    params, _, _ = fit_acf(corrs, fs, bounds=bounds, n_jobs=-1, maxfev=1000, progress=None)
 
     if ndim == 1:
         assert len(params) == 3
@@ -77,7 +141,8 @@ def test_fit_acf(ndim):
 
 
 @pytest.mark.parametrize('ndim', [1, 2])
-def test_fit_acf_cos(ndim):
+@pytest.mark.parametrize('bounds', [True, None])
+def test_fit_acf_cos(ndim, bounds):
 
     xs = np.arange(1000)
     fs = 1000
@@ -95,7 +160,13 @@ def test_fit_acf_cos(ndim):
     if ndim == 2:
         corrs = np.tile(corrs, (2, 1))
 
-    params, _, _ = fit_acf_cos(corrs, fs, maxfev=1000, n_jobs=-1, progress=None)
+    if bounds is True:
+        bounds = [
+            (.01, 0, 0, 0, 0, 0, None),
+            (1  ,  1, 1, 1, .1, 10, None)
+        ]
+
+    params, _, _ = fit_acf_cos(corrs, fs, bounds=bounds, maxfev=1000, n_jobs=-1, progress=None)
 
     if ndim == 1:
         assert len(params) == 7

@@ -202,8 +202,7 @@ def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=100
     Returns
     -------
     params : 1d or 2d array
-        Exponential decay parameters as [height, tau, offset].
-        If mode is None, then a 2d array of these
+        Exponential decay parameters as [tau, height, offset].
     """
 
 
@@ -321,6 +320,7 @@ def _fit_acf(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
         bounds = _bounds
     else:
         _bounds = np.array(_bounds)
+        bounds = np.array(bounds)
 
         xinds, yinds = np.where(bounds == None)
         if len(xinds) != 0:
