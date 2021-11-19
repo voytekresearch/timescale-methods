@@ -34,27 +34,29 @@ def test_ACF_compute_acf(from_psd):
     assert abs(np.mean(acf.corrs)) < .25
 
 
-def test_ACF_fit():
+@pytest.mark.parametrize('low_mem', [False])
+def test_ACF_fit(low_mem):
     lags = np.arange(1, 101)
     tau = .01
     amp = 1
-    fs = 100
+    fs = 1000
     corrs = sim_exp_decay(lags, fs, tau, amp)
-    acf = ACF(corrs, lags, fs)
+    acf = ACF(corrs, lags, fs, low_mem)
     acf.fit()
 
     assert (acf.params[0] - tau) < (tau * .1)
     assert acf.rsq > .5
 
-def test_ACF_fit_cos():
+@pytest.mark.parametrize('low_mem', [False])
+def test_ACF_fit_cos(low_mem):
     lags = np.arange(1, 101)
     tau = .01
-    fs = 100
+    fs = 1000
 
     corrs = sim_acf_cos(lags, fs, .01, 1, .25, .5, .01, 5, 0)
 
 
-    acf = ACF(corrs, lags, fs)
+    acf = ACF(corrs, lags, fs, low_mem)
     acf.fit_cos()
 
     assert (acf.params[0] - tau) < (tau * .1)

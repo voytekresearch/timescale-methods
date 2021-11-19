@@ -40,9 +40,11 @@ class ACF:
         [osc_tau, osc_amp, osc_gamma, osc_freq].
     rsq : float
         R-squared of the full fit.
+    low_mem : bool, optional, default: False
+        If true, only correlation coefficient arrays are stored.
     """
 
-    def __init__(self, corrs=None, lags=None, fs=None):
+    def __init__(self, corrs=None, lags=None, fs=None, low_mem=False):
         """Initialize object."""
 
         self.sig = None
@@ -63,6 +65,7 @@ class ACF:
         self.corrs_fit_cos = None
 
         self.rsq = None
+        self.low_mem = low_mem
 
 
     def compute_acf(self, sig, fs, start, win_len, nlags=None, from_psd=False, psd_kwargs=None):
@@ -94,6 +97,9 @@ class ACF:
             self.corrs = ifft(_powers).real
             self.corrs = self.corrs[:len(self.corrs)//2]
 
+        if self.low_mem:
+            self.sig = None
+
 
     def fit(self, **fit_kwargs):
         """Fit without an oscillitory component."""
@@ -105,6 +111,10 @@ class ACF:
         if not np.isnan(self.params).any():
             self.corrs_fit = sim_exp_decay(self.lags, self.fs, *self.params)
             self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
+
+        if self.low_mem:
+            self.lags = None
+            self.corrs_fit = None
 
 
     def fit_cos(self, **fit_kwargs):
@@ -123,6 +133,19 @@ class ACF:
             self.corrs_fit_cos = sim_damped_cos(self.lags, self.fs, *self.params_cos)
 
             self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
+
+        if self.low_mem:
+            self.lags = None
+            self.corrs_fit = None
+            self.corrs_fit_exp = None
+            self.corrs_fit_cos = None
+
+    def gen_corrs_fit(self):
+
+        if len(self.params) == 3:
+            return sim_exp_decay(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
+        else:
+            return sim_acf_cos(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
 
 
 def compute_acf(spikes, nlags, mode=None, n_jobs=-1, progress=None):
@@ -308,6 +331,8 @@ def _fit_acf(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
         inds = np.argsort(np.abs(corrs - np.max(corrs) * (1/np.exp(1))))
         target_tau = inds[1] if inds[0] == 0 else inds[0]
 
+    target_tau /= fs
+
     if guess is None:
         guess = [target_tau, np.max(corrs), 0.]
 
@@ -375,11 +400,13 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
             tau_guess = (pts[np.argmin(exp_est_bl[pts])] + inds[0]) / fs
 
         # Fit
-        _guess = [tau_guess, 1, .5, 1, 0, freq, .5]
+        hgt = np.max(corrs)
+
+        _guess = [tau_guess, hgt/2, .5, hgt/2, 0, freq, 0]
 
         _bounds = [
-            (tau_guess * .01, 0, 0, 0, 0, 0, -.5),
-            (tau_guess *  1,  1, 1, 1, .1, 10, .5)
+            (0,              hgt/2, 0, hgt/2,  0, 0, -.5),
+            (tau_guess * 10, hgt, 1,   hgt, .1, 10, .5)
         ]
 
     if bounds is None:
