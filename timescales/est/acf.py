@@ -68,8 +68,9 @@ class ACF:
         self.low_mem = low_mem
 
 
-    def compute_acf(self, sig, fs, start, win_len, nlags=None, from_psd=False, psd_kwargs=None):
-        """Compute autocorrelation
+    def compute_acf(self, sig, fs, start=0, win_len=None,
+                    nlags=None, from_psd=False, psd_kwargs=None):
+        """Compute autocorrelation.
 
         Parameters
         ----------
@@ -77,16 +78,21 @@ class ACF:
             LFP or spike counts or spike probabilities.
         fs : float
             Sampling rate, in Hz.
-        start : int
+        start : int, optional, default: 0
             Index of the starting point to compute the ACF.
-        win_len : int
-            Window length, in samples.
+        win_len : int, optional, default: None
+            Window length, in samples. If None, default to fs.
         nlags : int, optional, default: None
             Number of lags to compute. None defaults to the sampling rate, fs.
+        from_psd : bool, optional, default: False
+            Compute correlations from the inverse FFT of the PSD.
+        psd_kwargs : dict, optional, default: None
+            Compute spectrum kwargs. Only used if from_psd is True.
         """
         self.sig = sig
         self.fs = fs
 
+        win_len = fs if win_len is None else win_len
         nlags = self.fs if nlags is None else nlags
 
         if not from_psd:
