@@ -20,7 +20,7 @@ def compute_taus(iterable, method='acf', fit_kwargs=None,
     ----------
     iterable : 1d array-like
         Signal start indices (or correlation coefficients if pre-computed) to fit
-        in parallel
+        in parallel.
     method : {'acf', 'psd'}
         Method to compute the timscale with.
     fit_kwargs : dict, optional, default: None
