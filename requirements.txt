@@ -3,5 +3,5 @@ scipy >= 1.4.1
 matplotlib >= 3.0.3
 statsmodels >= 0.12.2
 tqdm >= 4.62.3
-fooof >= 1.0.0
+fooof @ git+https://github.com/ryanhammonds/fooof.git@knee
 neurodsp @ git+https://github.com/neurodsp-tools/neurodsp.git@main

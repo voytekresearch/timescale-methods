@@ -71,28 +71,23 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
     if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
 
-        knee = fm.get_params('aperiodic', 'knee')
-        exp = fm.get_params('aperiodic', 'exponent')
-
-        knee_freq, knee_tau = convert_knee_val(knee, exponent=exp)
+        knee_freq = fm.get_params('aperiodic', 'knee')
+        knee_tau = convert_knee_val(knee_freq)
     else:
         fm.fit(freqs, powers, f_range, n_jobs, progress)
 
-        knees = fm.get_params('aperiodic', 'knee')
+
         exps = fm.get_params('aperiodic', 'exponent')
+        knee_freq = fm.get_params('aperiodic', 'knee')
+        knee_tau = np.zeros(len(knee_freq))
 
-        knee_freq = np.zeros(len(knees))
-        knee_tau = np.zeros(len(knees))
-
-        for ind, (knee, exp) in enumerate(zip(knees, exps)):
-            _knee_freq, _knee_tau = convert_knee_val(knee, exponent=exp)
-            knee_freq[ind] = _knee_freq
-            knee_tau[ind] = _knee_tau
+        for ind, (freq, exp) in enumerate(zip(knee_freq, exps)):
+            knee_tau[ind] = convert_knee_val(freq)
 
     return fm, knee_freq, knee_tau
 
 
-def convert_knee_val(knee, exponent=2.):
+def convert_knee_val(knee_freq):
     """Convert knee parameter(s) to frequency and time-constant value.
 
     Parameters
@@ -110,7 +105,6 @@ def convert_knee_val(knee, exponent=2.):
         Timescale, in seconds.
     """
 
-    knee_freq = knee**(1./exponent)
     knee_tau = 1./(2*np.pi*knee_freq)
 
-    return knee_freq, knee_tau
+    return knee_tau
