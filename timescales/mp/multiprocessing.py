@@ -12,7 +12,7 @@ from timescales.est.psd import fit_psd
 from timescales.est.acf import ACF
 
 
-def compute_taus(iterable, method='acf', fit_kwargs=None,
+def compute_taus(iterable, method='acf', fit_kwargs=None, low_mem=False,
                  n_jobs=-1, chunksize=20, progress='tqdm.notebook'):
     """Compute and fit ACF or PSD in parallel.
 
@@ -25,6 +25,8 @@ def compute_taus(iterable, method='acf', fit_kwargs=None,
         Method to compute the timscale with.
     fit_kwargs : dict, optional, default: None
         Addition fit kwargs to pass to either mp_fit_acf or mp_fit_psd.
+    low_mem : bool, optional, default: False
+        Reduce memory usage.
     n_jobs : int, optional, default: -1
         Number of jobs to run in parallel. -1 defaults to max cpus.
     chunksize : int, optional, default: 20
@@ -47,13 +49,15 @@ def compute_taus(iterable, method='acf', fit_kwargs=None,
     except:
         tqdm = lambda i : i
 
-    if method == 'acf':
-        mp_func = mp_fit_acf
-    elif method == 'psd':
-        mp_func = mp_fit_psd
-
     with Pool(processes=n_jobs) as pool:
-        mapping = pool.imap(partial(mp_func, **fit_kwargs), iterable, chunksize=chunksize)
+
+        if method == 'acf':
+            mapping = pool.imap(partial(mp_fit_acf, low_mem=low_mem, **fit_kwargs),
+                                iterable, chunksize=chunksize)
+        elif method == 'psd':
+            mapping = pool.imap(partial(mp_fit_psd, **fit_kwargs),
+                                iterable, chunksize=chunksize)
+
         result = list(tqdm(mapping, total=len(iterable), dynamic_ncols=True))
 
     taus, rsq, result_class = sort_result(result)
@@ -123,7 +127,7 @@ def mp_fit_psd(iterable, sig=None, fs=None, win_len=None, f_range=None,
 
 
 def mp_fit_acf(ind, sig=None, lags=None, fs=None, win_len=None, method='cos',
-               compute_acf_kwargs=None, fit_kwargs=None):
+               compute_acf_kwargs=None, fit_kwargs=None, low_mem=False):
     """Multiprocessing wrapper for computing and fitting ACFs.
 
     Parameters
@@ -160,6 +164,9 @@ def mp_fit_acf(ind, sig=None, lags=None, fs=None, win_len=None, method='cos',
 
         Note, the shape of guess and bounds is dependent on method.
 
+    low_mem : bool, optional, default: False
+        Reduces memory usage.
+
     Returns
     -------
     tau : float
@@ -173,11 +180,11 @@ def mp_fit_acf(ind, sig=None, lags=None, fs=None, win_len=None, method='cos',
     win_len = fs if win_len is None else win_len
 
     if sig is not None:
-        acf = ACF()
+        acf = ACF(low_mem=low_mem)
         acf.compute_acf(sig, fs, start=ind, win_len=win_len, **compute_acf_kwargs)
     elif sig is None:
         lags = np.arange(1, len(ind)) if lags is None else lags
-        acf = ACF(ind, lags, fs)
+        acf = ACF(ind, lags, fs, low_mem)
 
     if method == 'cos':
         acf.fit_cos(**fit_kwargs)
