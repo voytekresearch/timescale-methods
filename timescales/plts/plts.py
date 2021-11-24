@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_connected_scatter(taus_a, taus_b, ax, title, paired=True,
-                           ylim=None, ylabel=None, ticklabels=None):
+def plot_connected_scatter(taus_a, taus_b, ax, title, paired=True, alpha_scatter=.5,
+                           alpha_line=.1,  ylim=None, ylabel=None, ticklabels=None):
 
     xs_a = np.random.uniform(1, 1.2, size=len(taus_a))
-    ax.scatter(xs_a, taus_a, alpha=.5)
+    ax.scatter(xs_a, taus_a, alpha=alpha_scatter)
 
 
     xs_b = np.random.uniform(1.8, 2, size=len(taus_b))
-    ax.scatter(xs_b, taus_b, alpha=.5)
+    ax.scatter(xs_b, taus_b, alpha=alpha_scatter)
 
     vp = ax.violinplot([taus_a, taus_b], showextrema=False)
     vp['bodies'][1].set_color('C1')
@@ -29,7 +29,7 @@ def plot_connected_scatter(taus_a, taus_b, ax, title, paired=True,
 
     if paired:
         for i, (t_psd, t_acf) in enumerate(zip(taus_a, taus_b)):
-            ax.plot([xs_a[i], xs_b[i]], [t_psd, t_acf], color='k', alpha=.1)
+            ax.plot([xs_a[i], xs_b[i]], [t_psd, t_acf], color='k', alpha=alpha_line)
 
     ax.set_title(title)
     ax.set_ylabel('Tau')
