@@ -7,7 +7,7 @@ import numpy as np
 from fooof import FOOOF, FOOOFGroup
 from neurodsp.spectral import compute_spectrum
 
-from timescales.est.psd import fit_psd, convert_knee_val
+from timescales.fit.psd import fit_psd, convert_knee_val
 from timescales.sim import sim_spikes_synaptic
 
 

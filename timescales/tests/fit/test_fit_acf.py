@@ -3,8 +3,8 @@
 import pytest
 import numpy as np
 
-from timescales.est import ACF, compute_acf, fit_acf, fit_acf_cos
-from timescales.est.acf import _acf_proxy, _acf_cos_proxy
+from timescales.fit import ACF, compute_acf, fit_acf, fit_acf_cos
+from timescales.fit.acf import _acf_proxy, _acf_cos_proxy
 from timescales.sim import sim_spikes_synaptic, sim_acf_cos, sim_exp_decay
 
 

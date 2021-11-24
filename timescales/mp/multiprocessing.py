@@ -8,8 +8,8 @@ import numpy as np
 
 from neurodsp.spectral import compute_spectrum
 
-from timescales.est.psd import fit_psd
-from timescales.est.acf import ACF
+from timescales.fit.psd import fit_psd
+from timescales.fit.acf import ACF
 
 
 def compute_taus(iterable, method='acf', fit_kwargs=None, low_mem=False,

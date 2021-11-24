@@ -4,7 +4,7 @@ import pytest
 
 import numpy as np
 
-from timescales.est.utils import progress_bar, check_guess_and_bounds
+from timescales.fit.utils import progress_bar, check_guess_and_bounds
 
 
 @pytest.mark.parametrize('progress', [None, 'tqdm', pytest.param('invalid',
