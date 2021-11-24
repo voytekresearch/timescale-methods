@@ -68,8 +68,8 @@ class ACF:
         self.low_mem = low_mem
 
 
-    def compute_acf(self, sig, fs, start=0, win_len=None,
-                    nlags=None, from_psd=False, psd_kwargs=None):
+    def compute_acf(self, sig, fs, start=0, win_len=None, nlags=None,
+                    from_psd=False, psd_kwargs=None):
         """Compute autocorrelation.
 
         Parameters
@@ -232,6 +232,10 @@ def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=100
     -------
     params : 1d or 2d array
         Exponential decay parameters as [tau, height, offset].
+    guess : 1d or 2d array
+        Curve fit initial guess parameters.
+    bounds : 1d or 2d array
+        Curve fit parameter bounds.
     """
 
 
