@@ -7,7 +7,7 @@ import numpy as np
 from fooof import FOOOF, FOOOFGroup
 from neurodsp.spectral import compute_spectrum
 
-from timescales.est.psd import fit_psd, convert_knee_val
+from timescales.fit.psd import fit_psd, convert_knee_val
 from timescales.sim import sim_spikes_synaptic
 
 
@@ -47,11 +47,14 @@ def test_fit_psd(ndim, init):
         assert (knee_tau[0] == knee_tau[1]).all()
 
 
-@pytest.mark.parametrize('knee', [10, 100, 1000])
-@pytest.mark.parametrize('exp', [1.5, 2, 2.5])
-def test_convert_knee_val(knee, exp):
+def test_convert_knee_val():
 
-    knee_freq, knee_tau = convert_knee_val(knee, exponent=exp)
+    knee_freq_lo = 10
+    knee_freq_hi = 100
 
-    assert knee_freq > knee_tau
-    assert knee_freq > 0
+    knee_tau_long = convert_knee_val(knee_freq_lo)
+    knee_tau_short = convert_knee_val(knee_freq_hi)
+
+    assert knee_tau_long > knee_tau_short
+    assert knee_tau_long < knee_freq_lo
+    assert knee_tau_short < knee_freq_hi
