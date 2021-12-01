@@ -40,3 +40,38 @@ def create_windows(samples, win_len, win_spacing):
     win_ends = win_starts + win_len
 
     return win_starts, mid_points, win_ends
+
+
+def get_distinct_windows(starts, ends):
+    """Return non-overlapping windows.
+
+    Parameters
+    ----------
+    starts : 1d array
+        Window starts, in samples.
+    ends : 1d array
+        Window ends, in samples.
+
+    Returns
+    -------
+    starts : 1d array
+        Non-overlapping window starts, in samples.
+    ends : 1d array
+        Non-overlapping window ends, in samples.
+    """
+
+    starts_nooverlap = []
+    ends_nooverlap = []
+
+    for ind, (s, e) in enumerate(zip(starts, ends)):
+
+        if ind == 0:
+            starts_nooverlap.append(s)
+            ends_nooverlap.append(e)
+            continue
+
+        if s >= ends_nooverlap[-1]:
+            starts_nooverlap.append(s)
+            ends_nooverlap.append(e)
+
+    return np.array(starts_nooverlap), np.array(ends_nooverlap)

@@ -11,14 +11,14 @@ def test_sim_acf_cos():
     fs = 1000
     freq = 10
     exp_tau = .01
-    exp_amp = 1
     osc_tau = .01
-    osc_amp = .5
     osc_gamma = .01
     osc_freq = 5
     offset = 0
+    amp_ratio = .5
+    height = 1
 
-    acf =  sim_acf_cos(xs, fs, exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, osc_freq, offset)
+    acf =  sim_acf_cos(xs, fs, exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, height, offset)
 
     assert len(acf) == len(xs)
     assert acf.max() >= 0

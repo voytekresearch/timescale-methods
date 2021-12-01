@@ -8,7 +8,6 @@ from scipy.optimize import curve_fit
 from scipy.fft import ifft
 from statsmodels.tsa.stattools import acf
 
-from neurodsp.filt import filter_signal
 from neurodsp.spectral import compute_spectrum
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
@@ -410,13 +409,11 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
             tau_guess = (pts[np.argmin(exp_est_bl[pts])] + inds[0]) / fs
 
         # Fit
-        hgt = np.max(corrs)
-
-        _guess = [tau_guess, hgt/2, .5, hgt/2, 0, freq, 0]
+        _guess = [tau_guess, 5, 0, freq, .5, np.max(corrs), 0]
 
         _bounds = [
-            (0,              hgt/2, 0, hgt/2,  0, 0, -.5),
-            (tau_guess * 10, hgt, 1,   hgt, .1, 10, .5)
+            (0,              0,  0, 0,  0, 0, -.5),
+            (tau_guess * 10, 1, .1, 10, 1, 1, .5)
         ]
 
     if bounds is None:

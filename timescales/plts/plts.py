@@ -46,3 +46,5 @@ def plot_connected_scatter(taus_a, taus_b, ax, title, paired=True, alpha_scatter
 
     if ylim is not None:
         ax.set_ylim(ylim)
+
+    return ax
