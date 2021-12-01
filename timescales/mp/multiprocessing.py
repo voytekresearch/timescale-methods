@@ -47,7 +47,7 @@ def compute_taus(iterable, method='acf', fit_kwargs=None, low_mem=False,
     try:
         tqdm = import_module(progress).tqdm
     except:
-        tqdm = lambda i : i
+        tqdm = None
 
     with Pool(processes=n_jobs) as pool:
 
@@ -58,7 +58,10 @@ def compute_taus(iterable, method='acf', fit_kwargs=None, low_mem=False,
             mapping = pool.imap(partial(mp_fit_psd, **fit_kwargs),
                                 iterable, chunksize=chunksize)
 
-        result = list(tqdm(mapping, total=len(iterable), dynamic_ncols=True))
+        if tqdm is None:
+            result = list(mapping)
+        else:
+            result = list(tqdm(mapping, total=len(iterable), dynamic_ncols=True))
 
     taus, rsq, result_class = sort_result(result)
 
@@ -100,16 +103,12 @@ def mp_fit_psd(iterable, sig=None, fs=None, win_len=None, f_range=None,
         Class containing intermediate objects.
     """
 
-    if compute_spectrum_kwargs is None:
-        compute_spectrum_kwargs = {}
-
+    compute_spectrum_kwargs = {} if compute_spectrum_kwargs is None else compute_spectrum_kwargs
+    fit_kwargs = {} if fit_kwargs is None else fit_kwargs
     win_len = fs if win_len is None else win_len
 
     freqs, powers = compute_spectrum(sig[iterable:iterable+win_len], fs, f_range=f_range,
                                      **compute_spectrum_kwargs)
-
-    if fit_kwargs is None:
-        fit_kwargs = {}
 
     _fit_kwargs = fit_kwargs.copy()
 
@@ -178,6 +177,7 @@ def mp_fit_acf(ind, sig=None, lags=None, fs=None, win_len=None, method='cos',
     """
 
     win_len = fs if win_len is None else win_len
+    fit_kwargs = {} if fit_kwargs is None else fit_kwargs
 
     if sig is not None:
         acf = ACF(low_mem=low_mem)
