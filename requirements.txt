@@ -5,4 +5,4 @@ statsmodels >= 0.12.2
 tqdm >= 4.62.3
 fooof @ git+https://github.com/ryanhammonds/fooof.git@knee
 neurodsp @ git+https://github.com/neurodsp-tools/neurodsp.git@main
-mne >= 0.24.1
+mne >= 0.23.4
