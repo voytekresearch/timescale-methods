@@ -16,7 +16,55 @@ from timescales.fit import convert_knee_val, ACF
 
 def fit_grid(sig, fs, grid, mode='psd', max_n_params=None, rsq_thresh=0,
              n_jobs=-1, chunksize=1):
+    """Fit a grid of parameters, using either the ACF or PSD.
 
+    Parameter
+    ---------
+    sig : 1d array
+        Voltage time series.
+    fs : float
+        Sampling rate, in Hz.
+    grid : dict
+        Contains fit arguments as keys, and parameters as values.
+
+        For PSD:
+
+        - freq_range : list of tuple (upper, lower)
+        - peak_width_limits : list of tuple (upper, lower)
+        - max_n_peaks : list of float
+        - peak_threshold : list of float
+        - knee_freq_bounds : list of tuple (upper, lower)
+        - exp_bounds : list of tuple (upper, lower)
+        - nperseg : list of int
+        - noverlap : list of int
+
+        For ACF, all parameters are curve_fit bounds (list of tuple (upper, lower)):
+
+        - exp_tau
+        - osc_tau
+        - osc_gamma
+        - freq
+        - amp_ratio
+        - height
+        - offset
+
+    mode : {'psd', 'acf'}
+        Whether to fit the PSD or ACF to determine the timescale.
+    max_n_params : optional, default: None
+        Limits the maximum number of parameter combinations to sample from the grid.
+    rsq_thresh : optional, default: 0
+        Removes parameter combinations with a full model fit below the specificed threshold.
+    n_jobs : optional, default: -1
+        Number of parameter combinations to run in parallel. -1 defaults to all available CPUs.
+    chunksize : optional, default: 1
+        Number of jobs to submit together in chunks. Usefull when each jobs completes rapidly.
+
+    Returns
+    -------
+    results : list of lists
+        Each index contains [param_index_array, knee_freq, r_squared, model].
+        The param_index_array references a parameter combination in grid (ordered dict indices).
+    """
     # Create an array of param grid indices
     param_inds = np.array(list(product(*[list(range(len(i))) for i in list(grid.values())])))
 
@@ -38,9 +86,9 @@ def fit_grid(sig, fs, grid, mode='psd', max_n_params=None, rsq_thresh=0,
                                         rsq_thresh=rsq_thresh),
                                 param_inds, chunksize=chunksize)
 
-        params = list(tqdm(mapping, desc='Fitting Spectra or ACF', total=len(param_inds)))
+        results = list(tqdm(mapping, desc='Fitting Spectra or ACF', total=len(param_inds)))
 
-    return params
+    return results
 
 
 def _fit_psd(index, sig=None, fs=None, grid=None, rsq_thresh=0):
@@ -80,7 +128,7 @@ def _fit_psd(index, sig=None, fs=None, grid=None, rsq_thresh=0):
     exp_low_bound, exp_high_bound = self_kwargs['exp_bounds']
 
     fm._ap_bounds = ((-np.inf, knee_low_bound, exp_low_bound),
-                     (np.inf, knee_high_bound,exp_high_bound))
+                     (np.inf, knee_high_bound, exp_high_bound))
 
     fm._ap_guess = (None, (knee_low_bound+knee_high_bound)/2, (exp_low_bound+exp_low_bound)/2)
 
@@ -102,6 +150,7 @@ def _fit_psd(index, sig=None, fs=None, grid=None, rsq_thresh=0):
 
 
 def _fit_acf(index, sig=None, fs=None, grid=None, rsq_thresh=0):
+    """Parallel ACF wrapper."""
 
     bounds = [[], []]
     guess = []
@@ -129,4 +178,4 @@ def _fit_acf(index, sig=None, fs=None, grid=None, rsq_thresh=0):
 
     knee_freq = convert_knee_val(acf.params[0])
 
-    return[index, knee_freq, acf.rsq, acf]
+    return [index, knee_freq, acf.rsq, acf]
