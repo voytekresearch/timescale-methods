@@ -101,6 +101,8 @@ class ACF:
             self.corrs = ifft(_powers).real
             self.corrs = self.corrs[:len(self.corrs)//2]
 
+        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
+
         if self.low_mem:
             self.sig = None
 
