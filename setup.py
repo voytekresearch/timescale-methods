@@ -54,9 +54,9 @@ setup(
     keywords = ['neuroscience', 'timescales', 'power spectra',
                 'autocorrelation','acf', 'electrophysiology'],
     install_requires = install_requires,
-    tests_require = ['pytest'],
+    tests_require = ['pytest', 'pytest-cov'],
     extras_require = {
-        'tests'   : ['pytest'],
-        'all'     : ['pytest']
+        'tests'   : ['pytest', 'pytest-cov'],
+        'all'     : ['pytest', 'pytest-cov']
     }
 )
