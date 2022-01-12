@@ -63,7 +63,7 @@ def sim_exp_decay(xs, fs, exp_tau, exp_amp, offset=0):
 
 def sim_damped_cos(xs, fs, osc_tau, osc_amp, osc_gamma, osc_freq):
 
-    damped_cos = (np.exp(-(xs / osc_tau * fs) ** osc_gamma)) * \
+    damped_cos = np.exp(-(xs / (osc_tau * fs)) ** osc_gamma) * \
         np.cos(2 * np.pi * osc_freq * (xs/len(xs)))
     damped_max = np.max(damped_cos)
 

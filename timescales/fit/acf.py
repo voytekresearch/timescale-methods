@@ -58,7 +58,6 @@ class ACF:
         self.param_exp = None
         self.params_cos = None
 
-
         self.corrs_fit = None
         self.corrs_fit_exp = None
         self.corrs_fit_cos = None
@@ -91,14 +90,14 @@ class ACF:
         self.sig = sig
         self.fs = fs
 
-        win_len = fs if win_len is None else win_len
         nlags = self.fs if nlags is None else nlags
+        self.sig = self.sig[start:start+win_len] if win_len is not None else self.sig[start:]
 
         if not from_psd:
-            self.corrs = compute_acf(self.sig[start:start+win_len], nlags)
+            self.corrs = compute_acf(self.sig, nlags)
         else:
             psd_kwargs = {} if psd_kwargs is None else psd_kwargs
-            _, _powers = compute_spectrum(self.sig[start:start+win_len], self.fs, **psd_kwargs)
+            _, _powers = compute_spectrum(self.sig, self.fs, **psd_kwargs)
             self.corrs = ifft(_powers).real
             self.corrs = self.corrs[:len(self.corrs)//2]
 
@@ -130,14 +129,14 @@ class ACF:
         self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, **fit_kwargs)
 
         if not np.isnan(self.params).any():
+            self.corrs_fit = sim_acf_cos(self.lags, self.fs, *self.params)
+            self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
+
+        if not np.isnan(self.params).any() and not self.low_mem:
             self.params_exp = self.params[:2]
             self.params_cos = self.params[2:-1]
-
-            self.corrs_fit = sim_acf_cos(self.lags, self.fs, *self.params)
             self.corrs_fit_exp = sim_exp_decay(self.lags, self.fs, *self.params_exp)
             self.corrs_fit_cos = sim_damped_cos(self.lags, self.fs, *self.params_cos)
-
-            self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
 
         if self.low_mem:
             self.lags = None
@@ -299,8 +298,6 @@ def fit_acf_cos(corrs, fs, lags=None, guess=None, bounds=None,
         Fit params as [exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, osc_freq, offset].
     """
 
-
-
     if corrs.ndim == 1:
 
         lags = np.arange(1, len(corrs)+1) if lags is None else lags
@@ -383,7 +380,7 @@ def _fit_acf(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
 def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
     """Fit 1d ACF with cosine."""
 
-    if guess is None or bounds is None:
+    if (guess is None or bounds is None) or (None in guess or None in bounds):
 
         # Compute spectrum of autocorrs to determine cos freq
         f, p = compute_spectrum(corrs, len(corrs))
@@ -430,6 +427,13 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
 
     if guess is None:
         guess = _guess
+    else:
+        guess = np.array(guess)
+        inds = np.where(guess == None)
+        if len(inds) != 0:
+            for ind in inds[0]:
+                guess[ind] = _guess[ind]
+        guess = guess.tolist()
 
     # If guess is outside of bounds,
     #   set to midpoint of bounds
@@ -439,9 +443,9 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
 
     try:
         params, _ = curve_fit(
-            lambda lags, exp_tau, exp_amp, osc_tau, osc_amp, osc_gamma, freq, offset: \
-                sim_acf_cos(lags, fs, exp_tau, exp_amp, osc_tau, osc_amp,
-                            osc_gamma, freq, offset),
+            lambda lags, exp_tau, osc_tau, osc_gamma, freq, amp_ratio, height, offset: \
+                sim_acf_cos(lags, fs, exp_tau, osc_tau, osc_gamma, freq,
+                            amp_ratio, height, offset),
             lags, corrs, p0=guess, bounds=bounds, maxfev=maxfev
         )
 

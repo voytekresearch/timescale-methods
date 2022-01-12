@@ -7,6 +7,7 @@ from multiprocessing import cpu_count, Pool
 import numpy as np
 
 from neurodsp.spectral import compute_spectrum
+from mne.time_frequency import psd_array_multitaper
 
 from timescales.fit.psd import fit_psd
 from timescales.fit.acf import ACF
@@ -107,8 +108,17 @@ def mp_fit_psd(iterable, sig=None, fs=None, win_len=None, f_range=None,
     fit_kwargs = {} if fit_kwargs is None else fit_kwargs
     win_len = fs if win_len is None else win_len
 
-    freqs, powers = compute_spectrum(sig[iterable:iterable+win_len], fs, f_range=f_range,
-                                     **compute_spectrum_kwargs)
+    if 'method' not in compute_spectrum_kwargs.keys():
+        compute_spectrum_kwargs['method'] = 'welch'
+
+    if compute_spectrum_kwargs['method'] != 'multitaper':
+        freqs, powers = compute_spectrum(sig[iterable:iterable+win_len], fs, f_range=f_range,
+                                        **compute_spectrum_kwargs)
+    else:
+        _compute_spectrum_kwargs = compute_spectrum_kwargs.copy()
+        del _compute_spectrum_kwargs['method']
+        powers, freqs = psd_array_multitaper(sig[iterable:iterable+win_len], fs, verbose=0,
+                                             **_compute_spectrum_kwargs)
 
     _fit_kwargs = fit_kwargs.copy()
 
