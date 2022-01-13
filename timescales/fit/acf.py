@@ -101,6 +101,8 @@ class ACF:
             self.corrs = ifft(_powers).real
             self.corrs = self.corrs[:len(self.corrs)//2]
 
+        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
+
         if self.low_mem:
             self.sig = None
 
@@ -133,10 +135,17 @@ class ACF:
             self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
 
         if not np.isnan(self.params).any() and not self.low_mem:
-            self.params_exp = self.params[:2]
-            self.params_cos = self.params[2:-1]
-            self.corrs_fit_exp = sim_exp_decay(self.lags, self.fs, *self.params_exp)
-            self.corrs_fit_cos = sim_damped_cos(self.lags, self.fs, *self.params_cos)
+
+            # Unpack params
+            exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params
+            exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
+            osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
+
+            self.params_exp = np.array([exp_tau, amp_ratio])
+            self.params_cos = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
+
+            self.corrs_fit_exp = exp
+            self.corrs_fit_cos = osc
 
         if self.low_mem:
             self.lags = None
