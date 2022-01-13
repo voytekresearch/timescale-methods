@@ -12,10 +12,11 @@ from neurodsp.spectral import compute_spectrum
 from fooof import FOOOF
 
 from timescales.fit import convert_knee_val, ACF
+from timescales.fit.utils import progress_bar
 
 
 def fit_grid(sig, fs, grid, mode='psd', max_n_params=None, rsq_thresh=0,
-             n_jobs=-1, chunksize=1):
+             n_jobs=-1, chunksize=1, progress=None):
     """Fit a grid of parameters, using either the ACF or PSD.
 
     Parameter
@@ -58,6 +59,8 @@ def fit_grid(sig, fs, grid, mode='psd', max_n_params=None, rsq_thresh=0,
         Number of parameter combinations to run in parallel. -1 defaults to all available CPUs.
     chunksize : optional, default: 1
         Number of jobs to submit together in chunks. Usefull when each jobs completes rapidly.
+    progress : {None, 'tqdm', 'tqdm.notebook'}
+        Specify whether to display a progress bar. Uses 'tqdm', if installed.
 
     Returns
     -------
@@ -86,7 +89,9 @@ def fit_grid(sig, fs, grid, mode='psd', max_n_params=None, rsq_thresh=0,
                                         rsq_thresh=rsq_thresh),
                                 param_inds, chunksize=chunksize)
 
-        results = list(tqdm(mapping, desc='Fitting Spectra or ACF', total=len(param_inds)))
+        desc = 'Computing ' + mode.upper()
+
+        results = list(progress_bar(mapping, progress, len(param_inds), desc))
 
     return results
 
