@@ -25,31 +25,29 @@ class ACF:
         Sampling rate, in Hz.
     corrs : 1d array
         Autocorrelation coefficients.
+    lags : 1d array
+        Time lag definitions.
+    guess : 1d array
+        Parameter guess as [tau, height, offset] when using fit or as [exp_tau, osc_tau, osc_gamma,
+        osc_freq, amp_ratio, height, offset] when using fit_cos.
     corrs_fit : 1d array
         Autocorrelation coefficient full fit.
-    corrs_fit_cos : 1d array
-        Damped oscillation fit. Only defined if the fit_cos method is called.
     params : 1d array
         Exponential decay fit params, and optionally damped cosine parameters, along with an offset
         parameter.
-    params_exp : 1d array
-        Exponential decay fit parameters: [tau, height, offset]
-    params_cos : 1d array
-        Damped cosine fit parameters:
-        [osc_tau, osc_amp, osc_gamma, osc_freq].
     rsq : float
         R-squared of the full fit.
-    low_mem : bool, optional, default: False
-        If true, only correlation coefficient arrays are stored.
+    low_mem : bool
+        Reduces memory load when True.
     """
 
     def __init__(self, corrs=None, lags=None, fs=None, low_mem=False):
         """Initialize object."""
 
         self.sig = None
-        self.fs = None if fs is None else fs
-        self.corrs = None if corrs is None else corrs
-        self.lags = None if lags is None else lags
+        self.fs = fs
+        self.corrs = corrs
+        self.lags = lags
 
         self.guess = None
         self.bounds = None
@@ -59,8 +57,11 @@ class ACF:
         self.params_cos = None
 
         self.corrs_fit = None
+
         self.corrs_fit_exp = None
         self.corrs_fit_cos = None
+        self.params_exp = None
+        self.params_cos = None
 
         self.rsq = None
         self.low_mem = low_mem
@@ -107,58 +108,82 @@ class ACF:
             self.sig = None
 
 
-    def fit(self, **fit_kwargs):
-        """Fit without an oscillitory component."""
+    def fit(self, guess=None, bounds=None, maxfev=1000, n_jobs=-1, progress=None):
+        """Fit without an oscillitory component.
+
+        Parameters
+        ----------
+        guess : list, optional, default: None
+            Estimated parameters as [exp_tau, osc_tau, osc_gamma,
+            osc_freq, amp_ratio, height, offset].
+        bounds : list, optional, default: None
+            Parameters bounds as [(*lower_bounds), (*upper_bounds)].
+        maxfev : int
+            Maximum number of fitting iterations.
+        n_jobs : int
+            Number of jobs to run in parralel, when corrs is 2d.
+        progress : {None, 'tqdm', 'tqdm.notebook'}
+            Specify whether to display a progress bar. Uses 'tqdm', if installed.
+        """
 
         self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
 
-        self.params, self.guess, self.bounds = fit_acf(self.corrs, self.fs, **fit_kwargs)
-
-        if not np.isnan(self.params).any():
-            self.corrs_fit = sim_exp_decay(self.lags, self.fs, *self.params)
-            self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
+        self.params, self.guess, self.bounds = fit_acf(self.corrs, self.fs, self.lags, guess=guess,
+            bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
 
         if self.low_mem:
             self.lags = None
-            self.corrs_fit = None
 
 
-    def fit_cos(self, **fit_kwargs):
-        """Fit with an oscillitory component."""
+    def fit_cos(self, guess=None, bounds=None, maxfev=1000, n_jobs=-1, progress=None):
+        """Fit with an oscillitory component.
+
+        Parameters
+        ----------
+        guess : list, optional, default: None
+            Estimated parameters as [tau, height, offset].
+        bounds : list, optional, default: None
+            Parameters bounds as [(*lower_bounds), (*upper_bounds)].
+        maxfev : int
+            Maximum number of fitting iterations.
+        n_jobs : int
+            Number of jobs to run in parralel, when corrs is 2d.
+        progress : {None, 'tqdm', 'tqdm.notebook'}
+            Specify whether to display a progress bar. Uses 'tqdm', if installed.
+        """
 
         self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
 
-        self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, **fit_kwargs)
+        self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, self.lags,
+            guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
 
-        if not np.isnan(self.params).any():
-            self.corrs_fit = sim_acf_cos(self.lags, self.fs, *self.params)
-            self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
+        if self.low_mem:
+            self.lags = None
 
-        if not np.isnan(self.params).any() and not self.low_mem:
+
+    def gen_corrs_fit(self):
+        """Generate fit and r-squared."""
+
+        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
+
+        if len(self.params) == 3:
+            self.corrs_fit = sim_exp_decay(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
+        else:
+            self.corrs_fit = sim_acf_cos(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
 
             # Unpack params
             exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params
-            exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
-            osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
 
             self.params_exp = np.array([exp_tau, amp_ratio])
             self.params_cos = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
 
+            exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
+            osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
+
             self.corrs_fit_exp = exp
             self.corrs_fit_cos = osc
 
-        if self.low_mem:
-            self.lags = None
-            self.corrs_fit = None
-            self.corrs_fit_exp = None
-            self.corrs_fit_cos = None
-
-    def gen_corrs_fit(self):
-
-        if len(self.params) == 3:
-            return sim_exp_decay(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
-        else:
-            return sim_acf_cos(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
+        self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
 
 
 def compute_acf(spikes, nlags, mode=None, n_jobs=-1, progress=None):
@@ -232,20 +257,11 @@ def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=100
         Number of jobs to run in parralel, when corrs is 2d.
     maxfev : int
         Maximum number of fitting iterations.
-    progress : {None, 'tqdm', 'tqdm.notebook'}
-        Specify whether to display a progress bar. Uses 'tqdm', if installed.
-
-    Returns
-    -------
-    params : 1d or 2d array
-        Exponential decay parameters as [tau, height, offset].
     guess : 1d or 2d array
         Curve fit initial guess parameters.
     bounds : 1d or 2d array
         Curve fit parameter bounds.
     """
-
-
 
     if corrs.ndim == 1:
 
@@ -392,7 +408,7 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
     if (guess is None or bounds is None) or (None in guess or None in bounds):
 
         # Compute spectrum of autocorrs to determine cos freq
-        f, p = compute_spectrum(corrs, len(corrs))
+        _, p = compute_spectrum(corrs, len(corrs))
         freq = int(np.argmax(p))
 
         # Tau estimation

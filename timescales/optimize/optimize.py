@@ -3,7 +3,6 @@
 from itertools import product
 from functools import partial
 from multiprocessing import Pool, cpu_count
-from tqdm.notebook import tqdm
 
 import numpy as np
 
@@ -175,8 +174,8 @@ def _fit_acf(index, sig=None, fs=None, grid=None, rsq_thresh=0):
     # Compute acf
     acf = ACF(low_mem=True)
     acf.compute_acf(sig, fs, nlags=nlags)
-
     acf.fit_cos(bounds=bounds, guess=guess, maxfev=1000)
+    acf.gen_corrs_fit()
 
     if np.isnan(acf.params).any() or acf.rsq < rsq_thresh:
         return [index, np.nan, np.nan, np.nan]

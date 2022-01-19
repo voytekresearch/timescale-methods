@@ -27,14 +27,12 @@ def sim_acf_cos(xs, fs, exp_tau, osc_tau, osc_gamma,
     height : float
         Total height of the combined components.
     offset : float
-        Constant add to translate along the y-axis
+        Y-axis intercept.
 
     Returns
     ------
     acf : 1d array
         Sum of exponential and damped cosine components.
-    exp, cos : 1d arrays, optional
-        Separate exponential and cosine components.
     """
 
     xs = np.arange(1, len(xs) + 1)
@@ -52,8 +50,30 @@ def sim_acf_cos(xs, fs, exp_tau, osc_tau, osc_gamma,
     return exp_osc + offset
 
 
-def sim_exp_decay(xs, fs, exp_tau, exp_amp, offset=0):
+def sim_exp_decay(xs, fs, exp_tau, exp_amp, offset=0.):
+    """Simulate an exponential decay.
+
+    Parameters
+    ----------
+    xs : 1d array
+        Lag definitions.
+    fs : float
+        Sampling rate, in Hz.
+    exp_tau : float
+        Timescale of the exponential decay.
+    exp_amp : float
+        Height of exponential decay.
+    offset : float, optional, default: 0.
+        Y-axis interecept.
+
+    Returns
+    -------
+    exp_decay : 1d array
+        Autocorrelation with exponential decay.
+    """
+
     exp_decay = (np.exp(-(xs / (exp_tau * fs))) + offset)
+
     exp_max = np.max(exp_decay)
     if exp_max > 0:
         exp_decay /= exp_max
@@ -62,7 +82,26 @@ def sim_exp_decay(xs, fs, exp_tau, exp_amp, offset=0):
 
 
 def sim_damped_cos(xs, fs, osc_tau, osc_amp, osc_gamma, osc_freq):
+    """Simulate a damped cosine.
 
+    Parameters
+    ----------
+    xs : 1d array
+        Lag definitions.
+    fs : float
+        Sampling rate, in Hz.
+    osc_tau : float
+        Timescale of the damped cosine.
+    osc_gamma : float
+        Exponential constant of the damped cosine.
+    osc_freq : float
+        Frequency of the damped cosine.
+
+    Returns
+    -------
+    damped_cos : 1d array
+        Autocorrelation with damped cosine.
+    """
     damped_cos = np.exp(-(xs / (osc_tau * fs)) ** osc_gamma) * \
         np.cos(2 * np.pi * osc_freq * (xs/len(xs)))
     damped_max = np.max(damped_cos)

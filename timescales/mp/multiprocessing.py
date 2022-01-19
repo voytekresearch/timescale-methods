@@ -1,4 +1,4 @@
-"""Multi-processing wrapper functions."""
+"""Multi-processing wrapper functions for sliding window analyses."""
 
 from functools import partial
 from importlib import import_module
@@ -137,7 +137,7 @@ def mp_fit_psd(iterable, sig=None, fs=None, win_len=None, f_range=None,
 
 def mp_fit_acf(ind, sig=None, lags=None, fs=None, win_len=None, method='cos',
                compute_acf_kwargs=None, fit_kwargs=None, low_mem=False):
-    """Multiprocessing wrapper for computing and fitting ACFs.
+    """Multiprocessing wrapper for computing and fitting sliding window ACFs.
 
     Parameters
     ----------
@@ -200,6 +200,8 @@ def mp_fit_acf(ind, sig=None, lags=None, fs=None, win_len=None, method='cos',
         acf.fit_cos(**fit_kwargs)
     elif method == 'decay':
         acf.fit(**fit_kwargs)
+
+    acf.gen_corrs_fit()
 
     if np.isnan(acf.params).any():
         return np.nan, np.nan, acf

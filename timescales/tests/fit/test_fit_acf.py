@@ -43,6 +43,7 @@ def test_ACF_fit(low_mem):
     corrs = sim_exp_decay(lags, fs, tau, amp)
     acf = ACF(corrs, lags, fs, low_mem)
     acf.fit()
+    acf.gen_corrs_fit()
 
     assert (acf.params[0] - tau) < (tau * .1)
     assert acf.rsq > .5
@@ -62,9 +63,9 @@ def test_ACF_fit_cos(low_mem):
 
     corrs = sim_acf_cos(xs, fs, tau, osc_tau, osc_gamma, freq, amp_ratio, height, offset)
 
-
     acf = ACF(corrs, xs, fs, low_mem)
     acf.fit_cos()
+    acf.gen_corrs_fit()
 
     assert (acf.params[0] - tau) < (tau * .1)
     assert acf.rsq > .5
@@ -194,7 +195,6 @@ def test_proxies():
     amp_ratio = .5
     height = 1
     offset = 0
-
 
     corrs = sim_exp_decay(xs, fs, .001, 1, 0)
     params = _acf_proxy([corrs, None, None], xs, fs, 1000)

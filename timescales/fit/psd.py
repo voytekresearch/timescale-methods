@@ -2,8 +2,6 @@
 
 import numpy as np
 
-from neurodsp.spectral import compute_spectrum
-
 from fooof import FOOOF, FOOOFGroup
 
 
@@ -21,8 +19,6 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
         Frequency range of interest.
     fooof_init : dict, optional, default: None
         Fooof initialization arguments.
-    compute_spectrum_kwargs : dict, optiona, default: None
-        Additional keyword arguments for compute_spectrum.
     knee_bounds : tuple of (float, float)
         Aperiodic knee bounds bounds.
     mode : {None, 'mean', 'median'}
@@ -76,12 +72,10 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
     else:
         fm.fit(freqs, powers, f_range, n_jobs, progress)
 
-
-        exps = fm.get_params('aperiodic', 'exponent')
         knee_freq = fm.get_params('aperiodic', 'knee')
         knee_tau = np.zeros(len(knee_freq))
 
-        for ind, (freq, exp) in enumerate(zip(knee_freq, exps)):
+        for ind, freq in enumerate(knee_freq):
             knee_tau[ind] = convert_knee_val(freq)
 
     return fm, knee_freq, knee_tau

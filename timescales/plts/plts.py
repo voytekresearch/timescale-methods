@@ -1,12 +1,34 @@
 """Plotting functions."""
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 
 def plot_connected_scatter(param_a, param_b, ax, title, paired=True, alpha_scatter=.5,
                            alpha_line=.1,  ylim=None, ylabel=None, xticklabels=None):
-
+    """Plot connected violin scattter plots.
+    Parameters
+    ----------
+    param_a : 1d array
+        First parameter to plot.
+    param_b : 1d array
+        Second parameter to plot.
+    ax : AxesSubplot
+        Subplot to plot onto.
+    title : str
+        Title of plot.
+    paired : bool, optional, default: True
+        Plot lines connected pairs of points from param_a and param_b.
+    alpha_scatter : float, optional, default: .5
+        Transparency of scatter points.
+    alpha_line : float, optional, default: .1
+        Transparency of scatter paired lines.
+    ylim : tuple of (float, float), optional, default: None
+        Y-axis limits.
+    ylabel : str, optional, default: None
+        Y-axis label.
+    xticklabels: list, optional, default: None
+        X-axis labels.
+    """
     xs_a = np.random.uniform(1, 1.2, size=len(param_a))
     ax.scatter(xs_a, param_a, alpha=alpha_scatter)
 
