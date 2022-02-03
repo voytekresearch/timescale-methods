@@ -44,7 +44,7 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
                       'simulation of tau. Increase tau or fs.')
 
     # Simulate a synaptic kernel
-    kernel = sim_synaptic_kernel(5 * tau, fs, 0, tau)
+    kernel = sim_synaptic_kernel(10 * tau, fs, 0, tau)
 
     # Simulate probabilities of spiking
     probs = sim_poisson_distribution(n_seconds, fs, kernel, isi=isi, mu=mu, var_noise=var_noise)
