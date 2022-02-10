@@ -118,23 +118,46 @@ def _fit_psd(index, sig=None, fs=None, grid=None, rsq_thresh=0):
             f_range = tuple(v[ind])
 
     # Compute spectrum
+    if 'noverlap' in spec_kwargs.keys():
+        noverlap = spec_kwargs['noverlap']
+
+        if isinstance(noverlap, float) and noverlap <= 1 and 'nperseg' in spec_kwargs.keys():
+            spec_kwargs['noverlap'] = int(spec_kwargs['nperseg'] * noverlap)
+        else:
+            spec_kwargs['noverlap'] = int(fs//8 * noverlap)
+
+
     freqs, powers = compute_spectrum(sig, fs, f_range=f_range, **spec_kwargs)
 
     # Fit
-    peak_width_limits = tuple(init_kwargs.pop('peak_width_limits'))
+    if 'peak_width_limits' in init_kwargs.keys():
+        peak_width_limits = tuple(init_kwargs.pop('peak_width_limits'))
+    else:
+        peak_width_limits = (0.5, 12.0)
 
     fm = FOOOF(aperiodic_mode='knee', verbose=False, peak_width_limits=peak_width_limits,
                **init_kwargs)
 
     # Bounds for aperiodic fitting, as: ((offset_low_bound, knee_low_bound, exp_low_bound),
     #                                    (offset_high_bound, knee_high_bound, exp_high_bound))
-    knee_low_bound, knee_high_bound = self_kwargs['knee_freq_bounds']
-    exp_low_bound, exp_high_bound = self_kwargs['exp_bounds']
+    if 'knee_freq_bounds' in self_kwargs.keys():
+        knee_low_bound, knee_high_bound = self_kwargs['knee_freq_bounds']
+        knee_guess = (knee_low_bound+knee_high_bound)/2
+    else:
+        knee_low_bound, knee_high_bound = (1e-3, len(sig)//2)
+        knee_guess = 1
+
+    if 'exp_bounds' in self_kwargs.keys():
+        exp_low_bound, exp_high_bound = self_kwargs['exp_bounds']
+        exp_guess = (exp_low_bound+exp_low_bound)/2
+    else:
+        exp_low_bound, exp_high_bound = -np.inf, np.inf
+        exp_guess = None
 
     fm._ap_bounds = ((-np.inf, knee_low_bound, exp_low_bound),
                      (np.inf, knee_high_bound, exp_high_bound))
 
-    fm._ap_guess = (None, (knee_low_bound+knee_high_bound)/2, (exp_low_bound+exp_low_bound)/2)
+    fm._ap_guess = (None, knee_guess, exp_guess)
 
     try:
         fm.fit(freqs, powers, freq_range=f_range)

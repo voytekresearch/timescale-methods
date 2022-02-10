@@ -70,6 +70,8 @@ def sim_poisson_distribution(n_seconds, fs, kernel, isi=None, mu=None, var_noise
         Length of the signal, in seconds.
     fs : float
         Sampling rate, in hz.
+    kernel : 1d or 2d array
+        Synaptic kernel to convolve with Poisson.
     n_neurons : int, optional, default: 100
         Number of neurons to simulate.
     isi : 1d array, optional, default: None
