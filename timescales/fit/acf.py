@@ -394,7 +394,7 @@ def _fit_acf(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
     try:
         params, _ = curve_fit(
             lambda lags, t, amp, off : sim_exp_decay(lags, fs, t, amp, off),
-            np.arange(1, len(corrs)+1), corrs, p0=guess, bounds=bounds, maxfev=maxfev
+            lags, corrs, p0=guess, bounds=bounds, maxfev=maxfev
         )
     except RuntimeError:
         params = np.nan
