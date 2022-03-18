@@ -47,9 +47,15 @@ def plot_connected_scatter(param_a, param_b, ax, title=None, paired=True,
     else:
         xs_b = np.random.uniform(*scatter_b_loc, size=len(param_b))
 
+    if colors is None:
+        c0 = 'C0'
+        c1 = 'C1'
+    else:
+        c0 = colors[0]
+        c1 = colors[1]
 
-    ax.scatter(xs_a, param_a, alpha=alpha_scatter)
-    ax.scatter(xs_b, param_b, alpha=alpha_scatter)
+    ax.scatter(xs_a, param_a, alpha=alpha_scatter, color=c0)
+    ax.scatter(xs_b, param_b, alpha=alpha_scatter, color=c1)
 
     # Violinplots
     if violin_locs is None:
@@ -57,12 +63,6 @@ def plot_connected_scatter(param_a, param_b, ax, title=None, paired=True,
     else:
         vp = ax.violinplot([param_a, param_b], positions=violin_locs, showextrema=False)
 
-    if colors is None:
-        c0 = 'C0'
-        c1 = 'C1'
-    else:
-        c0 = colors[0]
-        c1 = colors[1]
 
     vp['bodies'][0].set_color(c0)
     vp['bodies'][0].set_facecolor(c0)
@@ -83,8 +83,6 @@ def plot_connected_scatter(param_a, param_b, ax, title=None, paired=True,
     if paired:
         for i, (t_psd, t_acf) in enumerate(zip(param_a, param_b)):
             ax.plot([xs_a[i], xs_b[i]], [t_psd, t_acf], color='k', alpha=alpha_line)
-
-
 
     # Axis settings
     ax.set_title(title)
