@@ -8,8 +8,6 @@ from scipy.signal import convolve
 from neurodsp.sim import sim_synaptic_kernel, sim_oscillation
 from neurodsp.utils.norm import normalize_sig
 
-from timescales.fit import convert_knee_val
-
 
 def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
                         refract=None, isi=None, var_noise=None, return_sum=True):
@@ -222,6 +220,7 @@ def sim_probs_combined(n_seconds, fs, ap_freq, pe_freq,
         Probability of periodic spiking.
     """
 
+    from timescales.fit import convert_knee_val
 
     if isinstance(var, (list, tuple, np.ndarray)):
         var_ap, var_pe = var[0], var[1]
