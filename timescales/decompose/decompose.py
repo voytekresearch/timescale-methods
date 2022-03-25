@@ -381,8 +381,6 @@ def decompose_ar_windows(sig, fs, osc_order, ar_order, nperseg, noverlap,
     params = []
 
     # Only fit oscillatory model
-    print(osc_params[-2])
-    print(osc_params[-1])
     if ar_order == 0:
 
         for ind, (_sig, _params) in enumerate(zip(sig_win, osc_params)):
