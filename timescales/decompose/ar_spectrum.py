@@ -105,6 +105,8 @@ def ar_psds_bandstop(sig, fs, band_ranges, order,
     filter_kwargs = {} if filter_kwargs is None else filter_kwargs
     ar_psd_kwargs = {} if ar_psd_kwargs is None else ar_psd_kwargs
 
+    filter_kwargs['remove_edges'] = False
+
     # Determine size of psd array
     nfft = ar_psd_kwargs.pop('nfft', 4096)
 
