@@ -8,135 +8,76 @@ import pytest
 
 from neurodsp.utils.norm import normalize_sig
 
-from timescales.sim import sim_branching
+from timescales.sim import sim_branching, sim_asine_oscillation
 from timescales.fit import convert_knee_val
+from timescales.decompose.decompose import CAD, CADGroup
 
 
-from timescales.decompose.decompose import (decompose_ar, decompose_ar_windows, gen_ar_fit,
-    sim_asine, iter_estimate_freq, estimate_freq)
+def test_CAD():
 
+    np.random.seed(0)
 
-
-def test_decompose_ar():
-
-    osc_order = 2
-    ar_order = 2
-    fs = 1000
     n_seconds = 1
+    fs = 1000
+
     tau = convert_knee_val(10)
     xs = np.arange(fs)
 
     lfp = sim_branching(n_seconds, fs, tau, 100)
-    osc = sim_asine(xs, fs, 20, .25, -.49, 1)
-
-    lfp = normalize_sig(lfp, 0, .5)
-    osc = normalize_sig(osc, 0, .5)
-
-    sig = lfp + osc
-
-    params = decompose_ar(sig, fs, osc_order, ar_order)
-
-    assert len(params) == (ar_order * 4)
-
-
-def test_decompose_ar_windows():
+    osc = sim_asine_oscillation(xs, fs, 20, .25, -.49, 1)
+    sig = normalize_sig(lfp, 0, .5) + normalize_sig(osc, 0, .5)
 
     osc_order = 1
-    ar_order = 1
-    fs = 1000
-    n_seconds = 1
-    tau = convert_knee_val(10)
-    xs = np.arange(fs)
-
-    lfp = sim_branching(n_seconds, fs, tau, 100)
-    osc = sim_asine(xs, fs, 20, .25, -.49, 1)
-
-    lfp = normalize_sig(lfp, 0, .5)
-    osc = normalize_sig(osc, 0, .5)
-
-    sig = lfp + osc
-
-    nperseg = 100
-    noverlap = 0
-
-    osc_fit, ar_fit, params, t_def = decompose_ar_windows(
-        sig, fs, osc_order, ar_order, nperseg, noverlap, progress=tqdm)
-
-    assert len(osc_fit) == len(ar_fit)
-    assert len(osc_fit[0]) == len(ar_fit[0]) == nperseg
-
-    osc_fit, params, t_def = decompose_ar_windows(
-        sig, fs, osc_order, 0, nperseg, noverlap, progress=tqdm)
-
-    assert len(osc_fit) == len(ar_fit)
-
-
-def test_gen_ar_fit():
-
-    osc_order = 2
     ar_order = 2
-    fs = 1000
+
+    cad = CAD(sig, fs, osc_order, ar_order)
+
+    assert (sig == cad.sig).all()
+    assert fs == cad.fs
+    assert osc_order == cad.osc_order
+    assert ar_order == cad.ar_order
+
+    cad.fit(use_freq_est=True)
+
+    assert (cad.full_fit == cad.osc_fit + cad.ar_fit).all()
+    assert isinstance(cad.params, dict)
+
+    cad_no_freq_est = CAD(sig, fs, osc_order, ar_order)
+    cad_no_freq_est.fit(use_freq_est=False)
+
+    assert cad_no_freq_est.bounds is None
+    assert cad_no_freq_est.guess is None
+
+    cad_no_freq_est = CAD(sig, fs, osc_order, ar_order)
+    cad_no_freq_est.iter_freq_estimation(20, 10)
+
+    assert cad.bounds == cad_no_freq_est.bounds
+    assert (cad.guess == cad_no_freq_est.guess).all()
+
+
+def test_CADGroup():
+
+    np.random.seed(0)
+
     n_seconds = 1
+    fs = 1000
+
     tau = convert_knee_val(10)
     xs = np.arange(fs)
 
     lfp = sim_branching(n_seconds, fs, tau, 100)
-    osc = sim_asine(xs, fs, 20, .25, -.49, 1)
+    osc = sim_asine_oscillation(xs, fs, 20, .25, -.49, 1)
+    sig = normalize_sig(lfp, 0, .5) + normalize_sig(osc, 0, .5)
 
-    lfp = normalize_sig(lfp, 0, .5)
-    osc = normalize_sig(osc, 0, .5)
+    sigs = np.tile(sig, (2, 1))
 
-    sig = lfp + osc
-
-    params = decompose_ar(sig, fs, osc_order, ar_order)
-
-    sig_fit = gen_ar_fit(sig, params)
-
-    assert len(sig_fit) == len(sig)
-
-def test_sim_asine():
-
-    fs = 1000
-    xs = np.arange(fs)
-    freq = 10
-    rdsym = 0
-    phi = 0
-    height = 1
-
-    sig = sim_asine(xs, fs, freq, rdsym, phi, height)
-    assert len(sig) == len(xs)
-
-def test_iter_estimate_freq():
-
-    fs = 1000
-    xs = np.arange(fs)
-    freq = 10
-    rdsym = 0
-    phi = 0
-    height = 1
-
-    sig = sim_asine(xs, fs, freq, rdsym, phi, height)
     osc_order = 1
-    n_eig = 20
+    ar_order = 2
 
-    guess, bounds = iter_estimate_freq(sig, fs, osc_order, n_eig, freq_pad=10)
+    cg = CADGroup(sigs, fs, osc_order, ar_order)
+    cg.fit()
 
-    assert len(guess) == len(bounds[0]) == len(bounds[1])
-    for g, lb, up in zip(guess, bounds[0], bounds[1]):
-        assert (g >= lb) & (g <= up)
-
-
-def test_estimate_freq():
-
-    fs = 1000
-    xs = np.arange(fs)
-    freq = 10
-    rdsym = 0
-    phi = 0
-    height = 1
-
-    sig = sim_asine(xs, fs, freq, rdsym, phi, height)
-
-    freq_guess = estimate_freq(sig, fs, 20)
-
-    assert freq_guess > 0 and freq_guess < 100
+    assert (cg[0].full_fit == cg[1].full_fit).all()
+    assert len(cg) == 2
+    for i in cg:
+        assert isinstance(i, CAD)
