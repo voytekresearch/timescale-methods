@@ -10,7 +10,7 @@ from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
 from scipy.fft import fftfreq
 
-from statsmodels.tsa.arima.estimators.burg import burg
+from statsmodels.regression.linear_model import burg
 
 from spectrum import eigen
 
@@ -372,9 +372,9 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
         return osc_fit, params
 
     # Fit AR Burg
-    b_params, _ = burg(sig-osc_fit, ar_order=ar_order, demean=True)
-    ar_params = b_params.ar_params
-    params['params_ar'] = {k:v for k, v in zip(b_params.param_names[:-1], ar_params)}
+    ar_params, _ = burg(sig-osc_fit, order=ar_order, demean=True)
+
+    params['params_ar'] = {'ar_' + str(ind):v for ind, v in enumerate(ar_params)}
 
     ar_fit = sim_autoregressive(sig-osc_fit, ar_params)
 
