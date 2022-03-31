@@ -98,12 +98,19 @@ class CAD:
         osc_params = _decompose_ar(self.xs, self.sig, self.fs, self.osc_order, self.ar_order,
                                    bounds=self.bounds, guess=self.guess, maxfev=maxfev)
 
-        self.osc_fit, self.ar_fit, self.params = _fit(
-            self.xs, self.sig, self.fs, self.osc_order,
-            self.ar_order, *osc_params, return_params=True
-        )
+        if self.ar_order > 0:
+            self.osc_fit, self.ar_fit, self.params = _fit(
+                self.xs, self.sig, self.fs, self.osc_order,
+                self.ar_order, *osc_params, return_params=True
+            )
 
-        self.full_fit = self.osc_fit + self.ar_fit
+            self.full_fit = self.osc_fit + self.ar_fit
+
+        else:
+            self.osc_fit, self.params = _fit(
+                self.xs, self.sig, self.fs, self.osc_order,
+                self.ar_order, *osc_params, return_params=True
+            )
 
 
     def iter_freq_estimation(self, n_eig, freq_pad):
@@ -134,7 +141,7 @@ class CAD:
                 [0, -1, 1, -1] * self.osc_order,
                 [2,  1, 100, 1] * self.osc_order
             ]
-            self.guess = [1, 0, 1, 0]
+            self.guess = [2, 0, 1, 0]
 
         else:
 
@@ -382,3 +389,74 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
         return osc_fit + ar_fit
     else:
         return osc_fit, ar_fit, params
+
+
+
+def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5):
+    """Asymmetrical oscillatory decomposition.
+
+    Parameters
+    ---------
+    sig : 1d array
+        Voltage time series.
+    fs : float
+        Sampling rate, in Hertz.
+    freqs : 1d array
+        Frequencies to step through.
+    r_thresh : float, optional, default: .5
+        R-squared acceptance threshold.
+    freq_bounds_pad, optional, default: .5
+        Defines frequency range, plus and minus this value, to pad freqs.
+
+    Returns
+    -------
+    sig_osc : 2d array
+        Decomposed oscillatory components.
+    params : dict
+        Non-sinusoidal wave parameters.
+    """
+
+    sig_osc = np.zeros((len(freqs), len(sig)))
+    params = np.zeros((len(freqs), 4))
+
+    keep_inds = []
+
+    _sig = sig.copy()
+
+    for ind, freq in enumerate(freqs):
+
+        cad = CAD(_sig, fs, 1, 0)
+
+        bounds = [
+            [.1, -1, freq-freq_bound_pad, -1],
+            [10,  1, freq+freq_bound_pad,  1]
+        ]
+
+        guess = [1, 0, freq, 0]
+
+        cad.fit(use_freq_est=False, bounds=bounds, guess=guess)
+
+        r_sq = np.corrcoef(_sig, cad.osc_fit)[0][1]
+
+        if r_sq < r_thresh:
+            continue
+
+        _sig -= cad.osc_fit
+
+        sig_osc[ind] = cad.osc_fit
+        keep_inds.append(ind)
+
+        params[ind] = np.array(list(cad.params['params_osc'].values()))[:, -1]
+
+    if len(keep_inds) == 0:
+        raise ValueError('Decomposition unsuccessful.')
+
+    sig_osc = sig_osc[keep_inds]
+    params = params[keep_inds]
+
+    keys = list(cad.params['params_osc'].keys())
+    values = params.T
+
+    params = {k:v for k, v in zip(keys, values)}
+
+    return sig_osc, params
