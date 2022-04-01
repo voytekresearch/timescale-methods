@@ -138,10 +138,11 @@ class CAD:
             warnings.warn('No pseudo-spectral peaks detected.')
 
             self.bounds = [
-                [0, -1, 1, -1] * self.osc_order,
-                [2,  1, 100, 1] * self.osc_order
+                [1,  -1, -1, .2] * self.osc_order,
+                [100, 1,  1,  2] * self.osc_order
             ]
-            self.guess = [2, 0, 1, 0]
+
+            self.guess = [1, 0, 0, 2] * self.osc_order
 
         else:
 
@@ -152,11 +153,11 @@ class CAD:
             upper_freq = freq_guess + freq_pad
 
             bounds = [
-                [0, -1, lower_freq, -1] * self.osc_order,
-                [2,  1, upper_freq, 1] * self.osc_order
+                [lower_freq, -1, -1, 0] * self.osc_order,
+                [upper_freq,  1,  1, 2] * self.osc_order
             ]
 
-            guess = [1, 0, freq_guess, 0] * self.osc_order
+            guess = [freq_guess, 0, 0, 1] * self.osc_order
 
             f_range = np.arange(lower_freq, upper_freq+1)
 
@@ -166,7 +167,7 @@ class CAD:
             for f in f_range:
 
                 guess = np.array(guess).reshape(self.osc_order, -1)
-                guess[:, 2] = f
+                guess[:, 0] = f
                 guess = guess.flatten()
 
                 osc_params = _decompose_ar(self.xs, self.sig, self.fs, self.osc_order, 0,
@@ -303,12 +304,12 @@ def _decompose_ar(xs, sig, fs, osc_order, ar_order, bounds=None, guess=None, max
 
     if bounds is None:
         bounds = [
-            [.2, -1, 0, -1] * osc_order,
-            [ 2,  1, 100, 1] * osc_order
+            [0,  -1, -1, .2] * osc_order,
+            [100, 1,  1,  5] * osc_order
         ]
 
     if guess is None:
-        guess = [1, 0, 1, 0] * osc_order
+        guess = [1, 0, 0, 1] * osc_order
 
     # Inital oscillatory fit
     if ar_order > 0:
@@ -343,7 +344,7 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
     ar_order : int
         Autoregressive order.
     fit_args : list
-        Fit parameters as [heights, phis, freqs, rdsyms].
+        Fit parameters as [freqs, rdsyms, phis, heights].
     return_params : bool, optional, default: False
         Return fit parameters when True. Returns only signal fit when False.
         If true,
@@ -363,7 +364,7 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
     if osc_order <= 0:
         raise ValueError('Oscillatory order must be greater than zero.')
 
-    heights, phis, freqs, rdsyms = np.array(fit_args).reshape(osc_order, -1).T
+    freqs, rdsyms, phis, heights = np.array(fit_args).reshape(osc_order, -1).T
     params = {}
 
     # Construct (asym) oscillation
@@ -392,7 +393,8 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
 
 
 
-def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5):
+def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5,
+                           bounds=None, guess=None):
     """Asymmetrical oscillatory decomposition.
 
     Parameters
@@ -407,6 +409,10 @@ def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5):
         R-squared acceptance threshold.
     freq_bounds_pad, optional, default: .5
         Defines frequency range, plus and minus this value, to pad freqs.
+    bounds : 2d array-like, optional, default: None
+        Bounds for [rdsym, phi, height].
+    guess : 1d array-like, optional, default: None
+        Initial parameter guess for [rdsym, phi, height].
 
     Returns
     -------
@@ -421,6 +427,10 @@ def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5):
 
     keep_inds = []
 
+    _l_bounds = [-1, -1, .1] if bounds is None else bounds[0]
+    _u_bounds = [ 1,  1, 10] if bounds is None else bounds[1]
+    _guess = [0, 0, 1] if guess is None else guess
+
     _sig = sig.copy()
 
     for ind, freq in enumerate(freqs):
@@ -428,11 +438,11 @@ def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5):
         cad = CAD(_sig, fs, 1, 0)
 
         bounds = [
-            [.1, -1, freq-freq_bound_pad, -1],
-            [10,  1, freq+freq_bound_pad,  1]
+            [freq-freq_bound_pad, *_l_bounds],
+            [freq+freq_bound_pad, *_u_bounds]
         ]
 
-        guess = [1, 0, freq, 0]
+        guess = [freq, *_guess]
 
         cad.fit(use_freq_est=False, bounds=bounds, guess=guess)
 
