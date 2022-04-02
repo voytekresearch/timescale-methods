@@ -38,10 +38,8 @@ class CAD:
         Oscillatory fit.
     ar_fit : 1d array
         Autoregressive fit.
-    params : 1d array
+    params : dict
         Model parameters.
-    params_dict : dict
-        Model parameters with parameter names as keys.
     xs : 1d array
         Samples indices.
     guess : list
@@ -392,81 +390,87 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
         return osc_fit, ar_fit, params
 
 
-
-def asym_osc_decomposition(sig, fs, freqs, r_thresh=.5, freq_bound_pad=.5,
-                           bounds=None, guess=None):
-    """Asymmetrical oscillatory decomposition.
+class AMD:
+    """Asymmetrical Mode Decomposition.
 
     Parameters
-    ---------
+    ----------
     sig : 1d array
         Voltage time series.
     fs : float
         Sampling rate, in Hertz.
-    freqs : 1d array
-        Frequencies to step through.
-    r_thresh : float, optional, default: .5
-        R-squared acceptance threshold.
-    freq_bounds_pad, optional, default: .5
-        Defines frequency range, plus and minus this value, to pad freqs.
-    bounds : 2d array-like, optional, default: None
-        Bounds for [rdsym, phi, height].
-    guess : 1d array-like, optional, default: None
-        Initial parameter guess for [rdsym, phi, height].
 
-    Returns
-    -------
-    sig_osc : 2d array
-        Decomposed oscillatory components.
+    Attributes
+    ----------
+    sig_pe : 1d array
+        Periodic fit.
     params : dict
-        Non-sinusoidal wave parameters.
+        Model parameters.
+    freqs : 1d array
+        Frequencies associated with each wave.
+    xs : 1d array
+        Samples indices.
     """
 
-    sig_osc = np.zeros((len(freqs), len(sig)))
-    params = np.zeros((len(freqs), 4))
+    def __init__(self, sig, fs):
 
-    keep_inds = []
+        self.sig = sig
+        self.fs = fs
+        self.xs = np.arange(len(sig))
 
-    _l_bounds = [-1, -1, .1] if bounds is None else bounds[0]
-    _u_bounds = [ 1,  1, 10] if bounds is None else bounds[1]
-    _guess = [0, 0, 1] if guess is None else guess
 
-    _sig = sig.copy()
+    def fit(self, freqs, rsq_thresh=None, bounds=None, guess=None, maxfev=1000):
+        """Fit model.
 
-    for ind, freq in enumerate(freqs):
+        Parameters
+        ----------
+        freqs : 1d array
+            Frequencies to iteratively fit.
+        rsq_thresh : float, optional, default: None
+            Applies and r-squared threshold to each mode. Sub-threshold modes get zeros.
+        bounds : 2d array-like
+            Lower and upper bounds as [rdsym, phis, height].
+        guess : 1d array-like
+            Initial pararmeter estimates as [rdsym, phis, height]
+        """
+        if bounds is None:
+            bounds = [
+                [-1, -1,  0],
+                [ 1,  1, 10]
+            ]
 
-        cad = CAD(_sig, fs, 1, 0)
+        if guess is None:
+            guess = [0, 0, 2]
 
-        bounds = [
-            [freq-freq_bound_pad, *_l_bounds],
-            [freq+freq_bound_pad, *_u_bounds]
-        ]
+        self.sig_pe = np.zeros((len(freqs), len(self.sig)))
+        keep_inds = np.zeros(len(freqs), dtype=bool)
+        sig_remain = self.sig.copy()
+        params = np.zeros((len(freqs), 3))
 
-        guess = [freq, *_guess]
+        for ind, freq in enumerate(freqs):
 
-        cad.fit(use_freq_est=False, bounds=bounds, guess=guess)
+            try:
+                _params, _ = curve_fit(
+                    lambda xs, rdsym, phis, height : sim_asine_oscillation(
+                        xs, self.fs, freq, rdsym, phis, height),
+                    self.xs, sig_remain, bounds=bounds, p0=guess, maxfev=maxfev
+                )
+            except RuntimeError:
+                continue
 
-        r_sq = np.corrcoef(_sig, cad.osc_fit)[0][1]
+            params[ind] = _params
+            fit = sim_asine_oscillation(self.xs, self.fs, freq, *_params)
 
-        if r_sq < r_thresh:
-            continue
+            if rsq_thresh is not None:
+                rsq = np.corrcoef(sig_remain, fit)[0][1]
+                if rsq < rsq_thresh:
+                    continue
 
-        _sig -= cad.osc_fit
+            self.sig_pe[ind] = fit
+            sig_remain -= fit
 
-        sig_osc[ind] = cad.osc_fit
-        keep_inds.append(ind)
+            keep_inds[ind] = 1
 
-        params[ind] = np.array(list(cad.params['params_osc'].values()))[:, -1]
-
-    if len(keep_inds) == 0:
-        raise ValueError('Decomposition unsuccessful.')
-
-    sig_osc = sig_osc[keep_inds]
-    params = params[keep_inds]
-
-    keys = list(cad.params['params_osc'].keys())
-    values = params.T
-
-    params = {k:v for k, v in zip(keys, values)}
-
-    return sig_osc, params
+        self.sig_pe = self.sig_pe[keep_inds]
+        self.freqs = freqs[keep_inds]
+        self.params = params[keep_inds]

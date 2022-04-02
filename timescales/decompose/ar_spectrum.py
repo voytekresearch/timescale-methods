@@ -14,7 +14,7 @@ from neurodsp.filt import filter_signal
 
 
 
-def ar_psd(sig, fs, order, method='burg', nfft=4096, n_jobs=1):
+def ar_psd(sig, fs, order, f_range=None, method='burg', nfft=4096, n_jobs=1):
     """Compute an autoregressive power spectrum.
 
     Parameters
@@ -25,6 +25,8 @@ def ar_psd(sig, fs, order, method='burg', nfft=4096, n_jobs=1):
         Sampling rate, in Hz.
     order : int
         Number of autogressive coefficients to fit.
+    f_range : tuple
+        Lower and upper frequency bounds.
     method : str, {'burg', 'yule_walker'}
         Coefficient estimation method.
     nfft : int, optional, default: 4096
@@ -70,6 +72,11 @@ def ar_psd(sig, fs, order, method='burg', nfft=4096, n_jobs=1):
     freqs = fftfreq(nfft, 1/fs)
     powers = powers[:len(freqs)//2]
     freqs = freqs[:len(freqs)//2]
+
+    if f_range is not None:
+        inds = np.where((freqs >= f_range[0]) & (freqs <= f_range[1]))
+        freqs = freqs[inds]
+        powers = powers[inds]
 
     return freqs, powers
 
