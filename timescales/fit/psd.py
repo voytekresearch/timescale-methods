@@ -41,44 +41,39 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
     if fooof_init is None:
         fooof_init = {}
 
-    # Set aperiodic bounds
-    if knee_bounds is not None:
-        ap_bounds = ((-np.inf, knee_bounds[0], -np.inf),
-                     (np.inf, knee_bounds[1], np.inf))
-    else:
-        ap_bounds = ((-np.inf, -np.inf, -np.inf),
-                     (np.inf, np.inf, np.inf))
-
     if mode == 'mean' and powers.ndim == 2:
         powers = np.mean(powers, axis=0)
     elif mode == 'median' and powers.ndim == 2:
         powers = np.median(powers, axis=0)
 
+    fooof_init_cp = fooof_init.copy()
+    ap_mode = fooof_init_cp.pop('aperiodic_mode', 'knee')
+
+    # Init FOOOF
     if powers.ndim == 1:
-        fm = FOOOF(aperiodic_mode='knee', verbose=False, **fooof_init)
+        fm = FOOOF(aperiodic_mode=ap_mode, verbose=False, **fooof_init_cp)
     elif powers.ndim == 2:
-        fm = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
+        fm = FOOOFGroup(aperiodic_mode=ap_mode, verbose=False, **fooof_init_cp)
 
-    fm._ap_bounds = ap_bounds
-
-    if knee_bounds is not None:
+    # Overwite bounds and guess
+    if knee_bounds is not None and ap_mode == 'knee_constant':
+        fm._ap_bounds = ((-np.inf, knee_bounds[0], -np.inf, 0),
+                         (np.inf, knee_bounds[1], np.inf, np.inf))
+        fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None, 0]
+    elif knee_bounds is not None and ap_mode == 'knee':
+        fm._ap_bounds = ((-np.inf, knee_bounds[0], -np.inf),
+                         (np.inf, knee_bounds[1], np.inf))
         fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None]
 
+    # Fit
     if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
-
         knee_freq = fm.get_params('aperiodic', 'knee')
-        knee_tau = convert_knee_val(knee_freq)
     else:
         fm.fit(freqs, powers, f_range, n_jobs, progress)
-
         knee_freq = fm.get_params('aperiodic', 'knee')
-        knee_tau = np.zeros(len(knee_freq))
 
-        for ind, freq in enumerate(knee_freq):
-            knee_tau[ind] = convert_knee_val(freq)
-
-    return fm, knee_freq, knee_tau
+    return fm, knee_freq
 
 
 def convert_knee_val(knee_freq):
@@ -88,7 +83,7 @@ def convert_knee_val(knee_freq):
     ----------
     knee : float or array
         Knee of the aperiodic spectral fit.
-    exponent : float, optional, default: 2/.
+    exponent : float, optional, default: 2.
         Used for more accurate frequency estimation when PSD is Lorentzian.
 
     Returns
