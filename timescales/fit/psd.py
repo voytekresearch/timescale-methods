@@ -5,8 +5,8 @@ import numpy as np
 from fooof import FOOOF, FOOOFGroup
 
 
-def fit_psd(freqs, powers, f_range, fooof_init=None,
-            knee_bounds=None, mode=None, n_jobs=-1, progress=None):
+def fit_psd(freqs, powers, f_range, fooof_init=None, knee_bounds=None,
+            ap_bounds=None, ap_guess=None, mode=None, n_jobs=-1, progress=None):
     """Fit a PSD, using SpecParam, and estimate tau.
 
     Parameters
@@ -21,6 +21,10 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
         Fooof initialization arguments.
     knee_bounds : tuple of (float, float)
         Aperiodic knee bounds bounds.
+    ap_bounds : 2d array-like
+        Aperiodic bounds.
+    ap_guess : 1d array-like
+        Initial aperiodic parameter estimates.
     mode : {None, 'mean', 'median'}
         How to combine 2d spectra.
     n_jobs : int
@@ -56,22 +60,35 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
         fm = FOOOFGroup(aperiodic_mode=ap_mode, verbose=False, **fooof_init_cp)
 
     # Overwite bounds and guess
-    if knee_bounds is not None and ap_mode == 'knee_constant':
-        fm._ap_bounds = ((-np.inf, knee_bounds[0], -np.inf, 0),
-                         (np.inf, knee_bounds[1], np.inf, np.inf))
-        fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None, 0]
-    elif knee_bounds is not None and ap_mode == 'knee':
-        fm._ap_bounds = ((-np.inf, knee_bounds[0], -np.inf),
-                         (np.inf, knee_bounds[1], np.inf))
-        fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None]
+    if ap_bounds is None:
+        ap_bounds = [[-np.inf,      0, -np.inf,      0],
+                     [ np.inf, np.inf,  np.inf, np.inf]]
+
+    if knee_bounds is not None:
+        ap_bounds[0][1] = knee_bounds[0]
+        ap_bounds[1][1] = knee_bounds[1]
+
+    if ap_guess is None:
+        ap_guess =  [None, (ap_bounds[1][1] - ap_bounds[0][1])/2, None, 0]
+
+    if ap_mode == 'knee':
+        ap_bounds[0] = ap_bounds[0][:-1]
+        ap_bounds[1] = ap_bounds[1][:-1]
+        ap_guess = ap_guess[:-1]
+
+    fm._ap_bounds = ap_bounds
+    fm._ap_guess = ap_guess
 
     # Fit
     if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
-        knee_freq = fm.get_params('aperiodic', 'knee')
     else:
         fm.fit(freqs, powers, f_range, n_jobs, progress)
-        knee_freq = fm.get_params('aperiodic', 'knee')
+
+    if not fm.has_model:
+        return fm, np.nan
+
+    knee_freq = fm.get_params('aperiodic', 'knee')
 
     return fm, knee_freq
 
