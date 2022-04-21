@@ -64,20 +64,23 @@ def fit_psd(freqs, powers, f_range, fooof_init=None, knee_bounds=None,
         ap_bounds = [[-np.inf,      0, -np.inf,      0],
                      [ np.inf, np.inf,  np.inf, np.inf]]
 
+    ap_guess =  [None, None, None, 1e-6]
+
     if knee_bounds is not None:
         ap_bounds[0][1] = knee_bounds[0]
         ap_bounds[1][1] = knee_bounds[1]
-
-    if ap_guess is None:
-        ap_guess =  [None, (ap_bounds[1][1] - ap_bounds[0][1])/2, None, 0]
+        ap_guess[1] = (ap_bounds[1][1] - ap_bounds[0][1])/2
 
     if ap_mode == 'knee':
         ap_bounds[0] = ap_bounds[0][:-1]
         ap_bounds[1] = ap_bounds[1][:-1]
         ap_guess = ap_guess[:-1]
 
+    if knee_bounds is not None:
+        fm._ap_guess = ap_guess
+
     fm._ap_bounds = ap_bounds
-    fm._ap_guess = ap_guess
+
 
     # Fit
     if powers.ndim == 1:
