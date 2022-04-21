@@ -29,22 +29,20 @@ def test_fit_psd(ndim, init):
 
     if init:
         fooof_init = {'max_n_peaks': 0}
-        fm, knee_freq, knee_tau = fit_psd(freqs, powers, (1, 100), fooof_init=fooof_init)
+        fm, knee_freq = fit_psd(freqs, powers, (1, 100), fooof_init=fooof_init)
     else:
-        fm, knee_freq, knee_tau = fit_psd(freqs, powers, (1, 100))
+        fm, knee_freq = fit_psd(freqs, powers, (1, 100))
 
-    if np.isnan(knee_freq).any() or np.isnan(knee_tau).any():
+    if np.isnan(knee_freq).any():
         assert isinstance(fm, (FOOOF, FOOOFGroup))
         return
 
     if ndim == 1:
         assert isinstance(fm, FOOOF)
         assert isinstance(knee_freq, float)
-        assert isinstance(knee_tau, float)
     elif ndim == 2:
         assert isinstance(fm, FOOOFGroup)
         assert (knee_freq[0] == knee_freq[1]).all()
-        assert (knee_tau[0] == knee_tau[1]).all()
 
 
 def test_convert_knee_val():

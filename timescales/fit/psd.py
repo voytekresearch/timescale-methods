@@ -5,8 +5,8 @@ import numpy as np
 from fooof import FOOOF, FOOOFGroup
 
 
-def fit_psd(freqs, powers, f_range, fooof_init=None,
-            knee_bounds=None, mode=None, n_jobs=-1, progress=None):
+def fit_psd(freqs, powers, f_range, fooof_init=None, knee_bounds=None,
+            ap_bounds=None, ap_guess=None, mode=None, n_jobs=-1, progress=None):
     """Fit a PSD, using SpecParam, and estimate tau.
 
     Parameters
@@ -21,6 +21,10 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
         Fooof initialization arguments.
     knee_bounds : tuple of (float, float)
         Aperiodic knee bounds bounds.
+    ap_bounds : 2d array-like
+        Aperiodic bounds.
+    ap_guess : 1d array-like
+        Initial aperiodic parameter estimates.
     mode : {None, 'mean', 'median'}
         How to combine 2d spectra.
     n_jobs : int
@@ -41,44 +45,55 @@ def fit_psd(freqs, powers, f_range, fooof_init=None,
     if fooof_init is None:
         fooof_init = {}
 
-    # Set aperiodic bounds
-    if knee_bounds is not None:
-        ap_bounds = ((-np.inf, knee_bounds[0], -np.inf),
-                     (np.inf, knee_bounds[1], np.inf))
-    else:
-        ap_bounds = ((-np.inf, -np.inf, -np.inf),
-                     (np.inf, np.inf, np.inf))
-
     if mode == 'mean' and powers.ndim == 2:
         powers = np.mean(powers, axis=0)
     elif mode == 'median' and powers.ndim == 2:
         powers = np.median(powers, axis=0)
 
+    fooof_init_cp = fooof_init.copy()
+    ap_mode = fooof_init_cp.pop('aperiodic_mode', 'knee')
+
+    # Init FOOOF
     if powers.ndim == 1:
-        fm = FOOOF(aperiodic_mode='knee', verbose=False, **fooof_init)
+        fm = FOOOF(aperiodic_mode=ap_mode, verbose=False, **fooof_init_cp)
     elif powers.ndim == 2:
-        fm = FOOOFGroup(aperiodic_mode='knee', verbose=False, **fooof_init)
+        fm = FOOOFGroup(aperiodic_mode=ap_mode, verbose=False, **fooof_init_cp)
+
+    # Overwite bounds and guess
+    if ap_bounds is None:
+        ap_bounds = [[-np.inf,      0, -np.inf,      0],
+                     [ np.inf, np.inf,  np.inf, np.inf]]
+
+    ap_guess =  [None, None, None, 1e-6]
+
+    if knee_bounds is not None:
+        ap_bounds[0][1] = knee_bounds[0]
+        ap_bounds[1][1] = knee_bounds[1]
+        ap_guess[1] = (ap_bounds[1][1] - ap_bounds[0][1])/2
+
+    if ap_mode == 'knee':
+        ap_bounds[0] = ap_bounds[0][:-1]
+        ap_bounds[1] = ap_bounds[1][:-1]
+        ap_guess = ap_guess[:-1]
+
+    if knee_bounds is not None:
+        fm._ap_guess = ap_guess
 
     fm._ap_bounds = ap_bounds
 
-    if knee_bounds is not None:
-        fm._ap_guess = [None, (knee_bounds[1] - knee_bounds[0])/2, None]
 
+    # Fit
     if powers.ndim == 1:
         fm.fit(freqs, powers, f_range)
-
-        knee_freq = fm.get_params('aperiodic', 'knee')
-        knee_tau = convert_knee_val(knee_freq)
     else:
         fm.fit(freqs, powers, f_range, n_jobs, progress)
 
-        knee_freq = fm.get_params('aperiodic', 'knee')
-        knee_tau = np.zeros(len(knee_freq))
+    if not fm.has_model:
+        return fm, np.nan
 
-        for ind, freq in enumerate(knee_freq):
-            knee_tau[ind] = convert_knee_val(freq)
+    knee_freq = fm.get_params('aperiodic', 'knee')
 
-    return fm, knee_freq, knee_tau
+    return fm, knee_freq
 
 
 def convert_knee_val(knee_freq):
@@ -88,7 +103,7 @@ def convert_knee_val(knee_freq):
     ----------
     knee : float or array
         Knee of the aperiodic spectral fit.
-    exponent : float, optional, default: 2/.
+    exponent : float, optional, default: 2.
         Used for more accurate frequency estimation when PSD is Lorentzian.
 
     Returns
