@@ -65,7 +65,7 @@ def fit_psd(freqs, powers, f_range, fooof_init=None, knee_bounds=None,
                      [ np.inf, np.inf,  np.inf, np.inf]]
 
     if ap_guess is None:
-        ap_guess =  [None, None, None, 1e-6]
+        ap_guess =  [None, 1, None, 1e-6]
 
     if knee_bounds is not None:
         ap_bounds[0][1] = knee_bounds[0]
