@@ -1,5 +1,7 @@
 """Autocorrelation estimation methods."""
 
+import warnings
+
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
@@ -19,40 +21,48 @@ class ACF:
 
     Parameters
     ----------
-    sig : 1d array
-        LFP or spike counts or spike probabilities.
-    fs : float
-        Sampling rate, in Hz.
-    corrs : 1d array
-        Autocorrelation coefficients.
     lags : 1d array
         Time lag definitions.
-    guess : 1d array
-        Parameter guess as [tau, height, offset] when using fit or as [exp_tau, osc_tau, osc_gamma,
-        osc_freq, amp_ratio, height, offset] when using fit_cos.
+    corrs : 1d or 2d array
+        Autocorrelation coefficients.
+    fs : float
+        Sampling rate, in Hz.
+
+    Attributes
+    ----------
     corrs_fit : 1d array
-        Autocorrelation coefficient full fit.
+        Autocorrelation full fit.
     params : 1d array
-        Exponential decay fit params, and optionally damped cosine parameters, along with an offset
-        parameter.
+        Optimized parameters.
+    param_names : list of str
+        Parameter names in order of params.
     rsq : float
         R-squared of the full fit.
-    low_mem : bool
-        Reduces memory load when True.
+    guess : list, optional, default: None
+        Estimated parameters as either:
+        [tau, height, offset] when with_cos is False, or
+        [exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, height, offset].
+    bounds : list, optional, default: None
+        Parameters bounds as [(*lower_bounds), (*upper_bounds)].
+
+    Notes
+    -----
+    Parameters may be set on initialization or using the compute_acf method.
     """
 
-    def __init__(self, corrs=None, lags=None, fs=None, low_mem=False):
+    def __init__(self, lags=None, corrs=None, fs=None):
         """Initialize object."""
 
-        self.sig = None
-        self.fs = fs
-        self.corrs = corrs
         self.lags = lags
+        self.corrs = corrs
+        self.fs = fs
 
+        # Set via other methods
         self.guess = None
         self.bounds = None
 
         self.params = None
+        self.param_names = None
         self.param_exp = None
         self.params_cos = None
 
@@ -64,58 +74,99 @@ class ACF:
         self.params_cos = None
 
         self.rsq = None
-        self.low_mem = low_mem
 
 
-    def compute_acf(self, sig, fs, start=0, win_len=None, nlags=None,
-                    from_psd=False, psd_kwargs=None):
+    def compute_acf(self, sig, fs, nlags=None, from_psd=False,
+                    psd_kwargs=None, n_jobs=-1, progress=None):
         """Compute autocorrelation.
 
         Parameters
         ----------
-        sig : 1d array
-            LFP or spike counts or spike probabilities.
+        sig : 1d or 2d array
+            Voltage time series or spike counts.
         fs : float
             Sampling rate, in Hz.
-        start : int, optional, default: 0
-            Index of the starting point to compute the ACF.
-        win_len : int, optional, default: None
-            Window length, in samples. If None, default to fs.
         nlags : int, optional, default: None
             Number of lags to compute. None defaults to the sampling rate, fs.
         from_psd : bool, optional, default: False
             Compute correlations from the inverse FFT of the PSD.
         psd_kwargs : dict, optional, default: None
             Compute spectrum kwargs. Only used if from_psd is True.
+        n_jobs : int
+            Number of jobs to run in parralel, when corrs is 2d.
+            Default is equal to multiprocessing's cpu_count().
+        progress : {None, 'tqdm', 'tqdm.notebook'}
+            Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
-        self.sig = sig
-        self.fs = fs
 
+        self.fs = fs
         nlags = self.fs if nlags is None else nlags
-        self.sig = self.sig[start:start+win_len] if win_len is not None else self.sig[start:]
 
         if not from_psd:
-            self.corrs = compute_acf(self.sig, nlags)
+
+            # Compute ACF
+            if sig.ndim == 1:
+                self.corrs = acf(sig, nlags=nlags, qstat=False, fft=True)[1:]
+                self.lags = np.arange(1, len(self.corrs)+1)
+            elif sig.ndim == 2:
+
+                n_jobs = cpu_count() if n_jobs == -1 else n_jobs
+
+                with Pool(processes=n_jobs) as pool:
+                    mapping = pool.map(partial(acf, nlags=nlags, qstat=False, fft=True), sig)
+                    results = list(progress_bar(mapping, progress, len(sig), 'Computing ACF'))
+
+                self.corrs = np.array(results)[:, 1:]
+                self.lags = np.arange(1, len(self.corrs[0])+1)
+            else:
+                raise ValueError('sig must be either 1d or 2d.')
+
         else:
+            if n_jobs != 1:
+                warnings.warn('Parallezation not implemented for from_psd.', RuntimeWarning)
+
             psd_kwargs = {} if psd_kwargs is None else psd_kwargs
-            _, _powers = compute_spectrum(self.sig, self.fs, **psd_kwargs)
-            self.corrs = ifft(_powers).real
-            self.corrs = self.corrs[:len(self.corrs)//2]
+            _, _powers = compute_spectrum(sig, self.fs, **psd_kwargs)
 
-        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
-
-        if self.low_mem:
-            self.sig = None
+            if sig.ndim == 2:
 
 
-    def fit(self, guess=None, bounds=None, maxfev=1000, n_jobs=-1, progress=None):
+                for ind in range(len(_powers)):
+
+                    _corrs = ifft(_powers[ind]).real
+
+                    if ind == 0:
+                        self.corrs = np.zeros((len(_powers), len(_corrs)//2))
+
+                    self.corrs[ind] = _corrs[:len(_corrs)//2]
+
+                self.lags = np.arange(1, len(self.corrs[0])+1)
+
+            else:
+                self.corrs = ifft(_powers).real
+                self.corrs = self.corrs[:len(self.corrs)//2]
+                self.lags = np.arange(1, len(self.corrs)+1)
+
+
+
+    def fit(self, gen_fits=True, gen_components=False, with_cos=False,
+            guess=None, bounds=None, maxfev=1000, n_jobs=-1, progress=None):
         """Fit without an oscillitory component.
 
         Parameters
         ----------
+        gen_fits : bool, optional, default: False
+            Generates fit array and r-squared when True.
+            Does not generate full fits when False to prevent OOM.
+        gen_components : bool, optional, default: False
+            When gen_fits and with_cos are True, the exponential decay and cosine
+            components are be generated separately when this parameter is True.
+        with_cos : bool, optional, default: False
+            Includes oscillatory component as a damped cosine.
         guess : list, optional, default: None
-            Estimated parameters as [exp_tau, osc_tau, osc_gamma,
-            osc_freq, amp_ratio, height, offset].
+            Estimated parameters as either:
+            [tau, height, offset] when with_cos is False, or
+            [exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, height, offset].
         bounds : list, optional, default: None
             Parameters bounds as [(*lower_bounds), (*upper_bounds)].
         maxfev : int
@@ -126,116 +177,90 @@ class ACF:
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
 
-        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
+        if self.corrs is None or self.lags is None:
+            raise ValueError('Initialize with lags, corrs, and fs. '
+                             'Or call compute_acf prior to fitting.')
 
-        self.params, self.guess, self.bounds = fit_acf(self.corrs, self.fs, self.lags, guess=guess,
-            bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
+        if not with_cos:
+            # Non-oscillatory model
+            self.param_names = ['tau', 'height', 'offset']
+            self.params, self.guess, self.bounds = fit_acf(self.corrs, self.fs, self.lags, guess=guess,
+                bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
+        else:
+            # Oscillatory model
+            self.param_names = ['exp_tau', 'osc_tau', 'osc_gamma', 'osc_freq',
+                                'amp_ratio', 'height', 'offset']
+            self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, self.lags,
+                guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
 
-        if self.low_mem:
-            self.lags = None
+        if gen_fits:
+            self.gen_corrs_fit(gen_components)
 
 
-    def fit_cos(self, guess=None, bounds=None, maxfev=1000, n_jobs=-1, progress=None):
-        """Fit with an oscillitory component.
+    def gen_corrs_fit(self, gen_components=False):
+        """Generate fit and r-squared.
 
         Parameters
         ----------
-        guess : list, optional, default: None
-            Estimated parameters as [tau, height, offset].
-        bounds : list, optional, default: None
-            Parameters bounds as [(*lower_bounds), (*upper_bounds)].
-        maxfev : int
-            Maximum number of fitting iterations.
-        n_jobs : int
-            Number of jobs to run in parralel, when corrs is 2d.
-        progress : {None, 'tqdm', 'tqdm.notebook'}
-            Specify whether to display a progress bar. Uses 'tqdm', if installed.
+        gen_components : bool, optional, default: True
+            Generates oscillatory and exponential components separately, in additon to
+            combined, when True.
         """
 
-        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
+        sim_func = sim_exp_decay if self.params.shape[-1] == 3 else sim_acf_cos
 
-        self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, self.lags,
-            guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
+        if self.corrs.ndim == 2:
 
-        if self.low_mem:
-            self.lags = None
+            self.corrs_fit = np.zeros((len(self.params), len(self.corrs[0])))
+            self.rsq = np.zeros(len(self.params))
 
+            for ind in range(len(self.params)):
+                self.corrs_fit[ind] = sim_func(self.lags, self.fs, *self.params[ind])
+                self.rsq[ind] = np.corrcoef(self.corrs, self.corrs_fit[ind])[0][1] ** 2
 
-    def gen_corrs_fit(self):
-        """Generate fit and r-squared."""
-
-        self.lags = np.arange(1, len(self.corrs)+1) if self.lags is None else self.lags
-
-        if len(self.params) == 3:
-            self.corrs_fit = sim_exp_decay(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
         else:
-            self.corrs_fit = sim_acf_cos(np.arange(1, len(self.corrs)+1), self.fs, *self.params)
+            self.corrs_fit = sim_func(self.lags, self.fs, *self.params)
+            self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
 
-            # Unpack params
-            exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params
+        # Separate oscillatory and exponential decay compoents
+        n_params = len(self.params) if self.corrs.ndim == 1 else len(self.params[0])
+        n_corrs = 1 if self.corrs.ndim == 1 else len(self.corrs)
 
-            self.params_exp = np.array([exp_tau, amp_ratio])
-            self.params_cos = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
+        if gen_components and n_params != 3:
 
-            exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
-            osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
+            if n_corrs > 1:
 
-            self.corrs_fit_exp = exp
-            self.corrs_fit_cos = osc
+                self.params_exp = np.zeros((n_corrs, 2))
+                self.params_cos = np.zeros((n_corrs, 4))
+                self.corrs_fit_exp = np.zeros((n_corrs, len(self.corrs[0])))
+                self.corrs_fit_cos = np.zeros((n_corrs, len(self.corrs[0])))
 
-        self.rsq = np.corrcoef(self.corrs, self.corrs_fit)[0][1] ** 2
+                for ind in range(n_corrs):
+
+                    exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params[ind]
+
+                    self.params_exp[ind] = np.array([exp_tau, amp_ratio])
+                    self.params_cos[ind] = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
+
+                    self.corrs_fit_exp[ind] = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
+                    self.corrs_fit_cos[ind] = sim_damped_cos(self.lags, self.fs, osc_tau,
+                        1-amp_ratio, osc_gamma, osc_freq)
 
 
-def compute_acf(spikes, nlags, mode=None, n_jobs=-1, progress=None):
-    """Compute the autocorrelation for a spiking series.
+            else:
+                exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params
 
-    Parameters
-    ----------
-    spikes : 1d or 2d array
-        Spike counts or probabilities.
-    nlags : float
-        Number of lags to compute autocorrelation over.
-    mode : {None, 'mean', 'median'}
-        Used when spikes is 2d. Specifices computing the ACF as either the mean or median of the
-        ACF. Returns the 2d array of correlation when None.
-    n_jobs : int
-        Number of jobs to run in parralel, when corrs is 2d.
-    progress : {None, 'tqdm', 'tqdm.notebook'}
-        Specify whether to display a progress bar. Uses 'tqdm', if installed.
+                self.params_exp = np.array([exp_tau, amp_ratio])
+                self.params_cos = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
 
-    Returns
-    -------
-    corrs : 1d or 2d array
-        Autcorrelation.
-    """
+                exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
+                osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
 
-    # Compute acf
-    if spikes.ndim == 1:
-        corrs = acf(spikes, nlags=nlags, qstat=False, fft=True)[1:]
-    elif spikes.ndim == 2:
-        n_jobs = cpu_count() if n_jobs == -1 else n_jobs
+                self.corrs_fit_exp = exp
+                self.corrs_fit_cos = osc
 
-        with Pool(processes=n_jobs) as pool:
-
-            mapping = pool.map(partial(acf, nlags=nlags, qstat=False, fft=True), spikes)
-
-            results = list(progress_bar(mapping, progress, len(spikes), 'Computing ACF'))
-
-        corrs_2d = np.array(results)[:, 1:]
-
-        # Take mean or median of 2d acf results; if None, fit each acf separately
-        if mode == 'mean':
-            corrs = np.mean(corrs_2d, axis=0)
-        elif mode == 'median':
-            corrs = np.median(corrs_2d, axis=0)
-        elif mode is None:
-            corrs = corrs_2d
-        else:
-            raise ValueError('Requested mode must be either {\'mean\', \'median\', None}.')
-    else:
-        raise ValueError('Spike counts must be either 1d or 2d.')
-
-    return corrs
+        elif gen_components:
+            raise ValueError('Call the fit method with fit_cos=True for separable components.')
 
 
 def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):
