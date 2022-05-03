@@ -1,7 +1,5 @@
 """Autocorrelation estimation methods."""
 
-import warnings
-
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
@@ -13,8 +11,8 @@ from statsmodels.tsa.stattools import acf
 from neurodsp.spectral import compute_spectrum
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
-from timescales.fit.utils import progress_bar, check_guess_and_bounds
-
+from timescales.fit.utils import progress_bar, check_guess_and_bounds, convert_knee_val
+from timescales.autoreg import compute_ar_spectrum
 
 class ACF:
     """Autocorrelation function class.
@@ -75,8 +73,12 @@ class ACF:
 
         self.rsq = None
 
+        # For comparison to PSD models
+        self.tau = None
+        self.knee_freq = None
 
-    def compute_acf(self, sig, fs, nlags=None, from_psd=False,
+
+    def compute_acf(self, sig, fs, nlags=None, normalize=True, from_psd=False,
                     psd_kwargs=None, n_jobs=-1, progress=None):
         """Compute autocorrelation.
 
@@ -88,6 +90,8 @@ class ACF:
             Sampling rate, in Hz.
         nlags : int, optional, default: None
             Number of lags to compute. None defaults to the sampling rate, fs.
+        normalize : bool, optional, default: True
+            Normalizes from zero to one when True.
         from_psd : bool, optional, default: False
             Compute correlations from the inverse FFT of the PSD.
         psd_kwargs : dict, optional, default: None
@@ -122,31 +126,49 @@ class ACF:
                 raise ValueError('sig must be either 1d or 2d.')
 
         else:
-            if n_jobs != 1:
-                warnings.warn('Parallezation not implemented for from_psd.', RuntimeWarning)
 
+            # Handle kwargs
             psd_kwargs = {} if psd_kwargs is None else psd_kwargs
-            _, _powers = compute_spectrum(sig, self.fs, **psd_kwargs)
+            _psd_kwargs = psd_kwargs.copy()
+            norm_range = _psd_kwargs.pop('norm_range', None)
 
+            # Compute spectrum
+            if 'ar_order' in psd_kwargs:
+                ar_order = _psd_kwargs.pop('ar_order')
+                _, powers = compute_ar_spectrum(sig, self.fs, ar_order, **_psd_kwargs)
+            else:
+                _, powers = compute_spectrum(sig, self.fs, **_psd_kwargs)
+
+            # Normalize power if requested
+            if norm_range is not None:
+                powers = ACF.normalize(powers, norm_range)
+
+            # Take inverse fft to get acf
             if sig.ndim == 2:
 
+                for ind in range(len(powers)):
 
-                for ind in range(len(_powers)):
-
-                    _corrs = ifft(_powers[ind]).real
+                    _corrs = ifft(powers[ind]).real
 
                     if ind == 0:
-                        self.corrs = np.zeros((len(_powers), len(_corrs)//2))
+                        self.corrs = np.zeros((len(powers), len(_corrs)//2))
 
                     self.corrs[ind] = _corrs[:len(_corrs)//2]
 
                 self.lags = np.arange(1, len(self.corrs[0])+1)
+                self.corrs = self.corrs[:, :nlags]
 
             else:
-                self.corrs = ifft(_powers).real
-                self.corrs = self.corrs[:len(self.corrs)//2]
-                self.lags = np.arange(1, len(self.corrs)+1)
 
+                self.corrs = ifft(powers).real
+                self.corrs = self.corrs[:len(self.corrs)//2]
+                self.lags = np.arange(1, 2*len(self.corrs)+1, 2)
+                self.corrs = self.corrs[:nlags]
+
+            self.lags = self.lags[:nlags]
+
+        if normalize:
+            self.corrs = ACF.normalize(self.corrs)
 
 
     def fit(self, gen_fits=True, gen_components=False, with_cos=False,
@@ -192,6 +214,9 @@ class ACF:
                                 'amp_ratio', 'height', 'offset']
             self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, self.lags,
                 guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
+
+        self.tau = self.params[0]
+        self.knee_freq = convert_knee_val(self.tau)
 
         if gen_fits:
             self.gen_corrs_fit(gen_components)
@@ -261,6 +286,17 @@ class ACF:
 
         elif gen_components:
             raise ValueError('Call the fit method with fit_cos=True for separable components.')
+
+
+    @staticmethod
+    def normalize(corrs, norm_range=(0, 1)):
+        """Normalize correlation from 0 to 1."""
+        if corrs.ndim == 2:
+            for ind in range(len(corrs)):
+                corrs[ind] = ACF.normalize(corrs[ind])
+        else:
+            corrs = np.interp(corrs, (corrs.min(), corrs.max()), norm_range)
+        return corrs
 
 
 def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):
