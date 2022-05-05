@@ -9,10 +9,11 @@ from scipy.fft import ifft
 from statsmodels.tsa.stattools import acf
 
 from neurodsp.spectral import compute_spectrum
+from timescales.autoreg import compute_ar_spectrum
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
 from timescales.fit.utils import progress_bar, check_guess_and_bounds, convert_knee_val
-from timescales.autoreg import compute_ar_spectrum
+
 
 class ACF:
     """Autocorrelation function class.
@@ -63,6 +64,8 @@ class ACF:
         self.param_names = None
         self.param_exp = None
         self.params_cos = None
+        self.tau = None
+        self.knee_freq = None
 
         self.corrs_fit = None
 
@@ -220,6 +223,9 @@ class ACF:
 
         if gen_fits:
             self.gen_corrs_fit(gen_components)
+
+        self.tau = self.params[0]
+        self.knee_freq = convert_knee_val(self.params[0])
 
 
     def gen_corrs_fit(self, gen_components=False):
