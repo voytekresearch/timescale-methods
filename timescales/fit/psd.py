@@ -34,7 +34,7 @@ class PSD:
         Parameters as [offset, knee_freq, exp, const].
     param_names : list of str
         Parameter names in order of params.
-    knees : float or 1d array
+    knee_freq : float or 1d array
         Knee frequency.
     rsq : float
         R-squared of the full fit.
@@ -54,7 +54,8 @@ class PSD:
         self.models = None
         self.params = None
         self.param_names = ['offset', 'knee_freq', 'exp', 'const']
-        self.knees = None
+        self.knee_freq = None
+        self.tau = None
         self.rsq = None
         self.guess=None
         self.bounds = None
@@ -147,6 +148,9 @@ class PSD:
 
             for ind in range(len(self.powers_fit)):
                 self.rsq[ind] = np.corrcoef(self.powers, self.powers_fit[ind])[0][1] ** 2
+
+        self.knee_freq = self.params[1]
+        self.tau = convert_knee_val(self.params[1])
 
 
 def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
