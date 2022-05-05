@@ -60,7 +60,8 @@ class Pipe:
 
         with Pool(processes=n_jobs) as pool:
             mapping = pool.imap(self._run, self.seeds)
-            results = list(progress_bar(mapping, progress, len(self.seeds)))
+            results = list(progress_bar(mapping, progress, len(self.seeds),
+                                        'Fitting Timescales'))
 
         self.models = [r[0] for r in results]
         self.results = np.array([r[1] for r in results])
