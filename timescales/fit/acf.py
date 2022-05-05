@@ -11,7 +11,6 @@ from scipy.fft import ifft
 from statsmodels.tsa.stattools import acf
 
 from neurodsp.spectral import compute_spectrum
-from torch import conv1d
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
 from .psd import convert_knee_val
