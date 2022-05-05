@@ -2,11 +2,13 @@
 
 
 import operator as op
+from multiprocessing import Pool, cpu_count
 
 import numpy as np
 from scipy.signal import resample
 
 from timescales.fit import PSD, ACF
+from timescales.fit.utils import progress_bar
 
 from neurodsp.utils.norm import normalize_sig
 
@@ -35,35 +37,54 @@ class Pipe:
         self.sig = None
 
         self.model = None
+        self.models = []
         self.pipe = None
 
         self.results = None
         self.result = None
 
 
-    def run(self):
+    def run(self, n_jobs=-1, progress=None):
         """Run analysis pipeline.
 
-        To-Do: parallelize
+        Parameters
+        ----------
+        n_jobs : int
+            Number of jobs to run in parralel.
+        progress : {None, 'tqdm', 'tqdm.notebook'}
+            Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
-        if self.results is None:
-            self.results = []
 
-        for seed in self.seeds:
+        n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-            np.random.seed(seed)
+        self.results = [] if  self.results is None else self.results
 
-            # Run pipeline
-            for node in self.pipe:
-                getattr(self, node['step'])(*node['args'], **node['kwargs'])
+        with Pool(processes=n_jobs) as pool:
+            mapping = pool.imap(self._run, self.seeds)
+            results = list(progress_bar(mapping, progress, len(self.seeds)))
 
-            # Get results
-            self.results.append(self.result)
+        self.models = [r[0] for r in results]
+        self.results = np.array([r[1] for r in results])
 
-            # Clear
-            self.result = None
-            self.sig = None
-            self.model = None
+
+    def _run(self, seed):
+        """Proxy function to allow parallelziation.
+
+        Parameters
+        ----------
+        seed : int
+            Random seed to set.
+        """
+        np.random.seed(seed)
+
+        # Clear
+        self.model = None
+        self.result = None
+
+        for node in self.pipe:
+            getattr(self, node['step'])(*node['args'], **node['kwargs'])
+
+        return self.model, self.result
 
 
     def add_step(self, step, *args, **kwargs):
@@ -72,6 +93,11 @@ class Pipe:
         Parameters
         ----------
         step : {'simulate', 'sample', 'transform', fit'}
+            Method to run.
+        *args
+            Positional arugments for the specified method.
+        **kwargs
+            Keyword arguemnts for the specified method.
         """
         if self.pipe is None:
             self.pipe = []
@@ -204,7 +230,18 @@ class Pipe:
             # Upsampling can decrease computation time
             self.sig = resample(self.sig, n_resample)
 
-        self.spikes = self.sig > np.random.rand(len(self.sig))
+        self.sig = self.sig > np.random.rand(len(self.sig))
+
+
+    def bin(self, bin_size):
+        """Bin signal.
+
+        Parameters
+        ----------
+        bin_size : int
+            Number of samples per bin.
+        """
+        self.sig = self.sig.reshape(-1, bin_size).sum(axis=1)
 
 
     @staticmethod
