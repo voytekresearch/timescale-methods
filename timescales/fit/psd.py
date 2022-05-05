@@ -270,8 +270,8 @@ def fit_psd_huber(freqs, powers, f_range=None, bounds=None,
 
     # Parameter bounds and guess
     if bounds is None:
-        bounds = [[-np.inf,   1e-6, 0,      0],
-                  [ np.inf, np.inf, 5, np.inf]]
+        bounds = [[-100,   1e-6, 0,      0],
+                  [ 100, np.inf, 4, np.inf]]
 
     if guess is None:
         guess = [0, 1, 1, 1e-6]

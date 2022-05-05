@@ -32,7 +32,6 @@ class Pipe:
         self.fs = fs
 
         self.seeds = seeds
-        self.seed = None
 
         self.sig = None
 
@@ -200,10 +199,6 @@ class Pipe:
             operator = op.sub
         else:
             operator = op.truediv
-
-        # Set seed
-        if self.seed is not None:
-            np.random.seed(self.seed)
 
         # Simulate
         if self.sig is None:

@@ -14,7 +14,7 @@ from neurodsp.spectral import compute_spectrum
 from torch import conv1d
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
-from timescales.fit import convert_knee_val
+from .psd import convert_knee_val
 from timescales.fit.utils import progress_bar, check_guess_and_bounds
 
 
