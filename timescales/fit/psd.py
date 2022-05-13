@@ -51,7 +51,6 @@ class PSD:
         self.powers = powers
 
         # Set via other methods
-        self.models = None
         self.params = None
         self.param_names = ['offset', 'knee_freq', 'exp', 'const']
         self.knee_freq = None
@@ -133,13 +132,13 @@ class PSD:
             self.freqs = self.freqs[inds]
             self.powers = self.powers[:, inds] if self.powers.ndim == 2 else self.powers[inds]
 
-        if method == 'huber':
+        if method == 'huber' and fooof_init is None:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_huber(
                 self.freqs, self.powers, f_scale=f_scale, bounds=bounds,
                   guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
             )
-        elif method == 'fooof':
+        elif method == 'fooof' or fooof_init is not None:
             # Fooof can't, but should, handle 0 hertz
             if self.freqs[0] == 0:
                 self.freqs = self.freqs[1:]
@@ -155,12 +154,14 @@ class PSD:
 
         # Get r-squared
         if self.powers_fit.ndim == 1:
-            self.rsq = np.corrcoef(self.powers, self.powers_fit)[0][1] ** 2
+            self.rsq = np.corrcoef(np.log10(self.powers),
+                                   np.log10(self.powers_fit))[0][1] ** 2
         else:
             self.rsq = np.zeros(len(self.powers_fit))
 
             for ind in range(len(self.powers_fit)):
-                self.rsq[ind] = np.corrcoef(self.powers, self.powers_fit[ind])[0][1] ** 2
+                self.rsq[ind] = np.corrcoef(np.log10(self.powers),
+                                            np.log10(self.powers_fit[ind]))[0][1] ** 2
 
         self.knee_freq = self.params[1]
         self.tau = convert_knee_val(self.knee_freq)
@@ -222,11 +223,11 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
 
     # Parameter bounds and guess
     if ap_bounds is None:
-        ap_bounds = [[-np.inf,   1e-6, -np.inf,   1e-6],
-                     [ np.inf, np.inf,  np.inf, np.inf]]
+        ap_bounds = [[-np.inf, 1e-6,       0,      0],
+                     [ np.inf, freqs.max(),  np.inf, np.inf]]
 
     if ap_guess is None:
-        ap_guess =  [None, 1, None, 1e-6]
+        ap_guess =  [0, 1, 1, 1e-6]
 
     if ap_mode == 'knee':
         ap_bounds[0] = ap_bounds[0][:-1]
@@ -296,8 +297,8 @@ def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
 
     # Parameter bounds and guess
     if bounds is None:
-        bounds = [[-100,   1e-6, 0,      0],
-                  [ 100, np.inf, 4, np.inf]]
+        bounds = [[-np.inf, 1e-6,             0,      0],
+                  [ np.inf, freqs.max(), np.inf, np.inf]]
 
     if guess is None:
         guess = [0, 1, 1, 1e-6]
