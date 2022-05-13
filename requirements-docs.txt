@@ -1,0 +1,6 @@
+# Requirements for building the documentation site
+sphinx
+sphinx-gallery
+sphinx-book-theme
+numpydoc
+sphinx-copybutton
