@@ -13,7 +13,7 @@ from timescales.autoreg import compute_ar_spectrum
 from fooof import FOOOF, FOOOFGroup
 from fooof.core.funcs import expo_const_function
 
-from timescales.fit.utils import progress_bar
+from timescales.fit.utils import progress_bar, convert_knee_val
 
 
 class PSD:
@@ -51,7 +51,6 @@ class PSD:
         self.powers = powers
 
         # Set via other methods
-        self.models = None
         self.params = None
         self.param_names = ['offset', 'knee_freq', 'exp', 'const']
         self.knee_freq = None
@@ -60,8 +59,13 @@ class PSD:
         self.guess=None
         self.bounds = None
 
+        # For comparison to PSD models
+        self.tau = None
+        self.knee_freq = None
 
-    def compute_spectrum(self, sig, fs, ar_order=None, f_range=None, n_jobs=-1, **kwargs):
+
+    def compute_spectrum(self, sig, fs, ar_order=None, f_range=None,
+                         norm_range=None, n_jobs=-1, **kwargs):
         """Compute powers spectral density.
         Parameters
         ---------
@@ -73,21 +77,26 @@ class PSD:
             Compute an autoregressive spectra when not None.
         f_range : tuple of (float, float)
             Frequency range of interest, inclusive.
+        norm_range : tuple of (float, float), optional, default: None
+            The lower and upper normalization range.
         n_jobs : int
             Number of jobs to run in parralel, when powers is 2d.
             Only available when using an ar_order.
         **kwargs
-            Additional keyword arguments to pass to neurodsp's compute_spectrum.
+            Additional keyword arguments to pass to compute_spectrum or compute_ar_spectrum.
         """
         if ar_order is not None:
             self.freqs, self.powers = compute_ar_spectrum(sig, fs, ar_order, n_jobs=n_jobs,
-                                                          **kwargs)
+                                                          f_range=f_range, **kwargs)
         else:
-            self.freqs, self.powers = compute_spectrum(sig, fs, f_range=f_range)
+            self.freqs, self.powers = compute_spectrum(sig, fs, f_range=f_range, **kwargs)
+
+        if norm_range is not None:
+            self.powers = PSD.normalize(self.powers, norm_range)
 
 
-    def fit(self, f_range=None, method='huber', bounds=None,
-            maxfev=1000, guess=None, n_jobs=1, progress=None):
+    def fit(self, f_range=None, method='huber', fooof_init=None, bounds=None,
+            guess=None, f_scale=1., n_jobs=1, maxfev=1000, progress=None):
         """Fit power spectra.
 
         Parameters
@@ -99,14 +108,18 @@ class PSD:
             fooof model ('fooof').
         fooof_init : dict, optional, default: None
             Fooof initialization arguments.
+            Only used if method is 'fooof'.
+        f_scale : float, optional, default: 0.1
+            Value of soft margin between inlier and outlier residuals.
+            Only used if method is 'huber'.
         bounds : 2d array-like
             Parameter bounds.
         guess : 1d array-like
             Initial parameter estimates.
-        maxfev : int
-            Maximum number of fitting iterations. Only availble for huber method.
         n_jobs : int
             Number of jobs to run in parralel, when powers is 2d.
+        maxfev : int
+            Maximum number of fitting iterations. Only availble for huber method.
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
@@ -119,14 +132,13 @@ class PSD:
             self.freqs = self.freqs[inds]
             self.powers = self.powers[:, inds] if self.powers.ndim == 2 else self.powers[inds]
 
-        if method == 'huber':
+        if method == 'huber' and fooof_init is None:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_huber(
-                self.freqs, self.powers, bounds=bounds,
+                self.freqs, self.powers, f_scale=f_scale, bounds=bounds,
                   guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
             )
-        elif method == 'fooof':
-
+        elif method == 'fooof' or fooof_init is not None:
             # Fooof can't, but should, handle 0 hertz
             if self.freqs[0] == 0:
                 self.freqs = self.freqs[1:]
@@ -134,7 +146,7 @@ class PSD:
 
             # Aperiodic and periodic model
             self.params, self.powers_fit = fit_psd_fooof(
-                self.freqs, self.powers, fooof_init=None, ap_bounds=bounds,
+                self.freqs, self.powers, fooof_init=fooof_init, ap_bounds=bounds,
                 ap_guess=guess, n_jobs=n_jobs, progress=progress
             )
         else:
@@ -142,15 +154,28 @@ class PSD:
 
         # Get r-squared
         if self.powers_fit.ndim == 1:
-            self.rsq = np.corrcoef(self.powers, self.powers_fit)[0][1] ** 2
+            self.rsq = np.corrcoef(np.log10(self.powers),
+                                   np.log10(self.powers_fit))[0][1] ** 2
         else:
             self.rsq = np.zeros(len(self.powers_fit))
 
             for ind in range(len(self.powers_fit)):
-                self.rsq[ind] = np.corrcoef(self.powers, self.powers_fit[ind])[0][1] ** 2
+                self.rsq[ind] = np.corrcoef(np.log10(self.powers),
+                                            np.log10(self.powers_fit[ind]))[0][1] ** 2
 
         self.knee_freq = self.params[1]
-        self.tau = convert_knee_val(self.params[1])
+        self.tau = convert_knee_val(self.knee_freq)
+
+
+    @staticmethod
+    def normalize(powers, norm_range):
+        """Normalize power from upper to lower bounds."""
+        if powers.ndim == 2:
+            for ind in range(len(powers)):
+                powers[ind] = PSD.normalize(powers[ind])
+        else:
+            powers = np.interp(powers, (powers.min(), powers.max()), norm_range)
+        return powers
 
 
 def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
@@ -198,11 +223,11 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
 
     # Parameter bounds and guess
     if ap_bounds is None:
-        ap_bounds = [[-np.inf,   1e-6, -np.inf,      0],
-                     [ np.inf, np.inf,  np.inf, np.inf]]
+        ap_bounds = [[-np.inf, 1e-6,       0,      0],
+                     [ np.inf, freqs.max(),  np.inf, np.inf]]
 
     if ap_guess is None:
-        ap_guess =  [None, 1, None, 1e-6]
+        ap_guess =  [0, 1, 1, 1e-6]
 
     if ap_mode == 'knee':
         ap_bounds[0] = ap_bounds[0][:-1]
@@ -229,7 +254,7 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
     return params, powers_fit
 
 
-def fit_psd_huber(freqs, powers, f_range=None, bounds=None,
+def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
                   guess=None, maxfev=1000, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 
@@ -241,6 +266,8 @@ def fit_psd_huber(freqs, powers, f_range=None, bounds=None,
         Power spectral density.
     f_range : tuple of (float, float)
         Frequency range of interest.
+    f_scale : float, optional, default: 0.1
+            Value of soft margin between inlier and outlier residuals.
     bounds : 2d array-like
         Parameter bounds.
     guess : 1d array-like
@@ -270,8 +297,8 @@ def fit_psd_huber(freqs, powers, f_range=None, bounds=None,
 
     # Parameter bounds and guess
     if bounds is None:
-        bounds = [[-100,   1e-6, 0,      0],
-                  [ 100, np.inf, 4, np.inf]]
+        bounds = [[-np.inf, 1e-6,             0,      0],
+                  [ np.inf, freqs.max(), np.inf, np.inf]]
 
     if guess is None:
         guess = [0, 1, 1, 1e-6]
@@ -295,31 +322,9 @@ def fit_psd_huber(freqs, powers, f_range=None, bounds=None,
     else:
         # 1d
         params, _ = curve_fit(expo_const_function, freqs, np.log10(powers),
-                              loss='huber', maxfev=maxfev, p0=guess, bounds=bounds)
+                              loss='huber', f_scale=f_scale, maxfev=maxfev,
+                              p0=guess, bounds=bounds)
 
         powers_fit = 10**expo_const_function(freqs, *params)
 
     return params, powers_fit
-
-
-def convert_knee_val(knee_freq):
-    """Convert knee parameter(s) to frequency and time-constant value.
-
-    Parameters
-    ----------
-    knee : float or array
-        Knee of the aperiodic spectral fit.
-    exponent : float, optional, default: 2.
-        Used for more accurate frequency estimation when PSD is Lorentzian.
-
-    Returns
-    -------
-    knee_freq : float
-        Frequency where the knee occurs.
-    knee_tau : float
-        Timescale, in seconds.
-    """
-
-    knee_tau = 1./(2*np.pi*knee_freq)
-
-    return knee_tau

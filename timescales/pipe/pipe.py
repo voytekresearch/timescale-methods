@@ -33,6 +33,9 @@ class Pipe:
 
         self.seeds = seeds
 
+        if not isinstance(self.seeds, (tuple, list, np.ndarray)):
+            np.random.seed(self.seeds)
+
         self.sig = None
 
         self.model = None
@@ -66,9 +69,12 @@ class Pipe:
         self.models = [r[0] for r in results]
         self.results = np.array([r[1] for r in results])
 
+        self.model = None
+        self.result = None
+
 
     def _run(self, seed):
-        """Proxy function to allow parallelziation.
+        """Sub-function to allow imap parallelziation.
 
         Parameters
         ----------
@@ -78,8 +84,8 @@ class Pipe:
         np.random.seed(seed)
 
         # Clear
-        self.model = None
-        self.result = None
+        #self.model = None
+        #self.result = None
 
         for node in self.pipe:
             getattr(self, node['step'])(*node['args'], **node['kwargs'])
@@ -119,16 +125,32 @@ class Pipe:
 
         Notes
         -----
-        Assumes method based on transform method call.
+        Assumes fit type based on transform method call.
         """
 
-        self.model.fit(**fit_kwargs)
+        return_attrs = [return_attrs] if isinstance(return_attrs, str) else return_attrs
 
-        if isinstance(return_attrs, str):
-            return_attrs = [return_attrs]
+        # Multiple transforms
+        if isinstance(self.model, list):
+            res = []
+            for model in self.model:
+                if model.params is None:
+                    model.fit(**fit_kwargs)
+                    res.append([getattr(model, r, None) for r in return_attrs])
 
-        self.result = [getattr(self.model, r, None) for r in return_attrs]
+            res = res[0] if len(res) == 1 else res
+        # Single transform
+        else:
+            self.model.fit(**fit_kwargs)
+            res = [getattr(self.model, r, None) for r in return_attrs]
 
+        # Organize results
+        if self.result is None:
+            self.result = res
+        elif not isinstance(self.result[0], list):
+            self.result = [self.result, res]
+        else:
+            self.result.append(res)
 
     def transform(self, method, **compute_kwargs):
         """Fit timescale of simulation.
@@ -143,13 +165,18 @@ class Pipe:
         """
 
         if method == 'PSD':
-            self.model = PSD()
-            self.model.compute_spectrum(self.sig, self.fs,
-                                        **compute_kwargs)
+            model = PSD()
+            model.compute_spectrum(self.sig, self.fs, **compute_kwargs)
         elif method == 'ACF':
-            self.model = ACF()
-            self.model.compute_acf(self.sig, self.fs,
-                                   **compute_kwargs)
+            model = ACF()
+            model.compute_acf(self.sig, self.fs, **compute_kwargs)
+
+        if self.model is None:
+            self.model = model
+        elif not isinstance(self.model, list):
+            self.model = [self.model, model]
+        else:
+            self.model.append(model)
 
 
     def simulate(self, sim_func, *sim_args, operator='add', rescale=None,
@@ -210,21 +237,22 @@ class Pipe:
             )
 
 
-    def sample(self, n_resample=None):
+    def sample(self, fs=None):
         """Sample binary array from probabilties.
 
         Parameters
         ----------
-        n_resample : int, optional, default: None
-            Resample signal array before sampling.
+        fs : int, optional, default: None
+            Updated sampling rate.
 
         Notes
         -----
         Assumes the sig attribute is the target probability array.
         """
-        if n_resample:
+        if fs:
             # Upsampling can decrease computation time
-            self.sig = resample(self.sig, n_resample)
+            self.sig = resample(self.sig, int(fs * len(self.sig) / self.fs))
+            self.fs = fs
 
         self.sig = self.sig > np.random.rand(len(self.sig))
 
@@ -238,6 +266,7 @@ class Pipe:
             Number of samples per bin.
         """
         self.sig = self.sig.reshape(-1, bin_size).sum(axis=1)
+        self.fs = self.fs / bin_size
 
 
     @staticmethod

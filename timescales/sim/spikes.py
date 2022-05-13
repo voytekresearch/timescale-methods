@@ -9,7 +9,7 @@ from neurodsp.sim import sim_synaptic_kernel, sim_oscillation
 from neurodsp.utils.norm import normalize_sig
 
 
-def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
+def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=1, mu=None,
                         refract=None, isi=None, var_noise=None, return_sum=True):
     """Simulate a spiking autocorrelation as a synaptic kernel.
 
@@ -21,7 +21,7 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=100, mu=None,
         Sampling rate, in hz.
     tau : float
         Timescale, in seconds.
-    n_neurons : int, optional, default: 100
+    n_neurons : int, optional, default: 1
         Number of neurons to simulate.
     mu : float, optional, default: None
         Mean of the isi exponential distribuion. Only used if isi is None.

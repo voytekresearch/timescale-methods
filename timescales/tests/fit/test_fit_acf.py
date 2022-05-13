@@ -28,7 +28,7 @@ def test_ACF_compute_acf(from_psd):
     acf = ACF()
     acf.compute_acf(sig, fs, from_psd=from_psd)
     assert acf.corrs is not None
-    assert abs(np.mean(acf.corrs)) < .25
+    assert abs(np.mean(acf.corrs)) < 1
 
     acf = ACF()
     acf.compute_acf(np.vstack((sig, sig)), fs, from_psd=from_psd, n_jobs=2)
