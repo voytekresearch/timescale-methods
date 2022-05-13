@@ -45,15 +45,14 @@ extensions = [
     'sphinx_gallery.gen_gallery',
     'sphinx_copybutton',
     'numpydoc',
+    'nbsphinx',
+    'myst_nb'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build']
 
 # numpydoc interacts with autosummary, that creates excessive warnings
 # This line is a 'hack' for that interaction that stops the warnings
@@ -68,8 +67,12 @@ autodoc_default_options = {
 # generate autosummary even if no references
 autosummary_generate = True
 
-# The suffix(es) of source filenames. Can be str or list of string
-source_suffix = '.rst'
+# The suffix(es) of source filenames.
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.ipynb': 'myst-nb',
+    '.myst': 'myst-nb',
+}
 
 # The master toctree document.
 master_doc = 'index'
@@ -87,27 +90,9 @@ html_theme = 'sphinx_book_theme'
 
 # Theme options to customize the look and feel, which are theme-specific.
 html_theme_options = {
-    'navbar_sidebarrel': False,
-    'navbar_links': [
-        ("API", "api"),
-        ("Figures", 'figures'),
-        #("FAQ", "faq"),
-        #("Glossary", "glossary"),
-        #("Motivations", "auto_motivations/index"),
-        #("Tutorials", "auto_tutorials/index"),
-        #("Examples", "auto_examples/index"),
-        #("Reference", "reference"),
-        ("GitHub", "https://github.com/voytekresearch/timescale-methods", True),
-    ],
-
-    # Set the page width to not be restricted to hardset value
-    'body_max_width': None,
-
-    # Bootswatch (http://bootswatch.com/) theme to apply.
-    'bootswatch_theme': "flatly",
-
-    # Render the current pages TOC in the navbar
-    'navbar_pagenav': False,
+    'repository_url': "https://github.com/voytekresearch/timescale-methods",
+    'use_repository_button': True,
+    "show_navbar_depth": 4
 }
 
 # Settings for whether to copy over and show link rst source pages
@@ -124,8 +109,20 @@ sphinx_gallery_conf = {
     #'subsection_order' : ExplicitOrder(['../figures/x',
     #                                    '../figures/y']),
     'within_subsection_order': FileNameSortKey,
-    'backreferences_dir': 'generated',   # Where to drop linking files between examples & API
+    'backreferences_dir': 'generated',
     'doc_module': ('timescales',),
     'reference_url': {'timescales': None},
     'remove_config_comments': True,
 }
+
+nb_execution_mode = 'off'
+
+
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "html_image",
+]
+myst_url_schemes = ("http", "https", "mailto")
