@@ -10,9 +10,6 @@ from scipy.fft import fftfreq
 from statsmodels.regression.linear_model import yule_walker, burg
 from spectrum import arma2psd
 
-from neurodsp.filt import filter_signal
-
-
 
 def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, n_jobs=1):
     """Compute an autoregressive power spectrum.
