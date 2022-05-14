@@ -2,6 +2,7 @@
 sphinx
 sphinx-gallery
 sphinx-book-theme
-numpydoc
 sphinx-copybutton
+sphinx-design
+numpydoc
 myst-nb

@@ -11,7 +11,7 @@ Table of Contents
 
 .. contents::
    :local:
-   :depth: 2
+   :depth: 1
 
 .. currentmodule:: timescales.fit
 

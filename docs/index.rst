@@ -1,8 +1,9 @@
 
 .. include:: ../README.rst
 
-
 .. toctree::
     :maxdepth: 2
+    :hidden:
 
-    figures/fig01_acf_vs_psd
+    api.rst
+    figures/index.rst

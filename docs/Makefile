@@ -21,7 +21,7 @@ help:
 # Custom cleaner that also removes the generated files from sphinx-gallery
 clean:
 	rm -rf $(BUILDDIR)/*
-	rm -rf auto_figures
+	rm -rf auto_examples
 	rm -rf generated
 
 # Check that builds site with nitpicky checking, and also does post-hoc link check
