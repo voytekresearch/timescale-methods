@@ -37,7 +37,7 @@ class PSD:
     knee_freq : float or 1d array
         Knee frequency.
     rsq : float
-        R-squared of the full fit.
+        R-squared of the aperiodic fit.
     guess : list, optional, default: None
         Inital parameter estimates.
     bounds : list, optional, default: None
@@ -56,6 +56,7 @@ class PSD:
         self.knee_freq = None
         self.tau = None
         self.rsq = None
+        self.rsq_full = None
         self.guess=None
         self.bounds = None
 
@@ -145,26 +146,28 @@ class PSD:
                 self.powers = self.powers[1:] if self.powers.ndim == 1 else self.powers[:, 1:]
 
             # Aperiodic and periodic model
-            self.params, self.powers_fit = fit_psd_fooof(
-                self.freqs, self.powers, fooof_init=fooof_init, ap_bounds=bounds,
-                ap_guess=guess, n_jobs=n_jobs, progress=progress
+            self.params, self.powers_fit, self.rsq_full = fit_psd_fooof(
+                self.freqs, self.powers, fooof_init=fooof_init, return_rsq=True,
+                ap_bounds=bounds, ap_guess=guess, n_jobs=n_jobs, progress=progress
             )
         else:
             raise ValueError('method must be in [\'huber\', \'fooof\'].')
 
-        # Get r-squared
+        # Get r-squared, knee freqs, and taus
         if self.powers_fit.ndim == 1:
             self.rsq = np.corrcoef(np.log10(self.powers),
                                    np.log10(self.powers_fit))[0][1] ** 2
+
+            self.knee_freq = self.params[1]
+            self.tau = convert_knee_val(self.knee_freq)
         else:
             self.rsq = np.zeros(len(self.powers_fit))
 
             for ind in range(len(self.powers_fit)):
-                self.rsq[ind] = np.corrcoef(np.log10(self.powers),
+                self.rsq[ind] = np.corrcoef(np.log10(self.powers[ind]),
                                             np.log10(self.powers_fit[ind]))[0][1] ** 2
-
-        self.knee_freq = self.params[1]
-        self.tau = convert_knee_val(self.knee_freq)
+            self.knee_freq = self.params[:, 1]
+            self.tau = convert_knee_val(self.knee_freq)
 
 
     @staticmethod
@@ -178,7 +181,7 @@ class PSD:
         return powers
 
 
-def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
+def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False,
                   ap_bounds=None, ap_guess=None, n_jobs=-1, progress=None):
     """Fit a PSD, using SpecParam, and estimate tau.
 
@@ -192,6 +195,8 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
         Frequency range of interest.
     fooof_init : dict, optional, default: None
         Fooof initialization arguments.
+    return_rsq, optional, default: False
+        Returns the model's full r-squared if True.
     ap_bounds : 2d array-like
         Aperiodic bounds.
     ap_guess : 1d array-like
@@ -207,6 +212,8 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
         Parameters as [offset, knee_freq, exp, const].
     powers_fit : 1d or 2d array
         Aperiodic fit.
+    full_rsq : float or 1d array, optional
+        Full model's r-squared.
     """
 
     if fooof_init is None:
@@ -251,7 +258,10 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None,
 
     params = fm.get_params('aperiodic')
 
-    return params, powers_fit
+    if return_rsq:
+        return params, powers_fit, fm.get_params('r_squared')
+    else:
+        return params, powers_fit
 
 
 def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
@@ -314,7 +324,7 @@ def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
                         guess=guess, maxfev=maxfev, n_jobs=n_jobs),
                 zip(_freqs, powers)
             )
-            results = list(progress_bar(mapping, progress, len(powers)))
+            results = list(progress_bar(mapping, progress, len(powers), pbar_desc='Fitting PSD'))
 
         params = np.array([r[0] for r in results])
         powers_fit = np.array([r[1] for r in results])

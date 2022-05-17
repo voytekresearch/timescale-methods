@@ -33,7 +33,7 @@ def create_windows(samples, win_len, win_spacing):
 
     for lower, upper in samples:
         inds = np.arange(lower, upper, win_spacing) - (win_len//2)
-        win_starts.append(inds[np.where((inds >= 0) & (inds < upper))[0]])
+        win_starts.append(inds[np.where((inds >= lower) & (inds <= upper))[0]])
 
     win_starts = np.concatenate(win_starts)
     mid_points = win_starts + (win_len//2)

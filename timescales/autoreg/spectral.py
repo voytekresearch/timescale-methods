@@ -47,7 +47,7 @@ def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, 
         with Pool(processes=n_jobs) as pool:
 
             pfunc = partial(compute_ar_spectrum, fs=fs, order=order,
-                            nfft=nfft, n_jobs=n_jobs)
+                            nfft=nfft, f_range=f_range, n_jobs=n_jobs)
 
             mapping = pool.map(pfunc, sig)
 
