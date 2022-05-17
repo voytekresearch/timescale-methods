@@ -14,7 +14,7 @@ from os.path import dirname as up
 from datetime import date
 
 import sphinx_book_theme
-
+from timescales import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -24,7 +24,7 @@ copyright = '2021-{}, VoytekLab'.format(date.today().year)
 author = 'Ryan Hammonds'
 
 # Get and set the current version number
-from timescales import __version__
+
 version = __version__
 release = version
 
@@ -40,11 +40,12 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx_gallery.gen_gallery',
     'sphinx_copybutton',
     'sphinx_design',
+    'sphinx_remove_toctrees',
     'numpydoc',
-    'nbsphinx',
-    'myst_nb'
+    'nbsphinx'
 ]
 
 
@@ -59,12 +60,6 @@ numpydoc_show_class_members = False
 
 # generate autosummary even if no references
 autosummary_generate = True
-
-# The suffix(es) of source filenames.
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.ipynb': 'myst-nb'
-}
 
 # The master toctree document.
 master_doc = 'index'
@@ -84,10 +79,13 @@ html_theme = 'sphinx_book_theme'
 html_theme_options = {
     'repository_url': "https://github.com/voytekresearch/timescale-methods",
     'use_repository_button': True,
-    "show_navbar_depth": 1,
+    "show_navbar_depth": 0,
+    "show_nav_level": 0,
     "use_repository_button": True,
-    "show_toc_level": 1,
+    "show_toc_level": 1
 }
+
+remove_from_toctrees = ["./generated/*"]
 
 # Settings for whether to copy over and show link rst source pages
 html_copy_source = False
@@ -97,7 +95,8 @@ html_show_sourcelink = False
 
 # Configurations for sphinx gallery
 sphinx_gallery_conf = {
-    'examples_dirs': ['./figures'],
+    'examples_dirs': ['figures', 'tutorials'],
+    'gallery_dirs': ['auto_figures', 'auto_tutorials'],
     'backreferences_dir': 'generated',
     'doc_module': ('timescales',),
     'reference_url': {'timescales': None},
