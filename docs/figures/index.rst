@@ -1,8 +1,8 @@
-Figures
--------
+.. include:: README.rst
 
-.. toctree::
-    :maxdepth: 2
+.. nbgallery::
+    :name: rst-gallery
+    :glob:
 
     fig01_acf_vs_psd
     fig02_bias

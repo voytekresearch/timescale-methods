@@ -4,5 +4,5 @@ sphinx-gallery
 sphinx-book-theme
 sphinx-copybutton
 sphinx-design
+sphinx-remove-toctrees
 numpydoc
-myst-nb

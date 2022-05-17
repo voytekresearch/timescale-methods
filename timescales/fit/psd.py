@@ -68,6 +68,7 @@ class PSD:
     def compute_spectrum(self, sig, fs, ar_order=None, f_range=None,
                          norm_range=None, n_jobs=-1, **kwargs):
         """Compute powers spectral density.
+
         Parameters
         ---------
         sig : 1d or 2d array
