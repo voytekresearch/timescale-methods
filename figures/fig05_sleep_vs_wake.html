@@ -23,8 +23,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -36,14 +38,11 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Figure 4. Bias Solutions" href="fig04_bias_solutions.html" />
@@ -93,100 +92,16 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="current nav bd-sidenav">
- <li class="toctree-l1 has-children">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../api.html">
    API Documentation
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.fit.PSD.html">
-     timescales.fit.PSD
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.fit.ACF.html">
-     timescales.fit.ACF
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.sim.sim_spikes_synaptic.html">
-     timescales.sim.sim_spikes_synaptic
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.sim.sim_spikes_prob.html">
-     timescales.sim.sim_spikes_prob
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.sim.sim_poisson.html">
-     timescales.sim.sim_poisson
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.sim.sim_branching.html">
-     timescales.sim.sim_branching
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.sim.sim_ou.html">
-     timescales.sim.sim_ou
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.autoreg.compute_ar_spectrum.html">
-     timescales.autoreg.compute_ar_spectrum
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../generated/timescales.pipe.Pipe.html">
-     timescales.pipe.Pipe
-    </a>
-   </li>
-  </ul>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1">
   <a class="reference internal" href="index.html">
    Figures
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="fig01_acf_vs_psd.html">
-     Figure 1. PSD &amp; ACF
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="fig02_bias.html">
-     Figure 2. Bias
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="fig03_simulation.html">
-     Figure 3. Spike Simulations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="fig04_bias_solutions.html">
-     Figure 4. Bias Solutions
-    </a>
-   </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Figure 4. Sleep vs. Wake
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -333,29 +248,34 @@ title="Print to PDF"
     </div>
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   Figure 4. Sleep vs. Wake
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#ar-psd">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#AR-PSD">
    AR-PSD
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#fit-spectra">
-   Fit Spectra
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Fit-Spectra:-Spikes">
+   Fit Spectra: Spikes
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#spike-stats">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Spike-Stats">
    Spike Stats
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#spikes-vs-lfps">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Spikes-vs-LFPs">
    Spikes vs LFPs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Fit-Spectra:-LFP">
+   Fit Spectra: LFP
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Plot">
+   Plot
   </a>
  </li>
 </ul>
@@ -367,7 +287,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Figure 4. Sleep vs. Wake</h1>
+                <h1>Figure 4. Sleep vs. Wake</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -377,29 +297,34 @@ title="Print to PDF"
                         </div>
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   Figure 4. Sleep vs. Wake
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#ar-psd">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#AR-PSD">
    AR-PSD
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#fit-spectra">
-   Fit Spectra
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Fit-Spectra:-Spikes">
+   Fit Spectra: Spikes
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#spike-stats">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Spike-Stats">
    Spike Stats
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#spikes-vs-lfps">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Spikes-vs-LFPs">
    Spikes vs LFPs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Fit-Spectra:-LFP">
+   Fit Spectra: LFP
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Plot">
+   Plot
   </a>
  </li>
 </ul>
@@ -412,14 +337,259 @@ title="Print to PDF"
                 
               <div>
                 
-  <div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+  
+<style>
+/* CSS for nbsphinx extension */
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">cpu_count</span>
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
@@ -429,102 +599,80 @@ title="Print to PDF"
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_ind</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">,</span> <span class="n">pearsonr</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.spectral</span> <span class="kn">import</span> <span class="n">compute_spectrum</span>
 <span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
-<span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <span class="n">filter_signal</span>
 
-<span class="kn">from</span> <span class="nn">fooof</span> <span class="kn">import</span> <span class="n">FOOOF</span>
-<span class="kn">from</span> <span class="nn">fooof.objs</span> <span class="kn">import</span> <span class="n">combine_fooofs</span>
-
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">convert_knee_val</span><span class="p">,</span> <span class="n">fit_psd_fooof</span>
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_spikes_synaptic</span>
+<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span>
 <span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">plot_connected_scatter</span><span class="p">,</span> <span class="n">set_default_rc</span>
+<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
 <span class="kn">from</span> <span class="nn">timescales.utils</span> <span class="kn">import</span> <span class="n">create_windows</span>
-
-<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="n">set_default_rc</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-</div>
-<section id="figure-4-sleep-vs-wake">
-<h1>Figure 4. Sleep vs. Wake<a class="headerlink" href="#figure-4-sleep-vs-wake" title="Permalink to this headline">#</a></h1>
-<p>The timescales, as knee frequencies, are compared between 4 types of spike trains:</p>
+<section id="Figure-4.-Sleep-vs. Wake">
+<h1>Figure 4. Sleep vs. Wake<a class="headerlink" href="#Figure-4.-Sleep-vs. Wake" title="Permalink to this headline">#</a></h1>
+<p>The timescales, as knee frequencies, are compared between 4 types of spike trains and the local field potential:</p>
 <ul class="simple">
 <li><p>Wake : Excitatory Units</p></li>
 <li><p>NREM : Excitatory Units</p></li>
 <li><p>Wake : Inhibitory Units</p></li>
 <li><p>NREM : Inhibitory Units</p></li>
+<li><p>LFP Wake</p></li>
+<li><p>LFP NREM</p></li>
 </ul>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_spectra_trials</span><span class="p">(</span><span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
-                           <span class="n">kwargs_welch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs_ar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_spectra_trials</span><span class="p">(</span><span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span>
+                           <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">kwargs_ar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute Welch&#39;s and AR PSD for exciatatory and inhibitory spikes.&quot;&quot;&quot;</span>
-    
+
     <span class="c1"># Ensure unpackable</span>
-    <span class="k">if</span> <span class="n">kwargs_welch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">kwargs_welch</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">kwargs_ar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">kwargs_ar</span> <span class="o">=</span> <span class="p">{}</span>
-            
+
     <span class="c1"># Compute AR-PSD and Welch&#39;s-PSD for each window</span>
     <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">start_end</span><span class="p">):</span>
 
         <span class="c1"># Normalize</span>
         <span class="n">spikes_bin_e</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span>
             <span class="n">spikes_e</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        
+
         <span class="n">spikes_bin_i</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span>
             <span class="n">spikes_i</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        
+
         <span class="c1"># Compute excitatory spectra</span>
-        <span class="n">freqs_ar</span><span class="p">,</span> <span class="n">_powers_ar_e</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_e</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
-                                                     <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
-        
-        <span class="n">freqs_welch</span><span class="p">,</span> <span class="n">_powers_welch_e</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">spikes_bin_e</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span>
-                                                        <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_welch</span><span class="p">)</span>
-        
+        <span class="n">freqs_ar</span><span class="p">,</span> <span class="n">powers_ar_e</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_e</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
+                                                    <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
+
         <span class="c1"># Compute inhibitory spectra</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">_powers_ar_i</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_i</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
-                                              <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
-        
-        <span class="n">_</span><span class="p">,</span> <span class="n">_powers_welch_i</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">spikes_bin_i</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span>
-                                              <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_welch</span><span class="p">)</span>
-        
+        <span class="n">_</span><span class="p">,</span> <span class="n">powers_ar_i</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_i</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
+                                             <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
+
         <span class="c1"># Initalize arrays</span>
         <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            
-            <span class="n">freqs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;welch&#39;</span><span class="p">:</span> <span class="n">freqs_welch</span><span class="p">,</span> <span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="n">freqs_ar</span><span class="p">}</span>
-            
+
+            <span class="n">freqs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="n">freqs_ar</span><span class="p">}</span>
+
             <span class="n">powers</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;excitatory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_powers_ar_e</span><span class="p">))),</span>
-                       <span class="s1">&#39;inhibitory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_powers_ar_i</span><span class="p">)))},</span>
-                <span class="s1">&#39;welch&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;excitatory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_powers_welch_e</span><span class="p">))),</span>
-                          <span class="s1">&#39;inhibitory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_powers_welch_i</span><span class="p">)))}</span>
+                <span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;excitatory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_ar_e</span><span class="p">))),</span>
+                       <span class="s1">&#39;inhibitory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_ar_i</span><span class="p">)))}</span>
             <span class="p">}</span>
-            
-        <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">variance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_powers_ar_e</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">_powers_ar_e</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="p">)</span>
-            <span class="n">_powers_welch_e</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">_powers_welch_e</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="p">)</span>
-            <span class="n">_powers_ar_i</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">_powers_ar_i</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="p">)</span>
-            <span class="n">_powers_welch_i</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">_powers_welch_i</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="p">)</span>
-        
-        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">_powers_ar_e</span>
-        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;welch&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">_powers_welch_e</span>
-        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">_powers_ar_i</span>
-        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;welch&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">_powers_welch_i</span>
-        
+
+        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_ar_e</span>
+        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_ar_i</span>
+
     <span class="k">return</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span>
 </pre></div>
 </div>
 </div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
 </div>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
 <span class="n">base_name</span> <span class="o">=</span> <span class="s1">&#39;20140526_277um&#39;</span>
 <span class="n">dir_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/rph/Projects/timescale-methods/fcx1/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">&#39;</span>
 
@@ -534,7 +682,7 @@ title="Print to PDF"
 
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">20000</span>
 
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_i</span><span class="p">],</span> 
+<span class="n">n_seconds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_i</span><span class="p">],</span>
                          <span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_e</span><span class="p">]]))</span>
 
 <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
@@ -558,183 +706,222 @@ title="Print to PDF"
 </pre></div>
 </div>
 </div>
-</div>
-</section>
-<section id="ar-psd">
-<h1>AR-PSD<a class="headerlink" href="#ar-psd" title="Permalink to this headline">#</a></h1>
+<section id="AR-PSD">
+<h2>AR-PSD<a class="headerlink" href="#AR-PSD" title="Permalink to this headline">#</a></h2>
 <p>The AR spectra are influences by the bin size and the AR order parameters. These parameters will influence the resulting timescales measurements. These spectra follow a Lorentzian form.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sum spikes across E/I sub-units</span>
-<span class="n">spikes_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subtype_e</span><span class="p">:</span>
-    
-    <span class="n">st</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span>
-    <span class="n">st</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">st</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes_e</span><span class="p">))[</span><span class="mi">0</span><span class="p">]]</span>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sum spikes across E/I sub-units</span>
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
 
-    <span class="n">spikes_e</span><span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
-         
-<span class="n">spikes_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subtype_i</span><span class="p">:</span>
-    
-    <span class="n">st</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span>
-    <span class="n">st</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">st</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes_i</span><span class="p">))[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="k">for</span> <span class="n">sind</span><span class="p">,</span> <span class="n">subtype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">subtype_e</span><span class="p">,</span> <span class="n">subtype_i</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subtype</span><span class="p">:</span>
+        <span class="n">spikes</span><span class="p">[</span><span class="n">sind</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="n">spikes_i</span><span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
-    
+<span class="n">spikes_e</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">spikes_i</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
 <span class="c1"># Compute Spectra</span>
 <span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">bin_size</span> <span class="o">=</span> <span class="mi">200</span>
 <span class="n">ar_order</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="n">kwargs_welch</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nperseg&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">}</span>
-
 <span class="n">freqs_wake</span><span class="p">,</span> <span class="n">powers_wake</span> <span class="o">=</span> <span class="n">compute_spectra_trials</span><span class="p">(</span>
-    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_wake</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">kwargs_welch</span><span class="o">=</span><span class="n">kwargs_welch</span><span class="p">)</span>
+    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_wake</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span>
+<span class="p">)</span>
 
 <span class="n">freqs_nrem</span><span class="p">,</span> <span class="n">powers_nrem</span> <span class="o">=</span> <span class="n">compute_spectra_trials</span><span class="p">(</span>
-    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_nrem</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">kwargs_welch</span><span class="o">=</span><span class="n">kwargs_welch</span><span class="p">)</span>
+    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_nrem</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</div>
 </section>
-<section id="fit-spectra">
-<h1>Fit Spectra<a class="headerlink" href="#fit-spectra" title="Permalink to this headline">#</a></h1>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit FOOOF</span>
-<span class="n">fooof_init</span> <span class="o">=</span> <span class="p">{</span>
+<section id="Fit-Spectra:-Spikes">
+<h2>Fit Spectra: Spikes<a class="headerlink" href="#Fit-Spectra:-Spikes" title="Permalink to this headline">#</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fooof_init</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;aperiodic_mode&#39;</span><span class="p">:</span> <span class="s1">&#39;knee_constant&#39;</span><span class="p">,</span>
     <span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
     <span class="s1">&#39;peak_threshold&#39;</span><span class="p">:</span> <span class="mf">2.5</span>
 <span class="p">}</span>
 
-<span class="n">ap_bounds</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">],</span>
-    <span class="p">[</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>   <span class="mi">10</span><span class="p">,</span>  <span class="mf">1e-1</span><span class="p">]</span>
+<span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-20</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>     <span class="mi">10</span><span class="p">,</span>  <span class="mf">1e-2</span><span class="p">]</span>
 <span class="p">]</span>
 
-<span class="n">ap_guess</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">]</span>
+<span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">]</span>
 
-<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+<span class="n">psd_ex_nrem</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">])</span>
+<span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">psd_in_nrem</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">])</span>
+<span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
 
-    <span class="n">fm_ar_ex_nrem</span><span class="p">,</span> <span class="n">k_ar_ex_nrem</span> <span class="o">=</span> <span class="n">fit_psd_fooof</span><span class="p">(</span>
-        <span class="n">freqs_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">],</span>
-        <span class="n">f_range</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span>
-        <span class="n">ap_bounds</span><span class="o">=</span><span class="n">ap_bounds</span><span class="p">,</span> <span class="n">ap_guess</span><span class="o">=</span><span class="n">ap_guess</span>
-    <span class="p">)</span>
+<span class="n">psd_ex_wake</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">])</span>
+<span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
 
-    <span class="n">fm_ar_in_nrem</span><span class="p">,</span> <span class="n">k_ar_in_nrem</span> <span class="o">=</span> <span class="n">fit_psd_fooof</span><span class="p">(</span>
-        <span class="n">freqs_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">],</span>
-        <span class="n">f_range</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span>
-        <span class="n">ap_bounds</span><span class="o">=</span><span class="n">ap_bounds</span><span class="p">,</span> <span class="n">ap_guess</span><span class="o">=</span><span class="n">ap_guess</span>
-    <span class="p">)</span>
-    
-    <span class="n">fm_ar_ex_wake</span><span class="p">,</span> <span class="n">k_ar_ex_wake</span> <span class="o">=</span> <span class="n">fit_psd_fooof</span><span class="p">(</span>
-        <span class="n">freqs_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">],</span>
-        <span class="n">f_range</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span>
-        <span class="n">ap_bounds</span><span class="o">=</span><span class="n">ap_bounds</span><span class="p">,</span> <span class="n">ap_guess</span><span class="o">=</span><span class="n">ap_guess</span>
-    <span class="p">)</span>
-
-    <span class="n">fm_ar_in_wake</span><span class="p">,</span> <span class="n">k_ar_in_wake</span> <span class="o">=</span> <span class="n">fit_psd_fooof</span><span class="p">(</span>
-        <span class="n">freqs_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">],</span>
-        <span class="n">f_range</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span>
-        <span class="n">ap_bounds</span><span class="o">=</span><span class="n">ap_bounds</span><span class="p">,</span> <span class="n">ap_guess</span><span class="o">=</span><span class="n">ap_guess</span>
-    <span class="p">);</span>
+<span class="n">psd_in_wake</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">])</span>
+<span class="n">psd_in_wake</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2dcc08103ce84128ac32237fcffa4ecf", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "84c387e29ae041019a797d6b11e45dee", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "984fc4d8a77f45ffbd3856394dcb945b", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "213666fad14c4f768411b26db0441dbe", "version_major": 2, "version_minor": 0}</script></div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "39ea89c1509a466fb1dbb48a5ec5aec4", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cb85d2f86ef74c169413aa006976415b", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8680550e8ad44aa39d347ee607d36a9b", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e62cabf40daf461bb2fc36262f5a27b2", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
-<section id="spike-stats">
-<h1>Spike Stats<a class="headerlink" href="#spike-stats" title="Permalink to this headline">#</a></h1>
+<section id="Spike-Stats">
+<h2>Spike Stats<a class="headerlink" href="#Spike-Stats" title="Permalink to this headline">#</a></h2>
 <p>The NREM trials have a significantly higher r-squared values, compared to the wake trails. Comparing the timescales between the two may be confounded by this.</p>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Stats</span>
-<span class="n">rsq_ar_ex_wake</span> <span class="o">=</span> <span class="n">fm_ar_ex_wake</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;r_squared&#39;</span><span class="p">)</span>
-<span class="n">rsq_ar_in_wake</span> <span class="o">=</span> <span class="n">fm_ar_in_wake</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;r_squared&#39;</span><span class="p">)</span>
-<span class="n">rsq_ar_ex_nrem</span> <span class="o">=</span> <span class="n">fm_ar_ex_nrem</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;r_squared&#39;</span><span class="p">)</span>
-<span class="n">rsq_ar_in_nrem</span> <span class="o">=</span> <span class="n">fm_ar_in_nrem</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;r_squared&#39;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory:&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_ex_wake</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_ex_wake</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_ex_nrem</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_ex_nrem</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">rsq_ar_ex_wake</span><span class="p">,</span> <span class="n">rsq_ar_ex_nrem</span><span class="p">))</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># R-squared stats</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Spike R-Squared Statistics</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory:&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_in_wake</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_in_wake</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_in_nrem</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">rsq_ar_in_nrem</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">rsq_ar_in_wake</span><span class="p">,</span> <span class="n">rsq_ar_in_nrem</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: Wake vs NREM&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: Wake vs NREM&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Excitatory:
-Wake:  mean= 0.8215759253365615 std= 0.2167119433765959
-NREM:  mean= 0.9522372413911641 std= 0.06429946000153677
-Ttest_indResult(statistic=-13.52049854441162, pvalue=2.4050810274766257e-38)
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Spike R-Squared Statistics
 
-Inhibitory:
-Wake:  mean= 0.7799027817818405 std= 0.2362667642304492
-NREM:  mean= 0.9638841270974278 std= 0.051020109162062226
-Ttest_indResult(statistic=-17.90296298553872, pvalue=2.641058978922996e-62)
+Excitatory Wake:  mean = 0.8237961930445714 std = 0.2165613580105497
+Excitatory NREM:  mean = 0.9551133739885479 std = 0.0603757437890658
+Inhibitory Wake:  mean = 0.7760963792622833 std = 0.23944804910263517
+Inhibitory NREM:  mean = 0.9661529198146298 std = 0.04790972635594994
+
+Excitatory: Wake vs NREM
+Ttest_indResult(statistic=-13.386164016678734, pvalue=1.35224023375709e-37)
+
+Inhibitory: Wake vs NREM
+Ttest_indResult(statistic=-17.912471149298536, pvalue=3.90499537291248e-62)
+
+Wake: Excitatory vs Inhibitory
+Ttest_indResult(statistic=3.0494139674328213, pvalue=0.0023638115434466036)
+
+NREM: Excitatory vs Inhibitory
+Ttest_indResult(statistic=-3.312942925626916, pvalue=0.0009541012302210045)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Knee freq stats</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Spike Knee Frequency Statistics</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: Wake vs NREM&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: Wake vs NREM&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: Wake vs NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM&#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: Wake vs NRM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM&#39;</span><span class="p">,</span> <span class="s1">&#39;mean=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s1">&#39;std=&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: Inhibitory vs Excitatory&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: Inhibitory vs Excitatory&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Excitatory: Wake vs NREM
-Wake mean= 6.409594715072436 std= 4.121208985961638
-NREM mean= 4.673789228183016 std= 2.1088263719458427
-Ttest_indResult(statistic=8.484542417204866, pvalue=8.272494127773512e-17)
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Spike Knee Frequency Statistics
 
-Inhibitory: Wake vs NRM
-Wake mean= 4.912171137370713 std= 2.5277376242104967
-NREM mean= 4.066242433241119 std= 1.9071543228581433
-Ttest_indResult(statistic=5.796379002450699, pvalue=9.280707044831033e-09)
+Excitatory Wake:  mean = 6.510950551944465 std = 4.246369610003782
+Excitatory NREM:  mean = 4.648572040370361 std = 2.09479811903976
+Inhibitory Wake:  mean = 4.9346724778701345 std = 2.5163170714229937
+Inhibitory NREM:  mean = 4.060590712098375 std = 1.993919717180862
 
-Wake: Inhibitory vs Excitatory
-Ttest_indResult(statistic=5.97395220979583, pvalue=3.5699879872169226e-09)
+Excitatory: Wake vs NREM
+Ttest_indResult(statistic=8.877601649374666, pvalue=3.2896066288641537e-18)
 
-NREM: Inhibitory vs Excitatory
-Ttest_indResult(statistic=5.058982938070548, pvalue=4.92171346057284e-07)
-</pre></div>
-</div>
-</div>
+Inhibitory: Wake vs NREM
+Ttest_indResult(statistic=6.00776424501637, pvalue=2.6662281322938156e-09)
+
+Wake: Excitatory vs Inhibitory
+Ttest_indResult(statistic=6.591249288074879, pvalue=7.637748207776019e-11)
+
+NREM: Excitatory vs Inhibitory
+Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
+</pre></div></div>
 </div>
 </section>
-<section id="spikes-vs-lfps">
-<h1>Spikes vs LFPs<a class="headerlink" href="#spikes-vs-lfps" title="Permalink to this headline">#</a></h1>
+<section id="Spikes-vs-LFPs">
+<h2>Spikes vs LFPs<a class="headerlink" href="#Spikes-vs-LFPs" title="Permalink to this headline">#</a></h2>
 <p>Spike versus LFP timescale comparison.</p>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load LFP</span>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load LFP</span>
 <span class="n">data_id</span> <span class="o">=</span> <span class="s1">&#39;20140526_277um&#39;</span>
 <span class="n">data_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/rph/Projects/timescale-methods/fcx1/data_mats/</span><span class="si">{</span><span class="n">data_id</span><span class="si">}</span><span class="s1">&#39;</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1250</span>
@@ -749,10 +936,7 @@ Ttest_indResult(statistic=5.058982938070548, pvalue=4.92171346057284e-07)
 
 <span class="k">for</span> <span class="n">cind</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
     <span class="n">lfp_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;data</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s1">.mat&#39;</span><span class="p">)</span>
-    <span class="n">_sig_lfp</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">lfp_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">sig_lfp</span> <span class="o">+=</span> <span class="n">_sig_lfp</span>
-    
-<span class="k">del</span> <span class="n">_sig_lfp</span>
+    <span class="n">sig_lfp</span> <span class="o">+=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">lfp_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="n">sig_lfp</span> <span class="o">=</span> <span class="n">sig_lfp</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
 <span class="n">sig_lfp</span> <span class="o">=</span>  <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sig_lfp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -772,211 +956,81 @@ Ttest_indResult(statistic=5.058982938070548, pvalue=4.92171346057284e-07)
 
 <span class="n">start_end_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 <span class="n">start_end_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Create 2d arrays</span>
+<span class="n">sig_lfp_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig_lfp</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>
+                         <span class="nb">zip</span><span class="p">(</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">)])</span>
+
+<span class="n">sig_lfp_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig_lfp</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>
+                         <span class="nb">zip</span><span class="p">(</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_fit_windows</span><span class="p">(</span><span class="n">start_end</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
-    <span class="c1"># Settings</span>
-    <span class="n">ar_order</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="n">fooof_init</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;peak_threshold&#39;</span><span class="p">:</span><span class="mf">2.5</span><span class="p">}</span>
-    
-    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">start_end</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">start_end</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">sig_win</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-    
-    <span class="n">freqs_ar</span><span class="p">,</span> <span class="n">powers_ar</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">sig_win</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">)</span>
-    
-    <span class="n">ap_bounds</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">],</span>
-        <span class="p">[</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>   <span class="mi">10</span><span class="p">]</span>
-    <span class="p">]</span>
-
-    <span class="n">ap_guess</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-
-    <span class="n">fm_ar</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">fit_psd</span><span class="p">(</span><span class="n">freqs_ar</span><span class="p">,</span> <span class="n">powers_ar</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">fooof_init</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">fm_ar</span>
+</section>
+<section id="Fit-Spectra:-LFP">
+<h2>Fit Spectra: LFP<a class="headerlink" href="#Fit-Spectra:-LFP" title="Permalink to this headline">#</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-    
-    <span class="n">mapping</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_fit_windows</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">sig_lfp</span><span class="p">),</span> <span class="n">start_end_wake</span><span class="p">)</span>
-    
-    <span class="n">fm_ar_lfp_wake</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end_wake</span><span class="p">)))</span>
-    
-<span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-    
-    <span class="n">mapping</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_fit_windows</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">sig_lfp</span><span class="p">),</span> <span class="n">start_end_nrem</span><span class="p">)</span>
-    
-    <span class="n">fm_ar_lfp_nrem</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end_nrem</span><span class="p">)))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "84423fd36b1c421b8a345307d6f7e585", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "ef9256327b9e416e9bdf46170bebbb4b", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fg_ar_lfp_wake</span> <span class="o">=</span> <span class="n">combine_fooofs</span><span class="p">(</span><span class="n">fm_ar_lfp_wake</span><span class="p">)</span>
-<span class="n">fg_ar_lfp_nrem</span> <span class="o">=</span> <span class="n">combine_fooofs</span><span class="p">(</span><span class="n">fm_ar_lfp_nrem</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fooof_init</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;aperiodic_mode&#39;</span><span class="p">:</span> <span class="s1">&#39;knee_constant&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">&#39;peak_threshold&#39;</span><span class="p">:</span> <span class="mf">2.5</span>
+<span class="p">}</span>
 
-<span class="n">knees_wake_ar_lfp</span> <span class="o">=</span> <span class="n">fg_ar_lfp_wake</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;aperiodic&#39;</span><span class="p">,</span> <span class="s1">&#39;knee&#39;</span><span class="p">)</span>
-<span class="n">knees_nrem_ar_lfp</span> <span class="o">=</span> <span class="n">fg_ar_lfp_nrem</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;aperiodic&#39;</span><span class="p">,</span> <span class="s1">&#39;knee&#39;</span><span class="p">)</span>
-
-<span class="n">rsq_ar_lfp_nrem</span> <span class="o">=</span> <span class="n">fg_ar_lfp_nrem</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;r_squared&#39;</span><span class="p">)</span>
-<span class="n">rsq_ar_lfp_wake</span> <span class="o">=</span> <span class="n">fg_ar_lfp_wake</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="s1">&#39;r_squared&#39;</span><span class="p">)</span>
-
-<span class="n">nrem_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">rsq_ar_lfp_nrem</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">rsq_ar_ex_nrem</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">rsq_ar_in_nrem</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">)</span>
-<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="n">wake_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">rsq_ar_lfp_wake</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">rsq_ar_ex_wake</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">rsq_ar_in_wake</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">)</span>
-<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LFP               : mean=</span><span class="si">{</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, std=</span><span class="si">{</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Excitatory: mean=</span><span class="si">{</span><span class="n">k_ar_ex_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, std=</span><span class="si">{</span><span class="n">k_ar_ex_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Inhibitory: mean=</span><span class="si">{</span><span class="n">k_ar_in_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, std=</span><span class="si">{</span><span class="n">k_ar_in_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LFP               : mean=</span><span class="si">{</span><span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, std=</span><span class="si">{</span><span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Excitatory: mean=</span><span class="si">{</span><span class="n">k_ar_ex_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, std=</span><span class="si">{</span><span class="n">k_ar_ex_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Inhibitory: mean=</span><span class="si">{</span><span class="n">k_ar_in_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, std=</span><span class="si">{</span><span class="n">k_ar_in_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Wake
-LFP               : mean=5.371863121940904, std=2.2536124508768727
-Spikes, Excitatory: mean=6.363997375551424, std=4.198598518206156
-Spikes, Inhibitory: mean=4.847543482591124, std=2.458113586429114
-
-NREM
-LFP               : mean=1.4899557708348041, std=0.9704939378607275
-Spikes, Excitatory: mean=4.673789228183016, std=2.1088263719458427
-Spikes, Inhibitory: mean=4.064769041959997, std=1.9085337474328592
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Spikes&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake vs NREM:     &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Excitatory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">k_ar_ex_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Inhibitory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">k_ar_in_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Excitatory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span> <span class="n">k_ar_ex_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Inhibitory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span> <span class="n">k_ar_in_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Spikes
-Wake vs NREM:      Ttest_indResult(statistic=35.573269239021656, pvalue=2.9283622128562756e-173)
-
-Wake
-LFP vs Excitatory: Ttest_relResult(statistic=-3.5524527252328557, pvalue=0.0004368965649147672)
-LFP vs Inhibitory: Ttest_relResult(statistic=2.7376687246608116, pvalue=0.006521110647650202)
-
-NREM
-LFP vs Excitatory: Ttest_relResult(statistic=-36.43345331293269, pvalue=7.156876977406037e-150)
-LFP vs Inhibitory: Ttest_relResult(statistic=-39.07404420870041, pvalue=4.308699128732805e-162)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: LFP vs Excitatory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                                                     <span class="n">k_ar_ex_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">])))</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: LFP vs Inhibitory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                                                     <span class="n">k_ar_in_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">])))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: LFP vs Excitatory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-                                                                     <span class="n">k_ar_ex_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">])))</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: LFP vs Inhibitory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-                                                                     <span class="n">k_ar_in_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">])))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlation
-Wake: LFP vs Excitatory: r=-0.1685, p=0.0020
-Wake: LFP vs Inhibitory: r=-0.0954, p=0.0822
-
-NREM: LFP vs Excitatory: r=0.2718, p=0.0000
-NREM: LFP vs Inhibitory: r=0.5811, p=0.0000
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">knees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
-    <span class="n">knees_wake_ar_lfp</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-    <span class="n">k_ar_ex_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-    <span class="n">k_ar_in_wake</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-    <span class="n">knees_nrem_ar_lfp</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-    <span class="n">k_ar_ex_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-    <span class="n">k_ar_in_nrem</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span>
-<span class="p">])</span>
-
-<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Excitatory : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Inhibitory : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Excitatory : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Inhibitory : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">)</span>
+<span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-20</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>     <span class="mi">10</span><span class="p">,</span>  <span class="mf">1e-2</span><span class="p">]</span>
 <span class="p">]</span>
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">knees</span><span class="o">=</span><span class="n">knees</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">))</span>
+<span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">]</span>
+
+<span class="n">psd_lfp_wake</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
+<span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig_lfp_wake</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
+                 <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+
+<span class="n">psd_lfp_nrem</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
+<span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig_lfp_nrem</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
+                 <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_overlapping_densities</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">overlap_hspace</span><span class="o">=-</span><span class="mf">.5</span><span class="p">):</span>
-    
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3b560768ef224062a269e2c172ac3c66", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a487bff5e4c84d8c991b373e4d94f4f8", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Plot">
+<h2>Plot<a class="headerlink" href="#Plot" title="Permalink to this headline">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_overlapping_densities</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">overlap_hspace</span><span class="o">=-</span><span class="mf">.5</span><span class="p">):</span>
+
     <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;axes.facecolor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)})</span>
 
     <span class="c1"># Initialize the FacetGrid object</span>
     <span class="n">pal</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">cubehelix_palette</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">rot</span><span class="o">=-</span><span class="mf">.25</span><span class="p">,</span> <span class="n">light</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
-    
+
     <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">FacetGrid</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                          <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">pal</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="n">xlim</span><span class="p">)</span>
 
     <span class="c1"># Draw the densities in a few steps</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;knees&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
              <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-   
+
     <span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;knees&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">bw_adjust</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">grid</span><span class="o">.</span><span class="n">refline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -997,21 +1051,213 @@ NREM: LFP vs Inhibitory: r=0.5811, p=0.0000
     <span class="n">grid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">yticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
+
     <span class="n">grid</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">set_xlabels</span><span class="p">(</span><span class="s1">&#39;Knee Frequency (Hertz)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
-    
-    <span class="k">return</span> <span class="n">g</span>
 
-<span class="n">plot_overlapping_densities</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">overlap_hspace</span><span class="o">=-</span><span class="mf">0.75</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;overlapping_knee_densities.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">grid</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../_images/a9fbf350b39d0d4e6743c86ff061e0200eb23fc18f6e056e8d2ed3bb133d81cd.png" src="../_images/a9fbf350b39d0d4e6743c86ff061e0200eb23fc18f6e056e8d2ed3bb133d81cd.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># Apply r-squared threshold</span>
+<span class="n">rsq_thresh</span> <span class="o">=</span> <span class="mf">.25</span>
+
+<span class="n">nrem_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span>
+<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">wake_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span>
+<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Merge knees</span>
+<span class="n">knees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
+    <span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
+    <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
+    <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
+    <span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+    <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+    <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span>
+<span class="p">])</span>
+
+<span class="c1"># Merge labels</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Excitatory : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Inhibitory : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Excitatory : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Inhibitory : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># To dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">knees</span><span class="o">=</span><span class="n">knees</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">))</span>
+</pre></div>
 </div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
+<span class="n">plot_overlapping_densities</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">overlap_hspace</span><span class="o">=-</span><span class="mf">0.75</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig05_sleep_vs_wake.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/figures_fig05_sleep_vs_wake_18_0.png" src="../_images/figures_fig05_sleep_vs_wake_18_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LFP               : mean=</span><span class="si">{</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
+      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Excitatory: mean=</span><span class="si">{</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
+      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Inhibitory: mean=</span><span class="si">{</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
+      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NREM&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LFP               : mean=</span><span class="si">{</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
+      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Excitatory: mean=</span><span class="si">{</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
+      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Inhibitory: mean=</span><span class="si">{</span><span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
+      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Wake
+LFP               : mean=6.8001364891954, std=2.656403888980302
+Spikes, Excitatory: mean=6.15023882411311, std=3.816180868647709
+Spikes, Inhibitory: mean=4.5061781442512405, std=1.6995762892176098
+
+NREM
+LFP               : mean=3.1374131726642167, std=1.4539461558915583
+Spikes, Excitatory: mean=4.622147400058879, std=2.005520664967615
+Spikes, Inhibitory: mean=4.061209976351796, std=1.9957308268995413
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake vs NREM&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP       : &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+                                <span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+                                <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+                                <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Excitatory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+                                      <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Inhibitory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
+                                      <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NREM&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Excitatory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
+                                      <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Inhibitory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
+                                      <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Wake vs NREM
+LFP       :  Ttest_indResult(statistic=26.21179265308087, pvalue=4.76513474449946e-112)
+Excitatory:  Ttest_indResult(statistic=7.709989328694835, pvalue=3.438514642092187e-14)
+Inhibitory:  Ttest_indResult(statistic=3.38372695420238, pvalue=0.000747082004084111)
+
+Wake
+LFP vs Excitatory: Ttest_relResult(statistic=2.576773510327446, pvalue=0.010400209973630595)
+LFP vs Inhibitory: Ttest_relResult(statistic=13.76100417988951, pvalue=1.837967809311979e-34)
+
+NREM
+LFP vs Excitatory: Ttest_relResult(statistic=-15.57977377129755, pvalue=2.1891548411738475e-45)
+LFP vs Inhibitory: Ttest_relResult(statistic=-12.6061404963828, pvalue=4.4365469496275713e-32)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: LFP vs Excitatory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: LFP vs Inhibitory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: LFP vs Excitatory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: LFP vs Inhibitory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Correlation
+Wake: LFP vs Excitatory: r=0.0153, p=0.7802
+Wake: LFP vs Inhibitory: r=0.0704, p=0.1979
+
+NREM: LFP vs Excitatory: r=0.2206, p=0.0000
+NREM: LFP vs Inhibitory: r=0.5564, p=0.0000
+</pre></div></div>
+</div>
+</section>
 </section>
 
 

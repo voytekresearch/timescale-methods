@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>timescales.sim.sim_branching &#8212; timescales 0.0.1-dev documentation</title>
+    <title>Figures &#8212; timescales 0.0.1-dev documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -43,8 +43,6 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="timescales.sim.sim_ou" href="timescales.sim.sim_ou.html" />
-    <link rel="prev" title="timescales.sim.sim_poisson" href="timescales.sim.sim_poisson.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -98,7 +96,7 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../figures/index.html">
+  <a class="reference internal" href="index.html">
    Figures
   </a>
  </li>
@@ -237,7 +235,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>timescales.sim.sim_branching</h1>
+                <h1>Figures</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -249,43 +247,9 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="timescales-sim-sim-branching">
-<h1>timescales.sim.sim_branching<a class="headerlink" href="#timescales-sim-sim-branching" title="Permalink to this headline">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="timescales.sim.sim_branching">
-<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_branching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/branching.html#sim_branching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_branching" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulate a branching Poisson process.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>n_seconds</strong><span class="classifier">float</span></dt><dd><p>Length of the signal, in seconds.</p>
-</dd>
-<dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in hz.</p>
-</dd>
-<dt><strong>tau</strong><span class="classifier">float</span></dt><dd><p>Timescale, in seconds. Determines branching parameter, m.</p>
-</dd>
-<dt><strong>lambda_h</strong><span class="classifier">float</span></dt><dd><p>Poisson lambda constant.</p>
-</dd>
-<dt><strong>lamda_a</strong><span class="classifier">float</span></dt><dd><p>Initial Poisson lambda weight.
-If None, default to (tau * fs) * lambda_h.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>sig</strong><span class="classifier">1d array</span></dt><dd><p>Timseries containing timescale process.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Simplified implentation based on MR. Estimator:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0249447">https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0249447</a></p></li>
-<li><p><a class="reference external" href="https://github.com/Priesemann-Group/mrestimator">https://github.com/Priesemann-Group/mrestimator</a></p></li>
-</ul>
-</dd></dl>
-
+  <section id="figures">
+<h1>Figures<a class="headerlink" href="#figures" title="Permalink to this headline">#</a></h1>
+<p>Manuscript figures.</p>
 </section>
 
 
@@ -296,20 +260,6 @@ If None, default to (tau * fs) * lambda_h.</p>
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="timescales.sim.sim_poisson.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">timescales.sim.sim_poisson</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="timescales.sim.sim_ou.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">timescales.sim.sim_ou</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
 </div>
             </footer>
         </div>

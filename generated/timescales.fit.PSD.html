@@ -23,8 +23,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -36,13 +38,8 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -94,100 +91,16 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../api.html">
    API Documentation
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     timescales.fit.PSD
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.fit.ACF.html">
-     timescales.fit.ACF
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.sim.sim_spikes_synaptic.html">
-     timescales.sim.sim_spikes_synaptic
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.sim.sim_spikes_prob.html">
-     timescales.sim.sim_spikes_prob
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.sim.sim_poisson.html">
-     timescales.sim.sim_poisson
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.sim.sim_branching.html">
-     timescales.sim.sim_branching
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.sim.sim_ou.html">
-     timescales.sim.sim_ou
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.autoreg.compute_ar_spectrum.html">
-     timescales.autoreg.compute_ar_spectrum
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="timescales.pipe.Pipe.html">
-     timescales.pipe.Pipe
-    </a>
-   </li>
-  </ul>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1">
   <a class="reference internal" href="../figures/index.html">
    Figures
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../figures/fig01_acf_vs_psd.html">
-     Figure 1. PSD &amp; ACF
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../figures/fig02_bias.html">
-     Figure 2. Bias
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../figures/fig03_simulation.html">
-     Figure 3. Spike Simulations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../figures/fig04_bias_solutions.html">
-     Figure 4. Bias Solutions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../figures/fig05_sleep_vs_wake.html">
-     Figure 4. Sleep vs. Wake
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -361,7 +274,7 @@ title="Print to PDF"
 </dd>
 <dt><strong>knee_freq</strong><span class="classifier">float or 1d array</span></dt><dd><p>Knee frequency.</p>
 </dd>
-<dt><strong>rsq</strong><span class="classifier">float</span></dt><dd><p>R-squared of the full fit.</p>
+<dt><strong>rsq</strong><span class="classifier">float</span></dt><dd><p>R-squared of the aperiodic fit.</p>
 </dd>
 <dt><strong>guess</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Inital parameter estimates.</p>
 </dd>
@@ -387,7 +300,7 @@ title="Print to PDF"
 <td><p>Initialize object.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_spectrum</span></code>(sig, fs[, ar_order, ...])</p></td>
-<td><p>Compute powers spectral density. Parameters --------- sig : 1d or 2d array     Voltage time series or spike counts. fs : float     Sampling rate, in Hz. ar_order : int, optional, default: None     Compute an autoregressive spectra when not None. f_range : tuple of (float, float)     Frequency range of interest, inclusive. norm_range : tuple of (float, float), optional, default: None     The lower and upper normalization range. n_jobs : int     Number of jobs to run in parralel, when powers is 2d. Only available when using an ar_order. <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs     Additional keyword arguments to pass to compute_spectrum or compute_ar_spectrum.</p></td>
+<td><p>Compute powers spectral density.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>([f_range, method, fooof_init, bounds, ...])</p></td>
 <td><p>Fit power spectra.</p></td>
