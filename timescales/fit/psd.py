@@ -49,6 +49,7 @@ class PSD:
 
         self.freqs = freqs
         self.powers = powers
+        self.powers_fit = None
 
         # Set via other methods
         self.params = None
@@ -134,10 +135,10 @@ class PSD:
             self.freqs = self.freqs[inds]
             self.powers = self.powers[:, inds] if self.powers.ndim == 2 else self.powers[inds]
 
-        if method == 'huber' and fooof_init is None:
+        if method != 'fooof' and fooof_init is None:
             # Robust regression (aperiodic only)
-            self.params, self.powers_fit = fit_psd_huber(
-                self.freqs, self.powers, f_scale=f_scale, bounds=bounds,
+            self.params, self.powers_fit = fit_psd_robust(
+                self.freqs, self.powers, loss=method, f_scale=f_scale, bounds=bounds,
                   guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
             )
         elif method == 'fooof' or fooof_init is not None:
@@ -265,8 +266,8 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False
         return params, powers_fit
 
 
-def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
-                  guess=None, maxfev=1000, n_jobs=-1, progress=None):
+def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=1.,
+                   bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 
     Parameters
@@ -277,6 +278,8 @@ def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
         Power spectral density.
     f_range : tuple of (float, float)
         Frequency range of interest.
+    loss : {'huber', 'soft_l1', 'cauchy', 'arctan'}
+        Loss function.
     f_scale : float, optional, default: 0.1
             Value of soft margin between inlier and outlier residuals.
     bounds : 2d array-like
@@ -321,7 +324,7 @@ def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
 
         with Pool(processes=n_jobs) as pool:
             mapping = pool.imap(
-                partial(fit_psd_huber, powers=None, bounds=bounds,
+                partial(fit_psd_robust, powers=None, loss=loss, bounds=bounds,
                         guess=guess, maxfev=maxfev, n_jobs=n_jobs),
                 zip(_freqs, powers)
             )
@@ -333,7 +336,7 @@ def fit_psd_huber(freqs, powers, f_range=None, f_scale=1., bounds=None,
     else:
         # 1d
         params, _ = curve_fit(expo_const_function, freqs, np.log10(powers),
-                              loss='huber', f_scale=f_scale, maxfev=maxfev,
+                              loss=loss, f_scale=f_scale, maxfev=maxfev,
                               p0=guess, bounds=bounds)
 
         powers_fit = 10**expo_const_function(freqs, *params)

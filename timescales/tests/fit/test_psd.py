@@ -8,7 +8,7 @@ from fooof import FOOOF, FOOOFGroup
 from fooof.core.funcs import expo_const_function
 from neurodsp.spectral import compute_spectrum
 
-from timescales.fit.psd import PSD, fit_psd_fooof, fit_psd_huber, convert_knee_val
+from timescales.fit.psd import PSD, fit_psd_fooof, fit_psd_robust, convert_knee_val
 from timescales.sim import sim_spikes_synaptic
 
 
