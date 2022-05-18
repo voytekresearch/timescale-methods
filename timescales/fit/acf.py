@@ -294,6 +294,28 @@ class ACF:
             raise ValueError('Call the fit method with fit_cos=True for separable components.')
 
 
+    def plot(self, ax):
+        """Plot ACF.
+
+        Parameters
+        ----------
+        ax : AxesSubplot, optional, default: None
+            Axis to plot on.
+        """
+
+        if self.corrs is None:
+            raise ValueError('corrs and lags are undefined.')
+        else:
+            ax.plot(self.lags, self.corrs, label='ACF')
+
+        if self.corrs_fit is not None:
+            ax.plot(self.lags, self.corrs_fit, label='Fit', ls='--')
+
+        ax.legend()
+        ax.set_ylabel('Correlation')
+        ax.set_xlabel('Lags')
+
+
     @staticmethod
     def normalize(corrs, norm_range=(0, 1)):
         """Normalize correlation from 0 to 1."""

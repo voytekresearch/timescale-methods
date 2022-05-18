@@ -4,6 +4,7 @@ from itertools import repeat
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
@@ -170,6 +171,32 @@ class PSD:
                                             np.log10(self.powers_fit[ind]))[0][1] ** 2
             self.knee_freq = self.params[:, 1]
             self.tau = convert_knee_val(self.knee_freq)
+
+
+    def plot(self,  ax=None):
+        """Plot spectra.
+
+        Parameters
+        ----------
+        ax : AxesSubplot, optional, default: None
+            Axis to plot on.
+        """
+
+        if ax is None:
+            _, ax = plt.subplots(figsize=(8, 6))
+
+        if self.freqs is None or self.powers is None:
+            raise ValueError('freqs and powers are undefined.')
+        else:
+            ax.loglog(self.freqs, self.powers, label='PSD')
+
+        if self.powers_fit is not None:
+            ax.loglog(self.freqs, self.powers_fit, label='Fit', ls='--')
+
+        ax.legend()
+        ax.set_ylabel('Powers')
+        ax.set_xlabel('Frequencies')
+
 
 
     @staticmethod
