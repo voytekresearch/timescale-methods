@@ -9,7 +9,7 @@ import pytest
 from neurodsp.utils.norm import normalize_sig
 
 from timescales.sim import sim_branching, sim_asine_oscillation
-from timescales.fit import convert_knee_val
+from timescales.conversions import convert_knee
 from timescales.decompose.decompose import CAD, CADGroup
 
 
@@ -20,7 +20,7 @@ def test_CAD():
     n_seconds = 1
     fs = 1000
 
-    tau = convert_knee_val(10)
+    tau = convert_knee(10)
     xs = np.arange(fs)
 
     lfp = sim_branching(n_seconds, fs, tau, 100)
@@ -62,7 +62,7 @@ def test_CADGroup():
     n_seconds = 1
     fs = 1000
 
-    tau = convert_knee_val(10)
+    tau = convert_knee(10)
     xs = np.arange(fs)
 
     lfp = sim_branching(n_seconds, fs, tau, 100)

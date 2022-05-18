@@ -12,7 +12,9 @@ from neurodsp.spectral import compute_spectrum
 from timescales.autoreg import compute_ar_spectrum
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
-from timescales.fit.utils import progress_bar, check_guess_and_bounds, convert_knee_val
+from timescales.utils import normalize as normalize_acf
+from timescales.conversions import convert_knee
+from timescales.fit.utils import progress_bar, check_guess_and_bounds
 
 
 class ACF:
@@ -144,7 +146,7 @@ class ACF:
 
             # Normalize power if requested
             if norm_range is not None:
-                powers = ACF.normalize(powers, norm_range)
+                powers = normalize_acf(powers, *norm_range)
 
             # Take inverse fft to get acf
             if sig.ndim == 2:
@@ -171,7 +173,7 @@ class ACF:
             self.lags = self.lags[:nlags]
 
         if normalize:
-            self.corrs = ACF.normalize(self.corrs)
+            self.corrs = normalize_acf(self.corrs, 0, 1)
 
 
     def fit(self, gen_fits=True, gen_components=False, with_cos=False,
@@ -218,14 +220,11 @@ class ACF:
             self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, self.lags,
                 guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
 
-        self.tau = self.params[0]
-        self.knee_freq = convert_knee_val(self.tau)
-
         if gen_fits:
             self.gen_corrs_fit(gen_components)
 
         self.tau = self.params[0]
-        self.knee_freq = convert_knee_val(self.params[0])
+        self.knee_freq = convert_knee(self.tau)
 
 
     def gen_corrs_fit(self, gen_components=False):
@@ -314,17 +313,6 @@ class ACF:
         ax.legend()
         ax.set_ylabel('Correlation')
         ax.set_xlabel('Lags')
-
-
-    @staticmethod
-    def normalize(corrs, norm_range=(0, 1)):
-        """Normalize correlation from 0 to 1."""
-        if corrs.ndim == 2:
-            for ind in range(len(corrs)):
-                corrs[ind] = ACF.normalize(corrs[ind])
-        else:
-            corrs = np.interp(corrs, (corrs.min(), corrs.max()), norm_range)
-        return corrs
 
 
 def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):

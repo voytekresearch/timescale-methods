@@ -8,7 +8,7 @@ from fooof import FOOOF, FOOOFGroup
 from fooof.core.funcs import expo_const_function
 from neurodsp.spectral import compute_spectrum
 
-from timescales.fit.psd import PSD, fit_psd_fooof, fit_psd_robust, convert_knee_val
+from timescales.fit.psd import PSD, fit_psd_fooof, fit_psd_robust
 from timescales.sim import sim_spikes_synaptic
 
 
@@ -88,15 +88,3 @@ def test_fit_psd_fooof(ap_mode, ndim, init):
         assert len(params) == 2
         assert len(params[0]) == 4
 
-
-def test_convert_knee_val():
-
-    knee_freq_lo = 10
-    knee_freq_hi = 100
-
-    knee_tau_long = convert_knee_val(knee_freq_lo)
-    knee_tau_short = convert_knee_val(knee_freq_hi)
-
-    assert knee_tau_long > knee_tau_short
-    assert knee_tau_long < knee_freq_lo
-    assert knee_tau_short < knee_freq_hi

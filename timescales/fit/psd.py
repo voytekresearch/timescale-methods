@@ -14,8 +14,9 @@ from timescales.autoreg import compute_ar_spectrum
 from fooof import FOOOF, FOOOFGroup
 from fooof.core.funcs import expo_const_function
 
-from timescales.fit.utils import progress_bar, convert_knee_val
-
+from timescales.conversions import convert_knee
+from timescales.utils import normalize as normalize_psd
+from timescales.fit.utils import progress_bar
 
 class PSD:
     """Power spectral density class.
@@ -96,7 +97,7 @@ class PSD:
             self.freqs, self.powers = compute_spectrum(sig, fs, f_range=f_range, **kwargs)
 
         if norm_range is not None:
-            self.powers = PSD.normalize(self.powers, norm_range)
+            self.powers = normalize_psd(self.powers, *norm_range)
 
 
     def fit(self, f_range=None, method='huber', fooof_init=None, bounds=None,
@@ -162,7 +163,7 @@ class PSD:
                                    np.log10(self.powers_fit))[0][1] ** 2
 
             self.knee_freq = self.params[1]
-            self.tau = convert_knee_val(self.knee_freq)
+            self.tau = convert_knee(self.knee_freq)
         else:
             self.rsq = np.zeros(len(self.powers_fit))
 
@@ -170,7 +171,7 @@ class PSD:
                 self.rsq[ind] = np.corrcoef(np.log10(self.powers[ind]),
                                             np.log10(self.powers_fit[ind]))[0][1] ** 2
             self.knee_freq = self.params[:, 1]
-            self.tau = convert_knee_val(self.knee_freq)
+            self.tau = convert_knee(self.knee_freq)
 
 
     def plot(self,  ax=None):
