@@ -84,9 +84,6 @@ class Pipe:
         np.random.seed(seed)
 
         # Clear
-        #self.model = None
-        #self.result = None
-
         for node in self.pipe:
             getattr(self, node['step'])(*node['args'], **node['kwargs'])
 
