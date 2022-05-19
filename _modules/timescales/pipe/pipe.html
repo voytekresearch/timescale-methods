@@ -95,6 +95,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/index.html">
+   Tutorials
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../figures/index.html">
    Figures
   </a>
@@ -287,9 +292,6 @@ title="Source repository"
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
         <span class="c1"># Clear</span>
-        <span class="c1">#self.model = None</span>
-        <span class="c1">#self.result = None</span>
-
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span><span class="p">:</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">])(</span><span class="o">*</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">])</span>
 

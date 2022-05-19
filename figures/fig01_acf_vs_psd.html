@@ -100,6 +100,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/index.html">
+   Tutorials
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="index.html">
    Figures
   </a>
@@ -575,7 +580,8 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
 <span class="kn">from</span> <span class="nn">neurodsp.spectral</span> <span class="kn">import</span> <span class="n">compute_spectrum</span>
 
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">PSD</span><span class="p">,</span> <span class="n">convert_knee_val</span>
+<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">PSD</span>
+<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
 <span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_spikes_synaptic</span><span class="p">,</span> <span class="n">sim_branching</span>
 <span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
 
@@ -599,7 +605,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">n_seconds_plot</span> <span class="o">=</span> <span class="mf">.25</span>
 
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee_val</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -665,7 +671,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute ACF</span>
 <span class="n">nlags</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">norm_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">norm_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">psd_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span> <span class="n">norm_range</span><span class="o">=</span><span class="n">norm_range</span><span class="p">)</span>
 
 <span class="n">acf_spikes</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">()</span>
@@ -701,8 +707,8 @@ Ground Truth   :  10.0 Hertz
 
 PSD Spikes Knee:  9.91 Hertz
 PSD LFP    Knee:  10.06 Hertz
-ACF Spikes Knee:  9.85 Hertz
-ACF LFP    Knee:  9.87 Hertz
+ACF Spikes Knee:  9.84 Hertz
+ACF LFP    Knee:  9.86 Hertz
 </pre></div></div>
 </div>
 </section>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>timescales.sim.sim_ou &#8212; timescales 0.0.1-dev documentation</title>
+    <title>timescales.conversions.convert_tau &#8212; timescales 0.0.1-dev documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -43,8 +43,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="timescales.autoreg.compute_ar_spectrum" href="timescales.autoreg.compute_ar_spectrum.html" />
-    <link rel="prev" title="timescales.sim.sim_branching" href="timescales.sim.sim_branching.html" />
+    <link rel="next" title="timescales.conversions.psd_to_acf" href="timescales.conversions.psd_to_acf.html" />
+    <link rel="prev" title="timescales.conversions.convert_knee" href="timescales.conversions.convert_knee.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -242,7 +242,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>timescales.sim.sim_ou</h1>
+                <h1>timescales.conversions.convert_tau</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -254,30 +254,22 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="timescales-sim-sim-ou">
-<h1>timescales.sim.sim_ou<a class="headerlink" href="#timescales-sim-sim-ou" title="Permalink to this headline">#</a></h1>
+  <section id="timescales-conversions-convert-tau">
+<h1>timescales.conversions.convert_tau<a class="headerlink" href="#timescales-conversions-convert-tau" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="timescales.sim.sim_ou">
-<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_ou</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/ou.html#sim_ou"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_ou" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulate spikes as an Ornstein-Uhlenbeck process.</p>
+<dt class="sig sig-object py" id="timescales.conversions.convert_tau">
+<span class="sig-prename descclassname"><span class="pre">timescales.conversions.</span></span><span class="sig-name descname"><span class="pre">convert_tau</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/conversions/conv.html#convert_tau"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.conversions.convert_tau" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert tau(s) to knee frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>n_seconds</strong><span class="classifier">float</span></dt><dd><p>Length of the signal, in seconds.</p>
-</dd>
-<dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in hz.</p>
-</dd>
 <dt><strong>tau</strong><span class="classifier">float</span></dt><dd><p>Timescale, in seconds.</p>
-</dd>
-<dt><strong>std</strong><span class="classifier">float, optional, default: 1</span></dt><dd><p>Standard deviation of the OU process.</p>
-</dd>
-<dt><strong>mu</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Mean of of the OU process.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>sig</strong><span class="classifier">1d or 2d array</span></dt><dd><p>Signal containing timescale of interest.</p>
+<dt><strong>knee</strong><span class="classifier">float or array</span></dt><dd><p>Knee of the aperiodic spectral fit.</p>
 </dd>
 </dl>
 </dd>
@@ -294,17 +286,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="timescales.sim.sim_branching.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="timescales.conversions.convert_knee.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">timescales.sim.sim_branching</p>
+            <p class="prev-next-title">timescales.conversions.convert_knee</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="timescales.autoreg.compute_ar_spectrum.html" title="next page">
+    <a class='right-next' id="next-link" href="timescales.conversions.psd_to_acf.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">timescales.autoreg.compute_ar_spectrum</p>
+        <p class="prev-next-title">timescales.conversions.psd_to_acf</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

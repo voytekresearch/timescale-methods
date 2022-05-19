@@ -95,6 +95,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/index.html">
+   Tutorials
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../figures/index.html">
    Figures
   </a>
@@ -206,6 +211,8 @@ title="Source repository"
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">cpu_count</span>
 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
 <span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">ifft</span>
@@ -215,7 +222,9 @@ title="Source repository"
 <span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
 
 <span class="kn">from</span> <span class="nn">timescales.sim.acf</span> <span class="kn">import</span> <span class="n">sim_acf_cos</span><span class="p">,</span> <span class="n">sim_exp_decay</span><span class="p">,</span> <span class="n">sim_damped_cos</span>
-<span class="kn">from</span> <span class="nn">timescales.fit.utils</span> <span class="kn">import</span> <span class="n">progress_bar</span><span class="p">,</span> <span class="n">check_guess_and_bounds</span><span class="p">,</span> <span class="n">convert_knee_val</span>
+<span class="kn">from</span> <span class="nn">timescales.utils</span> <span class="kn">import</span> <span class="n">normalize</span> <span class="k">as</span> <span class="n">normalize_acf</span>
+<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
+<span class="kn">from</span> <span class="nn">timescales.fit.utils</span> <span class="kn">import</span> <span class="n">progress_bar</span><span class="p">,</span> <span class="n">check_guess_and_bounds</span>
 
 
 <div class="viewcode-block" id="ACF"><a class="viewcode-back" href="../../../generated/timescales.fit.ACF.html#timescales.fit.ACF">[docs]</a><span class="k">class</span> <span class="nc">ACF</span><span class="p">:</span>
@@ -347,7 +356,7 @@ title="Source repository"
 
             <span class="c1"># Normalize power if requested</span>
             <span class="k">if</span> <span class="n">norm_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">powers</span> <span class="o">=</span> <span class="n">ACF</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">powers</span><span class="p">,</span> <span class="n">norm_range</span><span class="p">)</span>
+                <span class="n">powers</span> <span class="o">=</span> <span class="n">normalize_acf</span><span class="p">(</span><span class="n">powers</span><span class="p">,</span> <span class="o">*</span><span class="n">norm_range</span><span class="p">)</span>
 
             <span class="c1"># Take inverse fft to get acf</span>
             <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -374,7 +383,7 @@ title="Source repository"
             <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">[:</span><span class="n">nlags</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span> <span class="o">=</span> <span class="n">ACF</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span> <span class="o">=</span> <span class="n">normalize_acf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_fits</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gen_components</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">with_cos</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -421,14 +430,11 @@ title="Source repository"
             <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">guess</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">fit_acf_cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span>
                 <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">knee_freq</span> <span class="o">=</span> <span class="n">convert_knee_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">gen_fits</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gen_corrs_fit</span><span class="p">(</span><span class="n">gen_components</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">knee_freq</span> <span class="o">=</span> <span class="n">convert_knee_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knee_freq</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">gen_corrs_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_components</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -450,7 +456,7 @@ title="Source repository"
 
             <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">rsq</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="p">[</span><span class="n">ind</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rsq</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="p">[</span><span class="n">ind</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span> <span class="o">=</span> <span class="n">sim_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
@@ -497,15 +503,42 @@ title="Source repository"
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Call the fit method with fit_cos=True for separable components.&#39;</span><span class="p">)</span>
 
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">corrs</span><span class="p">,</span> <span class="n">norm_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
-        <span class="sd">&quot;&quot;&quot;Normalize correlation from 0 to 1.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">corrs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs</span><span class="p">)):</span>
-                <span class="n">corrs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">ACF</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">corrs</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">corrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">corrs</span><span class="p">,</span> <span class="p">(</span><span class="n">corrs</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">corrs</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">norm_range</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">corrs</span></div>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot ACF.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ax : AxesSubplot, optional, default: None</span>
+<span class="sd">            Axis to plot on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;corrs and lags are undefined.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Plot ACF</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ACF&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ACF&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">corrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="n">corrs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.1</span><span class="p">)</span>
+
+        <span class="c1"># Plot fits</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Fit&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs_fit</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                   <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Mean Fit&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lag&#39;</span><span class="p">)</span>
+
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;ACF Model Fit&#39;</span> <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">title</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">fit_acf</span><span class="p">(</span><span class="n">corrs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

@@ -100,6 +100,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/index.html">
+   Tutorials
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="index.html">
    Figures
   </a>
@@ -580,7 +585,8 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
 
 <span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_branching</span>
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span><span class="p">,</span> <span class="n">convert_knee_val</span>
+<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span>
+<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span><span class="p">,</span> <span class="n">psd_to_acf</span>
 <span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
 <span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
 
@@ -601,7 +607,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Oscillations</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee_val</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
 
 <span class="n">pe</span> <span class="o">=</span> <span class="n">gen_periodic</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
@@ -761,7 +767,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">acf_pe_osc</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
 
 
-<span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lags_osc</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">convert_knee_val</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+<span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lags_osc</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="mf">.04</span><span class="p">,</span> <span class="mf">.06</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.05</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\tau$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
