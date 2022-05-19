@@ -18,6 +18,7 @@ from timescales.conversions import convert_knee
 from timescales.utils import normalize as normalize_psd
 from timescales.fit.utils import progress_bar
 
+
 class PSD:
     """Power spectral density class.
 
@@ -73,7 +74,7 @@ class PSD:
         """Compute powers spectral density.
 
         Parameters
-        ---------
+        ----------
         sig : 1d or 2d array
             Voltage time series or spike counts.
         fs : float
@@ -101,7 +102,7 @@ class PSD:
 
 
     def fit(self, f_range=None, method='huber', fooof_init=None, bounds=None,
-            guess=None, f_scale=1., n_jobs=1, maxfev=1000, progress=None):
+            guess=None, f_scale=.1, n_jobs=1, maxfev=1000, progress=None):
         """Fit power spectra.
 
         Parameters
@@ -174,7 +175,7 @@ class PSD:
             self.tau = convert_knee(self.knee_freq)
 
 
-    def plot(self,  ax=None):
+    def plot(self, ax=None, title=None):
         """Plot spectra.
 
         Parameters
@@ -188,27 +189,29 @@ class PSD:
 
         if self.freqs is None or self.powers is None:
             raise ValueError('freqs and powers are undefined.')
-        else:
-            ax.loglog(self.freqs, self.powers, label='PSD')
 
-        if self.powers_fit is not None:
-            ax.loglog(self.freqs, self.powers_fit, label='Fit', ls='--')
+
+        # Plot spectra
+        if self.powers.ndim == 1:
+            ax.loglog(self.freqs, self.powers, label='PSD', color='C0')
+        elif self.powers.ndim == 2:
+            ax.loglog(self.freqs, self.powers.mean(axis=0), label='PSD', color='C0')
+            for power in self.powers:
+                ax.loglog(self.freqs, power, color='C0', alpha=.1)
+
+        # Plot fits
+        if self.powers_fit is not None and self.powers_fit.ndim == 1:
+            ax.loglog(self.freqs, self.powers_fit, label='Fit', ls='--', color='C1')
+        elif self.powers_fit is not None and self.powers_fit.ndim == 2:
+            ax.loglog(self.freqs, self.powers_fit.mean(axis=0),
+                      ls='--', color='C1', label='Mean Fit')
 
         ax.legend()
         ax.set_ylabel('Powers')
         ax.set_xlabel('Frequencies')
 
-
-
-    @staticmethod
-    def normalize(powers, norm_range):
-        """Normalize power from upper to lower bounds."""
-        if powers.ndim == 2:
-            for ind in range(len(powers)):
-                powers[ind] = PSD.normalize(powers[ind])
-        else:
-            powers = np.interp(powers, (powers.min(), powers.max()), norm_range)
-        return powers
+        title = 'Aperiodic Model Fit' if title is None else title
+        ax.set_title(title)
 
 
 def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False,
@@ -294,7 +297,7 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False
         return params, powers_fit
 
 
-def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=1.,
+def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=.1,
                    bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 

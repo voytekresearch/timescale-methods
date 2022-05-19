@@ -3,6 +3,8 @@
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
+import matplotlib.pyplot as plt
+
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.fft import ifft
@@ -246,7 +248,7 @@ class ACF:
 
             for ind in range(len(self.params)):
                 self.corrs_fit[ind] = sim_func(self.lags, self.fs, *self.params[ind])
-                self.rsq[ind] = np.corrcoef(self.corrs, self.corrs_fit[ind])[0][1] ** 2
+                self.rsq[ind] = np.corrcoef(self.corrs[ind], self.corrs_fit[ind])[0][1] ** 2
 
         else:
             self.corrs_fit = sim_func(self.lags, self.fs, *self.params)
@@ -293,7 +295,7 @@ class ACF:
             raise ValueError('Call the fit method with fit_cos=True for separable components.')
 
 
-    def plot(self, ax):
+    def plot(self, ax=None, title=None):
         """Plot ACF.
 
         Parameters
@@ -302,17 +304,33 @@ class ACF:
             Axis to plot on.
         """
 
+        if ax is None:
+            _, ax = plt.subplots(figsize=(8, 6))
+
         if self.corrs is None:
             raise ValueError('corrs and lags are undefined.')
-        else:
-            ax.plot(self.lags, self.corrs, label='ACF')
 
-        if self.corrs_fit is not None:
-            ax.plot(self.lags, self.corrs_fit, label='Fit', ls='--')
+        # Plot ACF
+        if self.corrs.ndim == 1:
+            ax.plot(self.lags, self.corrs, label='ACF', color='C0')
+        elif self.corrs.ndim == 2:
+            ax.plot(self.lags, self.corrs.mean(axis=0), label='ACF', color='C0')
+            for corrs in self.corrs:
+                ax.plot(self.lags, corrs, color='C0', alpha=.1)
+
+        # Plot fits
+        if self.corrs_fit is not None and self.corrs_fit.ndim == 1:
+            ax.plot(self.lags, self.corrs_fit, label='Fit', ls='--', color='C1')
+        elif self.corrs_fit is not None and self.corrs_fit.ndim == 2:
+            ax.plot(self.lags, self.corrs_fit.mean(axis=0),
+                   ls='--', color='C1', label='Mean Fit')
 
         ax.legend()
         ax.set_ylabel('Correlation')
-        ax.set_xlabel('Lags')
+        ax.set_xlabel('Lag')
+
+        title = 'ACF Model Fit' if title is None else title
+        ax.set_title(title)
 
 
 def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):

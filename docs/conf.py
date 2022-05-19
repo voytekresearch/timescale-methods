@@ -85,7 +85,7 @@ html_theme_options = {
     "show_toc_level": 1
 }
 
-remove_from_toctrees = ["./generated/*", './figures/*']
+remove_from_toctrees = ["./generated/*", './figures/*', './tutorials/*']
 
 # Settings for whether to copy over and show link rst source pages
 html_copy_source = False

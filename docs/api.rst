@@ -84,8 +84,6 @@ Autoregressive models are availble to compute PSD from.
     compute_ar_spectrum
 
 
-
-
 Pipelines
 ---------
 
@@ -100,3 +98,20 @@ Pipe objects are used to reproducible simulate, transform, and/or fit timescales
    :toctree: generated/
 
     Pipe
+
+
+Conversions
+-----------
+
+Conversion functions are usefull for convert PSD to/from ACF, and to convert knee frequencies
+to taus.
+
+.. currentmodule:: timescales.conversions
+
+.. autosummary::
+   :toctree: generated/
+
+   convert_knee
+   convert_tau
+   psd_to_acf
+   acf_to_psd
