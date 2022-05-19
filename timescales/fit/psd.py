@@ -70,7 +70,7 @@ class PSD:
 
 
     def compute_spectrum(self, sig, fs, ar_order=None, f_range=None,
-                         norm_range=None, n_jobs=-1, **kwargs):
+                         norm_range=None, n_jobs=1, **kwargs):
         """Compute powers spectral density.
 
         Parameters
@@ -85,7 +85,7 @@ class PSD:
             Frequency range of interest, inclusive.
         norm_range : tuple of (float, float), optional, default: None
             The lower and upper normalization range.
-        n_jobs : int
+        n_jobs : int, optional, default: -1
             Number of jobs to run in parralel, when powers is 2d.
             Only available when using an ar_order.
         **kwargs
