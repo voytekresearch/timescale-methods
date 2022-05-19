@@ -55,6 +55,13 @@ def psd_to_acf(freqs, powers, fs, normalize=None):
         Sampling rate, in Hertz.
     normalize : tuple of (float, float), default: None
         Normalize from (min, max).
+
+    Returns
+    -------
+    lags : 1d array
+        Lag definitions.
+    corrs : 1d array
+        Correlation coefficients.
     """
     corrs = ifft(powers).real
     corrs = corrs[1:len(powers)//2]
