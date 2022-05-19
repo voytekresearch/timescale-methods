@@ -11,28 +11,15 @@ from timescales.sim.spikes import (sim_spikes_synaptic, sim_spikes_prob,
 
 
 @pytest.mark.parametrize('tau', [.1, 1e-6])
-@pytest.mark.parametrize('return_sum', [True, False])
 def test_sim_spikes_synaptic(tau, return_sum):
 
     n_seconds = 10
     fs = 1000
-    n_neurons = 10
 
-    probs, spikes = sim_spikes_synaptic(n_seconds, fs, tau,
-                                        n_neurons=n_neurons, return_sum=return_sum)
+    spikes = sim_spikes_synaptic(n_seconds, fs, tau)
 
-    if return_sum:
-        assert spikes.ndim == 1
-        assert spikes.dtype == int
-        assert spikes.max() <= n_neurons
-        assert spikes.min() >= 0
-    else:
-        assert spikes.ndim == 2
-        assert spikes.dtype == bool
-
-    assert probs.max() <= 1
-    assert probs.min() >= 0
-
+    assert spikes.ndim == 1
+    assert spikes.dtype == bool
 
 
 def test_sim_spikes_prob():
