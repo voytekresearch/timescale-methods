@@ -11,7 +11,7 @@ from timescales.sim.spikes import (sim_spikes_synaptic, sim_spikes_prob,
 
 
 @pytest.mark.parametrize('tau', [.1, 1e-6])
-def test_sim_spikes_synaptic(tau, return_sum):
+def test_sim_spikes_synaptic(tau):
 
     n_seconds = 10
     fs = 1000

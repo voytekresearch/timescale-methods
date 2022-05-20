@@ -2,7 +2,7 @@
 
 import pytest
 
-from timescales.sim.branching import sim_branching, sim_branching_spikes
+from timescales.sim.branching import sim_branching
 
 
 @pytest.mark.parametrize('lambda_a', [None, 100])

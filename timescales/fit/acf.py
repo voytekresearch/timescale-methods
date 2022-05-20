@@ -162,7 +162,7 @@ class ACF:
 
                     self.corrs[ind] = _corrs
 
-                self.lags = self.lags[:, :nlags]
+                self.lags = self.lags[:nlags]
                 self.corrs = self.corrs[:, :nlags]
 
             else:
