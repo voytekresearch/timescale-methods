@@ -61,6 +61,12 @@ numpydoc_show_class_members = False
 # generate autosummary even if no references
 autosummary_generate = True
 
+# Autodoc classes
+autodoc_default_options = {
+    'members': None,
+    'inherited-members': None,
+}
+
 # The master toctree document.
 master_doc = 'index'
 
