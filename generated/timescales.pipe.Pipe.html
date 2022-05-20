@@ -287,35 +287,176 @@ title="Print to PDF"
 <tr class="row-odd"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.__init__" title="timescales.pipe.Pipe.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_seconds, fs[, seeds])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_step</span></code>(step, *args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.add_step" title="timescales.pipe.Pipe.add_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_step</span></code></a>(step, *args, **kwargs)</p></td>
 <td><p>Add a step to the pipeline.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bin</span></code>(bin_size)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.bin" title="timescales.pipe.Pipe.bin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bin</span></code></a>(bin_size)</p></td>
 <td><p>Bin signal.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(return_attrs, **fit_kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.fit" title="timescales.pipe.Pipe.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(return_attrs, **fit_kwargs)</p></td>
 <td><p>Fit timescale of simulation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code>(sig[, mean, variance])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.normalize" title="timescales.pipe.Pipe.normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code></a>(sig[, mean, variance])</p></td>
 <td><p>Normalize signal with given mean and variance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescale</span></code>(sig[, norm_range])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.rescale" title="timescales.pipe.Pipe.rescale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescale</span></code></a>(sig[, norm_range])</p></td>
 <td><p>Normalize signal from lower to upper.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code>([n_jobs, progress])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.run" title="timescales.pipe.Pipe.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_jobs, progress])</p></td>
 <td><p>Run analysis pipeline.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code>([fs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.sample" title="timescales.pipe.Pipe.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>([fs])</p></td>
 <td><p>Sample binary array from probabilties.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code>(sim_func, *sim_args[, operator, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.simulate" title="timescales.pipe.Pipe.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>(sim_func, *sim_args[, operator, ...])</p></td>
 <td><p>Simulate aperiodic signal.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code>(method, **compute_kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.pipe.Pipe.transform" title="timescales.pipe.Pipe.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(method, **compute_kwargs)</p></td>
 <td><p>Fit timescale of simulation.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.add_step">
+<span class="sig-name descname"><span class="pre">add_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.add_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.add_step" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a step to the pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>step</strong><span class="classifier">{‘simulate’, ‘sample’, ‘transform’, fit’}</span></dt><dd><p>Method to run.</p>
+</dd>
+<dt><strong>*args</strong></dt><dd><p>Positional arugments for the specified method.</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><p>Keyword arguemnts for the specified method.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.bin">
+<span class="sig-name descname"><span class="pre">bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bin_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.bin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bin signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bin_size</strong><span class="classifier">int</span></dt><dd><p>Number of samples per bin.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_attrs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.fit" title="Permalink to this definition">#</a></dt>
+<dd><p>Fit timescale of simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>return_attrs</strong><span class="classifier">str or list of str or {‘knee_freq’, ‘tau’, ‘rsq’}</span></dt><dd><p>Model attributes to specifically store. These are attributes
+of PSD or ACF objects set upon fitting.</p>
+</dd>
+<dt><strong>**fit_kwargs</strong></dt><dd><p>Keyword arguments passed to the fit method of the
+PSD or ACF objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Assumes fit type based on transform method call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.normalize">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.normalize" title="Permalink to this definition">#</a></dt>
+<dd><p>Normalize signal with given mean and variance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.rescale">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.rescale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.rescale" title="Permalink to this definition">#</a></dt>
+<dd><p>Normalize signal from lower to upper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.run" title="Permalink to this definition">#</a></dt>
+<dd><p>Run analysis pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n_jobs</strong><span class="classifier">int</span></dt><dd><p>Number of jobs to run in parralel.</p>
+</dd>
+<dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}</span></dt><dd><p>Specify whether to display a progress bar. Uses ‘tqdm’, if installed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.sample" title="Permalink to this definition">#</a></dt>
+<dd><p>Sample binary array from probabilties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fs</strong><span class="classifier">int, optional, default: None</span></dt><dd><p>Updated sampling rate.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Assumes the sig attribute is the target probability array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">sim_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">sim_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.simulate" title="Permalink to this definition">#</a></dt>
+<dd><p>Simulate aperiodic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sim_func</strong><span class="classifier">func</span></dt><dd><p>Simulation function.</p>
+</dd>
+<dt><strong>operator</strong><span class="classifier">{‘add’, ‘mul’, ‘sub’, ‘div’} or {‘+’, ‘*’, ‘-’, ‘/’}</span></dt><dd><p>Operator to combine signals.</p>
+</dd>
+<dt><strong>rescale</strong><span class="classifier">tuple of (float, float), optional, default: None</span></dt><dd><p>Minimum and maximum y-values of simulation.</p>
+</dd>
+<dt><strong>mean</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Mean to normalize to.</p>
+</dd>
+<dt><strong>variance</strong><span class="classifier">float, opational, default: None</span></dt><dd><p>Variance to normalize to.</p>
+</dd>
+<dt><strong>*sim_args</strong></dt><dd><p>Additonal simulation positional arugments.</p>
+</dd>
+<dt><strong>**sim_kwargs</strong></dt><dd><p>Additional simulation keyword arguments.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Either rescale or (mean, std) should be passed for each simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.pipe.Pipe.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">compute_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/pipe/pipe.html#Pipe.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.pipe.Pipe.transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Fit timescale of simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>method</strong><span class="classifier">{‘PSD’, ‘ACF’}</span></dt><dd><p>Fitting method.</p>
+</dd>
+<dt><strong>**compute_kwargs</strong></dt><dd><p>Additional arguments to pass to compute_spectrum() or
+compute_acf() methods in the PSD or ACF objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

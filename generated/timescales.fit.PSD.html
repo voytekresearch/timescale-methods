@@ -304,17 +304,91 @@ title="Print to PDF"
 <tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.PSD.__init__" title="timescales.fit.PSD.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([freqs, powers])</p></td>
 <td><p>Initialize object.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_spectrum</span></code>(sig, fs[, ar_order, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.fit.PSD.compute_spectrum" title="timescales.fit.PSD.compute_spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_spectrum</span></code></a>(sig, fs[, ar_order, ...])</p></td>
 <td><p>Compute powers spectral density.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>([f_range, method, fooof_init, bounds, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.PSD.fit" title="timescales.fit.PSD.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>([f_range, method, fooof_init, bounds, ...])</p></td>
 <td><p>Fit power spectra.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>([ax, title])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.fit.PSD.plot" title="timescales.fit.PSD.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([ax, title])</p></td>
 <td><p>Plot spectra.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.PSD.compute_spectrum">
+<span class="sig-name descname"><span class="pre">compute_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/psd.html#PSD.compute_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.PSD.compute_spectrum" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute powers spectral density.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sig</strong><span class="classifier">1d or 2d array</span></dt><dd><p>Voltage time series or spike counts.</p>
+</dd>
+<dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in Hz.</p>
+</dd>
+<dt><strong>ar_order</strong><span class="classifier">int, optional, default: None</span></dt><dd><p>Compute an autoregressive spectra when not None.</p>
+</dd>
+<dt><strong>f_range</strong><span class="classifier">tuple of (float, float)</span></dt><dd><p>Frequency range of interest, inclusive.</p>
+</dd>
+<dt><strong>norm_range</strong><span class="classifier">tuple of (float, float), optional, default: None</span></dt><dd><p>The lower and upper normalization range.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int, optional, default: -1</span></dt><dd><p>Number of jobs to run in parralel, when powers is 2d.
+Only available when using an ar_order.</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><p>Additional keyword arguments to pass to compute_spectrum or compute_ar_spectrum.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.PSD.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'huber'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fooof_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxfev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/psd.html#PSD.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.PSD.fit" title="Permalink to this definition">#</a></dt>
+<dd><p>Fit power spectra.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f_range</strong><span class="classifier">tuple of (float, float)</span></dt><dd><p>Frequency range of interest, inclusive.</p>
+</dd>
+<dt><strong>method</strong><span class="classifier">{‘huber’, ‘fooof’}</span></dt><dd><p>Fit using a single scipy curve_fit call using robust regression (‘huber’) or use the
+fooof model (‘fooof’).</p>
+</dd>
+<dt><strong>fooof_init</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Fooof initialization arguments.
+Only used if method is ‘fooof’.</p>
+</dd>
+<dt><strong>f_scale</strong><span class="classifier">float, optional, default: 0.1</span></dt><dd><p>Value of soft margin between inlier and outlier residuals.
+Only used if method is ‘huber’.</p>
+</dd>
+<dt><strong>bounds</strong><span class="classifier">2d array-like</span></dt><dd><p>Parameter bounds.</p>
+</dd>
+<dt><strong>guess</strong><span class="classifier">1d array-like</span></dt><dd><p>Initial parameter estimates.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int</span></dt><dd><p>Number of jobs to run in parralel, when powers is 2d.</p>
+</dd>
+<dt><strong>maxfev</strong><span class="classifier">int</span></dt><dd><p>Maximum number of fitting iterations. Only availble for huber method.</p>
+</dd>
+<dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}</span></dt><dd><p>Specify whether to display a progress bar. Uses ‘tqdm’, if installed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.PSD.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/psd.html#PSD.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.PSD.plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Plot spectra.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ax</strong><span class="classifier">AxesSubplot, optional, default: None</span></dt><dd><p>Axis to plot on.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

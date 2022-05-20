@@ -258,7 +258,7 @@ title="Print to PDF"
 <h1>timescales.sim.sim_spikes_synaptic<a class="headerlink" href="#timescales-sim-sim-spikes-synaptic" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="timescales.sim.sim_spikes_synaptic">
-<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_spikes_synaptic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_neurons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refract</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/spikes.html#sim_spikes_synaptic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_spikes_synaptic" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_spikes_synaptic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refract</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/spikes.html#sim_spikes_synaptic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_spikes_synaptic" title="Permalink to this definition">#</a></dt>
 <dd><p>Simulate a spiking autocorrelation as a synaptic kernel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,8 +268,6 @@ title="Print to PDF"
 <dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in hz.</p>
 </dd>
 <dt><strong>tau</strong><span class="classifier">float</span></dt><dd><p>Timescale, in seconds.</p>
-</dd>
-<dt><strong>n_neurons</strong><span class="classifier">int, optional, default: 1</span></dt><dd><p>Number of neurons to simulate.</p>
 </dd>
 <dt><strong>mu</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Mean of the isi exponential distribuion. Only used if isi is None.</p>
 </dd>
@@ -286,9 +284,7 @@ Larger values, approaching 1, will produce smaller spectral exponents.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>probs</strong><span class="classifier">1d array</span></dt><dd><p>Probability distribution of spikes.</p>
-</dd>
-<dt><strong>spikes</strong><span class="classifier">1d or 2d array</span></dt><dd><p>Sum of spike counts across neurons.</p>
+<dt><strong>spikes</strong><span class="classifier">1d</span></dt><dd><p>Spike counts.</p>
 </dd>
 </dl>
 </dd>

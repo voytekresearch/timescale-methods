@@ -258,7 +258,7 @@ title="Print to PDF"
 <h1>timescales.sim.sim_ou<a class="headerlink" href="#timescales-sim-sim-ou" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="timescales.sim.sim_ou">
-<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_ou</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/ou.html#sim_ou"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_ou" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_ou</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/ou.html#sim_ou"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_ou" title="Permalink to this definition">#</a></dt>
 <dd><p>Simulate spikes as an Ornstein-Uhlenbeck process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,10 +268,6 @@ title="Print to PDF"
 <dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in hz.</p>
 </dd>
 <dt><strong>tau</strong><span class="classifier">float</span></dt><dd><p>Timescale, in seconds.</p>
-</dd>
-<dt><strong>std</strong><span class="classifier">float, optional, default: 1</span></dt><dd><p>Standard deviation of the OU process.</p>
-</dd>
-<dt><strong>mu</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Mean of of the OU process.</p>
 </dd>
 </dl>
 </dd>

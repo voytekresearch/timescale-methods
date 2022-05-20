@@ -620,7 +620,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">fs_spikes</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="n">times_spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs_spikes</span><span class="p">)</span>
 
-<span class="n">_</span><span class="p">,</span> <span class="n">spikes</span> <span class="o">=</span> <span class="n">sim_spikes_synaptic</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs_spikes</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">n_neurons</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">sim_spikes_synaptic</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs_spikes</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 
 <span class="c1"># Simulate LFP</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>

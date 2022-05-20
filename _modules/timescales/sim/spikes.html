@@ -213,12 +213,11 @@ title="Source repository"
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">convolve</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_synaptic_kernel</span><span class="p">,</span> <span class="n">sim_oscillation</span>
+<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_synaptic_kernel</span>
 <span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
 
 
-<div class="viewcode-block" id="sim_spikes_synaptic"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_spikes_synaptic.html#timescales.sim.sim_spikes_synaptic">[docs]</a><span class="k">def</span> <span class="nf">sim_spikes_synaptic</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">n_neurons</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">refract</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_noise</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_sum</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="sim_spikes_synaptic"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_spikes_synaptic.html#timescales.sim.sim_spikes_synaptic">[docs]</a><span class="k">def</span> <span class="nf">sim_spikes_synaptic</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refract</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_noise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Simulate a spiking autocorrelation as a synaptic kernel.</span>
 
 <span class="sd">    Parameters</span>
@@ -229,8 +228,6 @@ title="Source repository"
 <span class="sd">        Sampling rate, in hz.</span>
 <span class="sd">    tau : float</span>
 <span class="sd">        Timescale, in seconds.</span>
-<span class="sd">    n_neurons : int, optional, default: 1</span>
-<span class="sd">        Number of neurons to simulate.</span>
 <span class="sd">    mu : float, optional, default: None</span>
 <span class="sd">        Mean of the isi exponential distribuion. Only used if isi is None.</span>
 <span class="sd">    refract : int, optional, default: None</span>
@@ -245,10 +242,8 @@ title="Source repository"
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    probs : 1d array</span>
-<span class="sd">        Probability distribution of spikes.</span>
-<span class="sd">    spikes : 1d or 2d array</span>
-<span class="sd">        Sum of spike counts across neurons.</span>
+<span class="sd">    spikes : 1d</span>
+<span class="sd">        Spike counts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -262,15 +257,9 @@ title="Source repository"
     <span class="n">probs</span> <span class="o">=</span> <span class="n">sim_spikes_prob</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">isi</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">refract</span><span class="p">,</span> <span class="n">var_noise</span><span class="p">)</span>
 
     <span class="c1"># Select [0=no spike, 1=spike] using probabilities</span>
-    <span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_neurons</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">spikes</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">probs</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
 
-    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">):</span>
-        <span class="n">spikes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">probs</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">return_sum</span><span class="p">:</span>
-        <span class="n">spikes</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">probs</span><span class="p">,</span> <span class="n">spikes</span></div>
+    <span class="k">return</span> <span class="n">spikes</span></div>
 
 
 <div class="viewcode-block" id="sim_spikes_prob"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_spikes_prob.html#timescales.sim.sim_spikes_prob">[docs]</a><span class="k">def</span> <span class="nf">sim_spikes_prob</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">isi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refract</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_noise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -401,60 +390,73 @@ title="Source repository"
     <span class="k">return</span> <span class="n">poisson</span></div>
 
 
-<span class="k">def</span> <span class="nf">sim_probs_combined</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ap_freq</span><span class="p">,</span> <span class="n">pe_freq</span><span class="p">,</span>
-                        <span class="n">ap_sim_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">heights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Simulate spiking probabilities with aperiodic and periodic timescales.</span>
+<span class="k">def</span> <span class="nf">sample_spikes</span><span class="p">(</span><span class="n">probs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Randomly sample spikes from a probability array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    n_seconds : float</span>
-<span class="sd">        Length of the signal, in seconds.</span>
-<span class="sd">    ap_freq : float</span>
-<span class="sd">        Aperiodic frequency. Determines aperiodic timescale.</span>
-<span class="sd">    pe_freq : float</span>
-<span class="sd">        Periodic frequency. Determines periodic timescale.</span>
-<span class="sd">    ap_sim_kwargs : dict, optional, default: None</span>
-<span class="sd">        Keyword arguments to pass to sim_spike_prob.</span>
-<span class="sd">    heights : tuple of float, optional, default: None</span>
-<span class="sd">        Max probabilities as tuple of (aperiodic, periodic).</span>
+<span class="sd">    probs : 1d or 2d array</span>
+<span class="sd">        Probabilities to sample. Assumed to be between zero and one.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    probs_ap : 1d array</span>
-<span class="sd">        Probability of aperiodic spiking.</span>
-<span class="sd">    probs_pe : 1d array</span>
-<span class="sd">        Probability of periodic spiking.</span>
+<span class="sd">    spikes : 1d or 2d array</span>
+<span class="sd">        Spike counts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">convert_knee_val</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
-        <span class="n">height_ap</span><span class="p">,</span> <span class="n">height_pe</span> <span class="o">=</span> <span class="n">heights</span>
+    <span class="k">if</span> <span class="n">probs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">)):</span>
+            <span class="n">spikes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_spikes</span><span class="p">(</span><span class="n">probs</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">height_ap</span> <span class="o">=</span> <span class="mf">.5</span>
-        <span class="n">height_pe</span> <span class="o">=</span> <span class="mf">.5</span>
+        <span class="n">spikes</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">probs</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="n">ap_sim_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ap_sim_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">spikes</span>
 
-    <span class="c1"># Aperiodic</span>
-    <span class="n">ap_tau</span> <span class="o">=</span> <span class="n">convert_knee_val</span><span class="p">(</span><span class="n">ap_freq</span><span class="p">)</span>
 
-    <span class="n">kernel</span> <span class="o">=</span> <span class="n">sim_synaptic_kernel</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ap_tau</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ap_tau</span><span class="p">)</span>
-    <span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bin_spikes</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bin spikes.</span>
 
-    <span class="n">probs_ap</span> <span class="o">=</span> <span class="n">sim_spikes_prob</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="o">**</span><span class="n">ap_sim_kwargs</span><span class="p">)</span>
-    <span class="n">probs_ap</span> <span class="o">-=</span> <span class="n">probs_ap</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-    <span class="n">probs_ap</span> <span class="o">/=</span> <span class="n">probs_ap</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="n">probs_ap</span> <span class="o">*=</span> <span class="n">height_ap</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spikes : 1d or 2d array</span>
+<span class="sd">        Spike counts.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, in Hertz.</span>
+<span class="sd">    bin_size : int</span>
+<span class="sd">        Number of samples per bin.</span>
+<span class="sd">    mean : float, optional, default: None</span>
+<span class="sd">        Mean to normalize signal to.</span>
+<span class="sd">    variance : float, optional, default: None</span>
+<span class="sd">        Variance to normalize signal to.</span>
 
-    <span class="c1"># Periodic</span>
-    <span class="n">probs_pe</span> <span class="o">=</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">pe_freq</span><span class="p">)</span>
-    <span class="n">probs_pe</span> <span class="o">-=</span> <span class="n">probs_pe</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-    <span class="n">probs_pe</span> <span class="o">/=</span> <span class="n">probs_pe</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="n">probs_pe</span> <span class="o">*=</span> <span class="n">height_pe</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    spikes_bin : 1d or 2d array</span>
+<span class="sd">        Binned spike counts</span>
+<span class="sd">    fs_bin : float</span>
+<span class="sd">        Updated sampling rate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">probs_ap</span><span class="p">,</span> <span class="n">probs_pe</span>
+    <span class="k">if</span> <span class="n">spikes</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">)):</span>
+
+            <span class="n">_spikes_bin</span><span class="p">,</span> <span class="n">fs_bin</span> <span class="o">=</span> <span class="n">bin_spikes</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">spikes_bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_spikes_bin</span><span class="p">)))</span>
+
+            <span class="n">spikes_bin</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">_spikes_bin</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">spikes_bin</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">variance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spikes_bin</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">spikes_bin</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="n">variance</span><span class="p">)</span>
+
+        <span class="n">fs_bin</span> <span class="o">=</span> <span class="n">fs</span> <span class="o">/</span> <span class="n">bin_size</span>
+
+    <span class="k">return</span> <span class="n">spikes_bin</span><span class="p">,</span> <span class="n">fs_bin</span>
 </pre></div>
 
               </div>

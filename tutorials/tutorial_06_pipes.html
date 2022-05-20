@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>ACF Objects &#8212; timescales 0.0.1-dev documentation</title>
+    <title>06. Pipes &#8212; timescales 0.0.1-dev documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -45,6 +45,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Figures" href="../figures/index.html" />
+    <link rel="prev" title="05. Estimation Bias" href="tutorial_05_bias.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -253,18 +255,23 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-1d">
-   Fitting: 1d
+  <a class="reference internal nav-link" href="#Simulation">
+   Simulation
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-2d">
-   Fitting: 2d
+  <a class="reference internal nav-link" href="#Transform">
+   Transform
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Results">
-   Results
+  <a class="reference internal nav-link" href="#Fit">
+   Fit
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Run">
+   Run
   </a>
  </li>
 </ul>
@@ -276,7 +283,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>ACF Objects</h1>
+                <h1>06. Pipes</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -287,18 +294,23 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-1d">
-   Fitting: 1d
+  <a class="reference internal nav-link" href="#Simulation">
+   Simulation
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-2d">
-   Fitting: 2d
+  <a class="reference internal nav-link" href="#Transform">
+   Transform
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Results">
-   Results
+  <a class="reference internal nav-link" href="#Fit">
+   Fit
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Run">
+   Run
   </a>
  </li>
 </ul>
@@ -564,84 +576,113 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">acf</span> <span class="k">as</span> <span class="n">compute_acf</span>
-
 <span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_oscillation</span>
-<span class="kn">from</span> <span class="nn">neurodsp.spectral</span> <span class="kn">import</span> <span class="n">compute_spectrum</span>
 
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_ou</span>
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">ACF</span>
+<span class="kn">from</span> <span class="nn">timescales.pipe</span> <span class="kn">import</span> <span class="n">Pipe</span>
 <span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
-<span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
+<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">sim_synaptic_kernel</span>
+
 <span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
 <span class="n">set_default_rc</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<section id="ACF-Objects">
-<h1>ACF Objects<a class="headerlink" href="#ACF-Objects" title="Permalink to this headline">#</a></h1>
-<p>This tutorials explores the use of the ACF objects.</p>
+<section id="06.-Pipes">
+<h1>06. Pipes<a class="headerlink" href="#06.-Pipes" title="Permalink to this headline">#</a></h1>
+<p>Pipe objects provide a unified class to simulate stochastic signals, compute PSD and/or ACF, fit models, and extract timecales. These objects may be initialize with an array of random seeds for reproducible results. This allows various simulation and quantification methods to be compared to one another.</p>
+<p>Pipes are specificed using the <code class="docutils literal notranslate"><span class="pre">add_step</span></code> method, follow by a step string argument:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simulate</span></code> followed by a simulation function argument that accepts n_seconds and fs as the first two poistionals, follow by an arbitary number of keyword arguments supported by the function.</p></li>
+</ol>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sample</span></code> may used to sample spikes from a continuous simulation and to upsample the the continuous function by specifiying a larger sampling frequency, <code class="docutils literal notranslate"><span class="pre">fs</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin</span></code> may be used to bin spikes together.</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">transform</span></code> followed by either <code class="docutils literal notranslate"><span class="pre">PSD</span></code> or <code class="docutils literal notranslate"><span class="pre">ACF</span></code> and additionally supported keyword arguements.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit</span></code> followed by a list of supported attributes to return along with fit keyword arguements. For a list of attributes and supported kwargs, see the PSD and ACF classes in the timescales.fit.</p></li>
+</ol>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">knee_freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="n">knee_freq</span><span class="p">)</span>
-<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">50</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize a pipeline</span>
+<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 
-<span class="c1"># Simulate a signal</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sig_osc</span> <span class="o">=</span> <span class="n">sig</span> <span class="o">+</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<section id="Simulation">
+<h2>Simulation<a class="headerlink" href="#Simulation" title="Permalink to this headline">#</a></h2>
+<p>Multiple simulation method calls may be used to flexibly combine signals. The sample method allows sampling spikes from a probability distribution and also also probability upsampling for faster spike simulations. The bin method called last to sum spikes every five samples.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute spectrum using method</span>
-<span class="n">acf</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">()</span>
-<span class="n">acf</span><span class="o">.</span><span class="n">compute_acf</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tau</span> <span class="o">=</span>  <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">sim_synaptic_kernel</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">tau</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+
+
+<span class="c1"># Simulation Steps</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_oscillation</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.1</span><span class="p">))</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;sample&#39;</span><span class="p">)</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+</section>
+<section id="Transform">
+<h2>Transform<a class="headerlink" href="#Transform" title="Permalink to this headline">#</a></h2>
+<p>The transform method is used to transform a time series into either a PSD or ACF. A number of tranforms may be sequentially stacked, each to be ran on the same simulations.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Or using an external function</span>
-<span class="n">corrs</span> <span class="o">=</span> <span class="n">compute_acf</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">qstat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fft</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Welch&#39;s PSD</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
 
-<span class="n">acf</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">corrs</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="c1"># AR PSD</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># ACF from Welch&#39;s PSD</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;ACF&#39;</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">from_psd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># ACF from AR PSD</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;ACF&#39;</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">from_psd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">psd_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ar_order&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
-<section id="Fitting:-1d">
-<h2>Fitting: 1d<a class="headerlink" href="#Fitting:-1d" title="Permalink to this headline">#</a></h2>
-<p>PSD objects support two ACF models. The first is a simple exponential decay - appropropriate when no oscillations are present. A second damped cosine model is available when oscillations are present. However, when multiple oscillatons are present, the PSD models is suggested.</p>
-<div class="nbinput docutils container">
+</section>
+<section id="Fit">
+<h2>Fit<a class="headerlink" href="#Fit" title="Permalink to this headline">#</a></h2>
+<p>A fit call for each transform can be added to the pipeline. A single fit call may be added to the pipeline if all of the transforms are of the same type.</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-
-<span class="c1"># Exponential</span>
-<span class="n">acf</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-<span class="n">acf</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Exponential Decay Model&#39;</span><span class="p">)</span>
-
-<span class="c1"># Damped cosine</span>
-<span class="n">acf_cos</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">()</span>
-<span class="n">acf_cos</span><span class="o">.</span><span class="n">compute_acf</span><span class="p">(</span><span class="n">sig_osc</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="n">acf_cos</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">with_cos</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">acf_cos</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Damped Cosine&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Run">
+<h2>Run<a class="headerlink" href="#Run" title="Permalink to this headline">#</a></h2>
+<p>The pipeline may be excute in parallel.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run pipeline</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -649,42 +690,27 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_Untitled_6_0.png" src="../_images/tutorials_Untitled_6_0.png" />
-</div>
-</div>
-</section>
-<section id="Fitting:-2d">
-<h2>Fitting: 2d<a class="headerlink" href="#Fitting:-2d" title="Permalink to this headline">#</a></h2>
-<p>2d arrays of signals or correlations are supported.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">5</span>
-
-<span class="n">nsigs</span> <span class="o">=</span> <span class="mi">20</span>
-
-<span class="n">sigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nsigs</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
-
-<span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsigs</span><span class="p">):</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-    <span class="n">sigs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">sigs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">knee_freq</span><span class="p">)</span>
-</pre></div>
-</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e170a495b563406980ec2d44daa1e84c", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit</span>
-<span class="n">acf</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">()</span>
-<span class="n">acf</span><span class="o">.</span><span class="n">compute_acf</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="n">acf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">with_cos</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">acf</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Truth&#39;</span><span class="p">)</span>
+
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Welch</span><span class="se">\&#39;</span><span class="s1">s PSD&#39;</span><span class="p">,</span>  <span class="s1">&#39;AR PSD&#39;</span><span class="p">,</span> <span class="s1">&#39;Welch</span><span class="se">\&#39;</span><span class="s1">s ACF&#39;</span><span class="p">,</span> <span class="s1">&#39;AR ACF&#39;</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Knee Frequency (Hertz)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Pipe Results&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -692,60 +718,8 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_Untitled_9_0.png" src="../_images/tutorials_Untitled_9_0.png" />
+<img alt="../_images/tutorials_tutorial_06_pipes_11_0.png" src="../_images/tutorials_tutorial_06_pipes_11_0.png" />
 </div>
-</div>
-</section>
-<section id="Results">
-<h2>Results<a class="headerlink" href="#Results" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">acf</span><span class="o">.</span><span class="n">param_names</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[&#39;exp_tau&#39;,
- &#39;osc_tau&#39;,
- &#39;osc_gamma&#39;,
- &#39;osc_freq&#39;,
- &#39;amp_ratio&#39;,
- &#39;height&#39;,
- &#39;offset&#39;]
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">acf</span><span class="o">.</span><span class="n">params</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-array([[1.41596274e-02, 5.75828900e-02, 1.00000000e-01, 4.96851887e+00,
-        6.11214625e-01, 7.78241857e-01, 2.19397589e-01],
-       [1.78506249e-02, 3.44993307e-05, 2.96296520e-12, 5.00368526e+00,
-        8.07856339e-01, 7.74575854e-01, 1.86776492e-01],
-       [1.94496772e-02, 9.99999989e-01, 9.60349691e-02, 5.00253943e+00,
-        7.34143279e-01, 8.31915435e-01, 1.78194125e-01],
-       [1.75063738e-02, 4.35207947e-03, 7.12521139e-04, 4.99162831e+00,
-        8.10755871e-01, 7.76777111e-01, 2.05387302e-01],
-       [1.50673823e-02, 9.99999997e-01, 1.17410465e-13, 5.00554451e+00,
-        7.77721345e-01, 8.14000705e-01, 1.95504667e-01]])
-</pre></div></div>
 </div>
 </section>
 </section>
@@ -758,6 +732,20 @@ array([[1.41596274e-02, 5.75828900e-02, 1.00000000e-01, 4.96851887e+00,
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="tutorial_05_bias.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">05. Estimation Bias</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="../figures/index.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Figures</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
             </footer>
         </div>

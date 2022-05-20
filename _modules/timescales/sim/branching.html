@@ -208,48 +208,12 @@ title="Source repository"
   <h1>Source code for timescales.sim.branching</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Branching simulations.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<span class="k">def</span> <span class="nf">sim_branching_spikes</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">lambda_h</span><span class="p">,</span> <span class="n">lambda_a</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_neurons</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Simulate spikes from a branching Poisson process.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    n_seconds : float</span>
-<span class="sd">        Length of the signal, in seconds.</span>
-<span class="sd">    fs : float</span>
-<span class="sd">        Sampling rate, in hz.</span>
-<span class="sd">    tau : float</span>
-<span class="sd">        Timescale, in seconds. Determines branching parameter, m.</span>
-<span class="sd">    lambda_h : float</span>
-<span class="sd">        Poisson lambda constant.</span>
-<span class="sd">    lamda_a : float</span>
-<span class="sd">        Initial Poisson lambda weight.</span>
-<span class="sd">        If None, default to (tau * fs) * lambda_h.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    probs : 1d array</span>
-<span class="sd">        Probability distribution of spikes.</span>
-<span class="sd">    spikes : 1d or 2d array</span>
-<span class="sd">        Sum of spike counts across neurons.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
-
-    <span class="n">probs</span> <span class="o">=</span> <span class="n">sim_branching</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">lambda_h</span><span class="p">,</span> <span class="n">lambda_a</span><span class="p">)</span>
-    <span class="n">probs</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">probs</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
-
-    <span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">):</span>
-        <span class="n">spikes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">probs</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">probs</span><span class="p">,</span> <span class="n">spikes</span>
-
-
-<div class="viewcode-block" id="sim_branching"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_branching.html#timescales.sim.sim_branching">[docs]</a><span class="k">def</span> <span class="nf">sim_branching</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">lambda_h</span><span class="p">,</span> <span class="n">lambda_a</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="sim_branching"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_branching.html#timescales.sim.sim_branching">[docs]</a><span class="k">def</span> <span class="nf">sim_branching</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">lambda_h</span><span class="p">,</span> <span class="n">lambda_a</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Simulate a branching Poisson process.</span>
 
 <span class="sd">    Parameters</span>
@@ -265,6 +229,10 @@ title="Source repository"
 <span class="sd">    lamda_a : float</span>
 <span class="sd">        Initial Poisson lambda weight.</span>
 <span class="sd">        If None, default to (tau * fs) * lambda_h.</span>
+<span class="sd">    mean : float, optional, default: None</span>
+<span class="sd">        Mean to normalize signal to.</span>
+<span class="sd">    variance : float, optional, default: None</span>
+<span class="sd">        Variance to normalize signal to.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -296,6 +264,10 @@ title="Source repository"
     <span class="c1"># Poisson with memory</span>
     <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)):</span>
         <span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="n">m</span> <span class="o">*</span> <span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lambda_h</span><span class="p">)</span>
+
+    <span class="c1"># Normalize</span>
+    <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">variance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="n">variance</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sig</span></div>
 </pre></div>

@@ -210,8 +210,9 @@ title="Source repository"
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
 
-<div class="viewcode-block" id="sim_ou"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_ou.html#timescales.sim.sim_ou">[docs]</a><span class="k">def</span> <span class="nf">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
+<div class="viewcode-block" id="sim_ou"><a class="viewcode-back" href="../../../generated/timescales.sim.sim_ou.html#timescales.sim.sim_ou">[docs]</a><span class="k">def</span> <span class="nf">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Simulate spikes as an Ornstein-Uhlenbeck process.</span>
 
 <span class="sd">    Parameters</span>
@@ -222,16 +223,13 @@ title="Source repository"
 <span class="sd">        Sampling rate, in hz.</span>
 <span class="sd">    tau : float</span>
 <span class="sd">        Timescale, in seconds.</span>
-<span class="sd">    std : float, optional, default: 1</span>
-<span class="sd">        Standard deviation of the OU process.</span>
-<span class="sd">    mu : float, optional, default: None</span>
-<span class="sd">        Mean of of the OU process.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    sig : 1d or 2d array</span>
 <span class="sd">        Signal containing timescale of interest.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">variance</span> <span class="o">**</span> <span class="mf">.5</span>
 
     <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
 
@@ -244,7 +242,10 @@ title="Source repository"
     <span class="c1"># Simulate the OU process</span>
     <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">sig</span><span class="p">[</span><span class="n">ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span> <span class="o">*</span> \
-            <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">sqrtdt</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+            <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">sqrtdt</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+
+    <span class="c1"># Enforce exact mean and variance</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="n">variance</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sig</span></div>
 </pre></div>

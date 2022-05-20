@@ -258,7 +258,7 @@ title="Print to PDF"
 <h1>timescales.sim.sim_branching<a class="headerlink" href="#timescales-sim-sim-branching" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="timescales.sim.sim_branching">
-<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_branching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/branching.html#sim_branching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_branching" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">timescales.sim.</span></span><span class="sig-name descname"><span class="pre">sim_branching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/sim/branching.html#sim_branching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.sim.sim_branching" title="Permalink to this definition">#</a></dt>
 <dd><p>Simulate a branching Poisson process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -273,6 +273,10 @@ title="Print to PDF"
 </dd>
 <dt><strong>lamda_a</strong><span class="classifier">float</span></dt><dd><p>Initial Poisson lambda weight.
 If None, default to (tau * fs) * lambda_h.</p>
+</dd>
+<dt><strong>mean</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Mean to normalize signal to.</p>
+</dd>
+<dt><strong>variance</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Variance to normalize signal to.</p>
 </dd>
 </dl>
 </dd>

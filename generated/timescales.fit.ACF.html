@@ -310,20 +310,110 @@ title="Print to PDF"
 <tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.ACF.__init__" title="timescales.fit.ACF.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([lags, corrs, fs])</p></td>
 <td><p>Initialize object.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_acf</span></code>(sig, fs[, nlags, normalize, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.fit.ACF.compute_acf" title="timescales.fit.ACF.compute_acf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_acf</span></code></a>(sig, fs[, nlags, normalize, ...])</p></td>
 <td><p>Compute autocorrelation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>([gen_fits, gen_components, with_cos, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.ACF.fit" title="timescales.fit.ACF.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>([gen_fits, gen_components, with_cos, ...])</p></td>
 <td><p>Fit without an oscillitory component.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_corrs_fit</span></code>([gen_components])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#timescales.fit.ACF.gen_corrs_fit" title="timescales.fit.ACF.gen_corrs_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_corrs_fit</span></code></a>([gen_components])</p></td>
 <td><p>Generate fit and r-squared.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>([ax, title])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.ACF.plot" title="timescales.fit.ACF.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([ax, title])</p></td>
 <td><p>Plot ACF.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.ACF.compute_acf">
+<span class="sig-name descname"><span class="pre">compute_acf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_psd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/acf.html#ACF.compute_acf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.ACF.compute_acf" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute autocorrelation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sig</strong><span class="classifier">1d or 2d array</span></dt><dd><p>Voltage time series or spike counts.</p>
+</dd>
+<dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in Hz.</p>
+</dd>
+<dt><strong>nlags</strong><span class="classifier">int, optional, default: None</span></dt><dd><p>Number of lags to compute. None defaults to the sampling rate, fs.</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Normalizes from zero to one when True.</p>
+</dd>
+<dt><strong>from_psd</strong><span class="classifier">bool, optional, default: False</span></dt><dd><p>Compute correlations from the inverse FFT of the PSD.</p>
+</dd>
+<dt><strong>psd_kwargs</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Compute spectrum kwargs. Only used if from_psd is True.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int, optional, default: -1</span></dt><dd><p>Number of jobs to run in parralel, when corrs is 2d.
+Default is equal to multiprocessing’s cpu_count().</p>
+</dd>
+<dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}</span></dt><dd><p>Specify whether to display a progress bar. Uses ‘tqdm’, if installed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.ACF.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen_fits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_cos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxfev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/acf.html#ACF.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.ACF.fit" title="Permalink to this definition">#</a></dt>
+<dd><p>Fit without an oscillitory component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gen_fits</strong><span class="classifier">bool, optional, default: False</span></dt><dd><p>Generates fit array and r-squared when True.
+Does not generate full fits when False to prevent OOM.</p>
+</dd>
+<dt><strong>gen_components</strong><span class="classifier">bool, optional, default: False</span></dt><dd><p>When gen_fits and with_cos are True, the exponential decay and cosine
+components are be generated separately when this parameter is True.</p>
+</dd>
+<dt><strong>with_cos</strong><span class="classifier">bool, optional, default: False</span></dt><dd><p>Includes oscillatory component as a damped cosine.</p>
+</dd>
+<dt><strong>guess</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Estimated parameters as either:
+[tau, height, offset] when with_cos is False, or
+[exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, height, offset].</p>
+</dd>
+<dt><strong>bounds</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Parameters bounds as [(<a href="#id5"><span class="problematic" id="id6">*</span></a>lower_bounds), (<a href="#id7"><span class="problematic" id="id8">*</span></a>upper_bounds)].</p>
+</dd>
+<dt><strong>maxfev</strong><span class="classifier">int</span></dt><dd><p>Maximum number of fitting iterations.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int</span></dt><dd><p>Number of jobs to run in parralel, when corrs is 2d.</p>
+</dd>
+<dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}</span></dt><dd><p>Specify whether to display a progress bar. Uses ‘tqdm’, if installed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.ACF.gen_corrs_fit">
+<span class="sig-name descname"><span class="pre">gen_corrs_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/acf.html#ACF.gen_corrs_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.ACF.gen_corrs_fit" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate fit and r-squared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gen_components</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Generates oscillatory and exponential components separately, in additon to
+combined, when True.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timescales.fit.ACF.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/acf.html#ACF.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.ACF.plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Plot ACF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ax</strong><span class="classifier">AxesSubplot, optional, default: None</span></dt><dd><p>Axis to plot on.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
