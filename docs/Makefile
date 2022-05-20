@@ -21,14 +21,15 @@ help:
 # Custom cleaner that also removes the generated files from sphinx-gallery
 clean:
 	rm -rf $(BUILDDIR)/*
-	rm -rf auto_examples
+	rm -rf auto_*
 	rm -rf generated
+	rm -rf _build
+	rm -rf html
 
 # Check that builds site with nitpicky checking, and also does post-hoc link check
 check:
 	make SPHINXOPTS="-n" html
 	make linkcheck
-
 
 # Build the html site, and push it to gh-pages branch of repo to deploy
 install:
@@ -38,7 +39,7 @@ install:
 	#   --no-checkout just fetches the root folder without content
 	#   --depth 1 is a speed optimization since we don't need the history prior to the last commit
 	#   -b gh-pages fetches only the branch for the gh-pages
-	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/voytekresearch/timescale-methods _build/gh_pages
+	git clone -b gh-pages --single-branch --no-checkout --depth 1 git@github.com:voytekresearch/timescale-methods.git _build/gh_pages
 	# A .nojekyll file tells Github pages to bypass Jekyll processing
 	touch _build/gh_pages/.nojekyll
 	# Build the sphinx site

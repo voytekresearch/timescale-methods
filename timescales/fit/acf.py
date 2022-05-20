@@ -3,6 +3,8 @@
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
+import matplotlib.pyplot as plt
+
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.fft import ifft
@@ -12,7 +14,9 @@ from neurodsp.spectral import compute_spectrum
 from timescales.autoreg import compute_ar_spectrum
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
-from timescales.fit.utils import progress_bar, check_guess_and_bounds, convert_knee_val
+from timescales.utils import normalize as normalize_acf
+from timescales.conversions import convert_knee, psd_to_acf
+from timescales.fit.utils import progress_bar, check_guess_and_bounds
 
 
 class ACF:
@@ -99,7 +103,7 @@ class ACF:
             Compute correlations from the inverse FFT of the PSD.
         psd_kwargs : dict, optional, default: None
             Compute spectrum kwargs. Only used if from_psd is True.
-        n_jobs : int
+        n_jobs : int, optional, default: -1
             Number of jobs to run in parralel, when corrs is 2d.
             Default is equal to multiprocessing's cpu_count().
         progress : {None, 'tqdm', 'tqdm.notebook'}
@@ -107,7 +111,7 @@ class ACF:
         """
 
         self.fs = fs
-        nlags = self.fs if nlags is None else nlags
+        nlags = int(self.fs) if nlags is None else nlags
 
         if not from_psd:
 
@@ -138,40 +142,38 @@ class ACF:
             # Compute spectrum
             if 'ar_order' in psd_kwargs:
                 ar_order = _psd_kwargs.pop('ar_order')
-                _, powers = compute_ar_spectrum(sig, self.fs, ar_order, **_psd_kwargs)
+                freqs, powers = compute_ar_spectrum(sig, self.fs, ar_order, **_psd_kwargs)
             else:
-                _, powers = compute_spectrum(sig, self.fs, **_psd_kwargs)
+                freqs, powers = compute_spectrum(sig, self.fs, **_psd_kwargs)
 
             # Normalize power if requested
             if norm_range is not None:
-                powers = ACF.normalize(powers, norm_range)
+                powers = normalize_acf(powers, *norm_range)
 
             # Take inverse fft to get acf
             if sig.ndim == 2:
 
                 for ind in range(len(powers)):
 
-                    _corrs = ifft(powers[ind]).real
+                    self.lags, _corrs = psd_to_acf(freqs, powers[ind], fs, (0, 1))
 
                     if ind == 0:
-                        self.corrs = np.zeros((len(powers), len(_corrs)//2))
+                        self.corrs = np.zeros((len(powers), len(_corrs)))
 
-                    self.corrs[ind] = _corrs[:len(_corrs)//2]
+                    self.corrs[ind] = _corrs
 
-                self.lags = np.arange(1, len(self.corrs[0])+1)
+                self.lags = self.lags[:nlags]
                 self.corrs = self.corrs[:, :nlags]
 
             else:
 
-                self.corrs = ifft(powers).real
-                self.corrs = self.corrs[:len(self.corrs)//2]
-                self.lags = np.arange(1, 2*len(self.corrs)+1, 2)
-                self.corrs = self.corrs[:nlags]
+                self.lags, self.corrs = psd_to_acf(freqs, powers, fs, (0, 1))
 
             self.lags = self.lags[:nlags]
+            self.corrs = self.corrs[:nlags]
 
         if normalize:
-            self.corrs = ACF.normalize(self.corrs)
+            self.corrs = normalize_acf(self.corrs, 0, 1)
 
 
     def fit(self, gen_fits=True, gen_components=False, with_cos=False,
@@ -209,8 +211,8 @@ class ACF:
         if not with_cos:
             # Non-oscillatory model
             self.param_names = ['tau', 'height', 'offset']
-            self.params, self.guess, self.bounds = fit_acf(self.corrs, self.fs, self.lags, guess=guess,
-                bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
+            self.params, self.guess, self.bounds = fit_acf(self.corrs, self.fs, self.lags,
+                guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
         else:
             # Oscillatory model
             self.param_names = ['exp_tau', 'osc_tau', 'osc_gamma', 'osc_freq',
@@ -218,14 +220,13 @@ class ACF:
             self.params, self.guess, self.bounds = fit_acf_cos(self.corrs, self.fs, self.lags,
                 guess=guess, bounds=bounds, maxfev=maxfev, n_jobs=n_jobs, progress=progress)
 
-        self.tau = self.params[0]
-        self.knee_freq = convert_knee_val(self.tau)
-
-        if gen_fits:
+        if gen_fits and not np.isnan(self.params).any():
             self.gen_corrs_fit(gen_components)
-
-        self.tau = self.params[0]
-        self.knee_freq = convert_knee_val(self.params[0])
+            self.tau = self.params[0]
+            self.knee_freq = convert_knee(self.tau)
+        else:
+            self.tau = np.nan
+            self.knee_freq = np.nan
 
 
     def gen_corrs_fit(self, gen_components=False):
@@ -247,7 +248,7 @@ class ACF:
 
             for ind in range(len(self.params)):
                 self.corrs_fit[ind] = sim_func(self.lags, self.fs, *self.params[ind])
-                self.rsq[ind] = np.corrcoef(self.corrs, self.corrs_fit[ind])[0][1] ** 2
+                self.rsq[ind] = np.corrcoef(self.corrs[ind], self.corrs_fit[ind])[0][1] ** 2
 
         else:
             self.corrs_fit = sim_func(self.lags, self.fs, *self.params)
@@ -294,15 +295,42 @@ class ACF:
             raise ValueError('Call the fit method with fit_cos=True for separable components.')
 
 
-    @staticmethod
-    def normalize(corrs, norm_range=(0, 1)):
-        """Normalize correlation from 0 to 1."""
-        if corrs.ndim == 2:
-            for ind in range(len(corrs)):
-                corrs[ind] = ACF.normalize(corrs[ind])
-        else:
-            corrs = np.interp(corrs, (corrs.min(), corrs.max()), norm_range)
-        return corrs
+    def plot(self, ax=None, title=None):
+        """Plot ACF.
+
+        Parameters
+        ----------
+        ax : AxesSubplot, optional, default: None
+            Axis to plot on.
+        """
+
+        if ax is None:
+            _, ax = plt.subplots(figsize=(8, 6))
+
+        if self.corrs is None:
+            raise ValueError('corrs and lags are undefined.')
+
+        # Plot ACF
+        if self.corrs.ndim == 1:
+            ax.plot(self.lags, self.corrs, label='ACF', color='C0')
+        elif self.corrs.ndim == 2:
+            ax.plot(self.lags, self.corrs.mean(axis=0), label='ACF', color='C0')
+            for corrs in self.corrs:
+                ax.plot(self.lags, corrs, color='C0', alpha=.1)
+
+        # Plot fits
+        if self.corrs_fit is not None and self.corrs_fit.ndim == 1:
+            ax.plot(self.lags, self.corrs_fit, label='Fit', ls='--', color='C1')
+        elif self.corrs_fit is not None and self.corrs_fit.ndim == 2:
+            ax.plot(self.lags, self.corrs_fit.mean(axis=0),
+                   ls='--', color='C1', label='Mean Fit')
+
+        ax.legend()
+        ax.set_ylabel('Correlation')
+        ax.set_xlabel('Lag')
+
+        title = 'ACF Model Fit' if title is None else title
+        ax.set_title(title)
 
 
 def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=1000, progress=None):

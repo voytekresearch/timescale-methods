@@ -6,10 +6,16 @@ This module provides timescale simulation and fitting methods.
 These simulations allow the validation and comparison of different timescale estimation methods
 including PSD and ACF.
 
-|ProjectStatus|_
+|ProjectStatus|_ |BuildStatus|_ |Coverage|_
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
 .. _ProjectStatus: https://www.repostatus.org/#active
+
+.. |BuildStatus| image:: https://github.com/github/docs/actions/workflows/main.yml/badge.svg
+.. _BuildStatus: https://github.com/voytekresearch/timescale-methods/actions/workflows/build.yml
+
+.. |Coverage| image:: https://codecov.io/gh/voytekresearch/timescale-methods/branch/main/graph/badge.svg
+.. _Coverage: https://codecov.io/gh/voytekresearch/timescale-methods
 
 
 Dependencies

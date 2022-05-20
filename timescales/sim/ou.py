@@ -2,8 +2,9 @@
 
 import numpy as np
 
+from neurodsp.utils.norm import normalize_sig
 
-def sim_ou(n_seconds, fs, tau, std=.1, mu=10.):
+def sim_ou(n_seconds, fs, tau, mean=0., variance=1.):
     """Simulate spikes as an Ornstein-Uhlenbeck process.
 
     Parameters
@@ -14,16 +15,13 @@ def sim_ou(n_seconds, fs, tau, std=.1, mu=10.):
         Sampling rate, in hz.
     tau : float
         Timescale, in seconds.
-    std : float, optional, default: 1
-        Standard deviation of the OU process.
-    mu : float, optional, default: None
-        Mean of of the OU process.
 
     Returns
     -------
     sig : 1d or 2d array
         Signal containing timescale of interest.
     """
+    std = variance ** .5
 
     n_samples = int(n_seconds * fs)
 
@@ -36,6 +34,9 @@ def sim_ou(n_seconds, fs, tau, std=.1, mu=10.):
     # Simulate the OU process
     for ind in range(n_samples - 1):
         sig[ind + 1] = sig[ind] + (1/fs) * \
-            (-(sig[ind] - mu) / tau) + sigma * sqrtdt * np.random.randn()
+            (-(sig[ind] - mean) / tau) + sigma * sqrtdt * np.random.randn()
+
+    # Enforce exact mean and variance
+    sig = normalize_sig(sig, mean=mean, variance=variance)
 
     return sig

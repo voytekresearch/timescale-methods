@@ -7,6 +7,7 @@ from multiprocessing import Pool, cpu_count
 import numpy as np
 from scipy.signal import resample
 
+from timescales.sim import bin_spikes
 from timescales.fit import PSD, ACF
 from timescales.fit.utils import progress_bar
 
@@ -58,7 +59,27 @@ class Pipe:
         """
 
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
+        self.seeds = [np.random.randint(0, 1000)] if self.seeds is None else self.seeds
 
+        # Ensure correct order of calls in pipe
+        fit_inds= [ind for ind in range(len(self.pipe))
+                   if self.pipe[ind]['step'] == 'fit']
+
+        trans_inds= [ind for ind in range(len(self.pipe))
+                     if self.pipe[ind]['step'] == 'transform']
+
+        pipe = self.pipe[:min([*fit_inds, *trans_inds])]
+
+        if len(fit_inds) > 1 and len(trans_inds) > 1:
+
+            # Rearrange steps into valid order
+            for tind, find in zip(trans_inds, fit_inds):
+                pipe.append(self.pipe[tind])
+                pipe.append(self.pipe[find])
+
+            self.pipe = pipe
+
+        # Run
         self.results = [] if  self.results is None else self.results
 
         with Pool(processes=n_jobs) as pool:
@@ -84,9 +105,6 @@ class Pipe:
         np.random.seed(seed)
 
         # Clear
-        #self.model = None
-        #self.result = None
-
         for node in self.pipe:
             getattr(self, node['step'])(*node['args'], **node['kwargs'])
 
@@ -151,6 +169,7 @@ class Pipe:
             self.result = [self.result, res]
         else:
             self.result.append(res)
+
 
     def transform(self, method, **compute_kwargs):
         """Fit timescale of simulation.
@@ -265,8 +284,7 @@ class Pipe:
         bin_size : int
             Number of samples per bin.
         """
-        self.sig = self.sig.reshape(-1, bin_size).sum(axis=1)
-        self.fs = self.fs / bin_size
+        self.sig, self.fs = bin_spikes(self.sig, self.fs, bin_size)
 
 
     @staticmethod

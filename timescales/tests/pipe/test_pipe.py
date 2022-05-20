@@ -6,6 +6,7 @@ import numpy as np
 from timescales.sim import sim_spikes_prob
 from neurodsp.sim import sim_oscillation, sim_synaptic_kernel
 
+from timescales.conversions import convert_knee
 from timescales.pipe import Pipe
 
 def test_pipe_init():
@@ -60,7 +61,7 @@ def test_pipe_spikes():
     # Settings
     n_seconds = 5
     fs = 5000
-    tau = .016
+    tau = convert_knee(10)
     kernel = sim_synaptic_kernel(5 * tau, fs, 0, tau)
 
     # Initialize pipeline
@@ -85,25 +86,36 @@ def test_pipe_run():
     # Settings
     n_seconds = 2
     fs = 1000
-    tau = .016
+    tau = convert_knee(10)
     kernel = sim_synaptic_kernel(5 * tau, fs, 0, tau)
 
     # PSD
     pipe_psd = Pipe(n_seconds, fs, seeds=list(range(5)))
-    pipe_psd.add_step('simulate', sim_spikes_prob, kernel, rescale=(0, .8))
+    pipe_psd.add_step('simulate', sim_spikes_prob, kernel, rescale=(0, 1))
     pipe_psd.add_step('transform', 'PSD', ar_order=5)
-    pipe_psd.add_step('fit', ['knee_freq', 'rsq', 'tau'])
+    pipe_psd.add_step('fit', ['knee_freq', 'rsq', 'tau'], f_scale=1)
     pipe_psd.run()
 
     # ACF
     pipe_acf = Pipe(n_seconds, fs, seeds=list(range(5)))
-    pipe_acf.add_step('simulate', sim_spikes_prob, kernel, rescale=(0, .8))
+    pipe_acf.add_step('simulate', sim_spikes_prob, kernel, rescale=(0, 1))
     pipe_acf.add_step('transform', 'ACF')
     pipe_acf.add_step('fit', ['knee_freq', 'rsq', 'tau'])
     pipe_acf.run()
 
     # AR-PSD is more Lorentzian than ACF
     assert pipe_psd.results[:, 1].mean() > pipe_acf.results[:, 1].mean()
+
+    print(pipe_psd.results[:, 1])
+    print(pipe_acf.results[:, 1])
+    print()
+    print(tau)
+    print(pipe_psd.results[:, 2])
+    print(pipe_acf.results[:, 2])
+    print()
+    print(10)
+    print(pipe_psd.results[:, 0])
+    print(pipe_acf.results[:, 0])
 
     # AR-PSD timescales are more accurate (MAE)
     assert np.abs(pipe_psd.results[:, 2] - tau).mean() < \

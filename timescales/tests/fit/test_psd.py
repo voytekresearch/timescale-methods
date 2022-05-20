@@ -4,12 +4,11 @@ import pytest
 
 import numpy as np
 
-from fooof import FOOOF, FOOOFGroup
 from fooof.core.funcs import expo_const_function
 from neurodsp.spectral import compute_spectrum
 
-from timescales.fit.psd import PSD, fit_psd_fooof, fit_psd_huber, convert_knee_val
-from timescales.sim import sim_spikes_synaptic
+from timescales.fit.psd import PSD, fit_psd_fooof, fit_psd_robust
+from timescales.sim import sim_spikes_synaptic, sim_ou
 
 
 def test_psd_init():
@@ -27,7 +26,7 @@ def test_psd_compute_spectrum(ar_order):
     fs = 1000
     tau = .01
 
-    sig, _ = sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=1, return_sum=True)
+    sig = sim_spikes_synaptic(n_seconds, fs, tau)
 
     psd = PSD()
 
@@ -64,14 +63,13 @@ def test_fit_psd_fooof(ap_mode, ndim, init):
     n_seconds = 1
     fs = 1000
     tau = .01
-    n_neurons = 2
 
-    probs, _ = sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=n_neurons, return_sum=True)
+    sig = sim_ou(n_seconds, fs, tau)
 
     if ndim == 2:
-        probs = np.tile(probs, (2, 1))
+        sig = np.tile(sig, (2, 1))
 
-    freqs, powers = compute_spectrum(probs, fs, f_range=(1, 100))
+    freqs, powers = compute_spectrum(sig, fs, f_range=(1, 100))
 
     if init:
         fooof_init = {'max_n_peaks': 0, 'aperiodic_mode': ap_mode}
@@ -88,15 +86,3 @@ def test_fit_psd_fooof(ap_mode, ndim, init):
         assert len(params) == 2
         assert len(params[0]) == 4
 
-
-def test_convert_knee_val():
-
-    knee_freq_lo = 10
-    knee_freq_hi = 100
-
-    knee_tau_long = convert_knee_val(knee_freq_lo)
-    knee_tau_short = convert_knee_val(knee_freq_hi)
-
-    assert knee_tau_long > knee_tau_short
-    assert knee_tau_long < knee_freq_lo
-    assert knee_tau_short < knee_freq_hi

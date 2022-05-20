@@ -6,33 +6,6 @@ from importlib import import_module
 import numpy as np
 
 
-def convert_knee_val(knee_freq):
-    """Convert knee parameter(s) to frequency and time-constant value.
-
-    Parameters
-    ----------
-    knee : float or array
-        Knee of the aperiodic spectral fit.
-    exponent : float, optional, default: 2.
-        Used for more accurate frequency estimation when PSD is Lorentzian.
-
-    Returns
-    -------
-    knee_freq : float
-        Frequency where the knee occurs.
-    knee_tau : float
-        Timescale, in seconds.
-
-    Notes
-    -----
-    This function may be used to convert to/from knee frequencies or taus.
-    """
-
-    knee_tau = 1./(2*np.pi*knee_freq)
-
-    return knee_tau
-
-
 def progress_bar(iterable, progress, n_to_run, pbar_desc='Fitting ACF'):
     """Add a progress bar to an iterable to be processed.
 

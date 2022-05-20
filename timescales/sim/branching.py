@@ -1,47 +1,11 @@
 """Branching simulations."""
 
+from neurodsp.utils.norm import normalize_sig
+
 import numpy as np
 
 
-def sim_branching_spikes(n_seconds, fs, tau, lambda_h, lambda_a=None, n_neurons=100):
-    """Simulate spikes from a branching Poisson process.
-
-    Parameters
-    ----------
-    n_seconds : float
-        Length of the signal, in seconds.
-    fs : float
-        Sampling rate, in hz.
-    tau : float
-        Timescale, in seconds. Determines branching parameter, m.
-    lambda_h : float
-        Poisson lambda constant.
-    lamda_a : float
-        Initial Poisson lambda weight.
-        If None, default to (tau * fs) * lambda_h.
-
-    Returns
-    -------
-    probs : 1d array
-        Probability distribution of spikes.
-    spikes : 1d or 2d array
-        Sum of spike counts across neurons.
-    """
-
-    n_samples = int(n_seconds * fs)
-
-    probs = sim_branching(n_seconds, fs, tau, lambda_h, lambda_a)
-    probs = (probs - np.min(probs)) / np.ptp(probs)
-
-    spikes = np.zeros((n_neurons, n_samples), dtype=bool)
-
-    for ind in range(n_neurons):
-        spikes[ind] = (probs > np.random.rand(*probs.shape))
-
-    return probs, spikes
-
-
-def sim_branching(n_seconds, fs, tau, lambda_h, lambda_a=None):
+def sim_branching(n_seconds, fs, tau, lambda_h, lambda_a=None, mean=None, variance=None):
     """Simulate a branching Poisson process.
 
     Parameters
@@ -57,6 +21,10 @@ def sim_branching(n_seconds, fs, tau, lambda_h, lambda_a=None):
     lamda_a : float
         Initial Poisson lambda weight.
         If None, default to (tau * fs) * lambda_h.
+    mean : float, optional, default: None
+        Mean to normalize signal to.
+    variance : float, optional, default: None
+        Variance to normalize signal to.
 
     Returns
     -------
@@ -88,5 +56,9 @@ def sim_branching(n_seconds, fs, tau, lambda_h, lambda_a=None):
     # Poisson with memory
     for ind in range(1, len(sig)):
         sig[ind] = np.random.poisson(lam=m * sig[ind-1] + lambda_h)
+
+    # Normalize
+    if mean is not None or variance is not None:
+        sig = normalize_sig(sig, mean=mean, variance=variance)
 
     return sig

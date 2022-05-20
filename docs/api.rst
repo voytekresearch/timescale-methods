@@ -13,17 +13,17 @@ Table of Contents
    :local:
    :depth: 1
 
-.. currentmodule:: timescales.fit
-
 Model Objects
 -------------
 
-Objects that manage data and fit the model to parameterize neural power spectra.
+Objects for computing timescales from PSD or ACF.
 
 PSD
 ~~~
 
 The PSD object fits power spectra and extracts timescales.
+
+.. currentmodule:: timescales.fit
 
 .. autosummary::
    :toctree: generated/
@@ -40,9 +40,6 @@ The ACF object fits autocorrelation functions and extracts timescales.
 
    ACF
 
-
-.. currentmodule:: timescales.sim
-
 Simulations
 -----------
 
@@ -50,6 +47,8 @@ Spikes
 ~~~~~~
 
 Spike simulations use exponentially decaying probability kernels, convolved with a Poisson.
+
+.. currentmodule:: timescales.sim
 
 .. autosummary::
    :toctree: generated/
@@ -69,9 +68,6 @@ Local field potentials are simulated branching and Ornstein-Uhlenbeck processes.
    sim_branching
    sim_ou
 
-
-.. currentmodule:: timescales.autoreg
-
 Autoregression
 --------------
 
@@ -80,13 +76,13 @@ Spectral
 
 Autoregressive models are availble to compute PSD from.
 
+.. currentmodule:: timescales.autoreg
+
 .. autosummary::
    :toctree: generated/
 
     compute_ar_spectrum
 
-
-.. currentmodule:: timescales.pipe
 
 Pipelines
 ---------
@@ -96,8 +92,26 @@ Pipes
 
 Pipe objects are used to reproducible simulate, transform, and/or fit timescales.
 
+.. currentmodule:: timescales.pipe
 
 .. autosummary::
    :toctree: generated/
 
     Pipe
+
+
+Conversions
+-----------
+
+Conversion functions are usefull for convert PSD to/from ACF, and to convert knee frequencies
+to taus.
+
+.. currentmodule:: timescales.conversions
+
+.. autosummary::
+   :toctree: generated/
+
+   convert_knee
+   convert_tau
+   psd_to_acf
+   acf_to_psd

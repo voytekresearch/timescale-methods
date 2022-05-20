@@ -5,12 +5,11 @@ import warnings
 import numpy as np
 from scipy.signal import convolve
 
-from neurodsp.sim import sim_synaptic_kernel, sim_oscillation
+from neurodsp.sim import sim_synaptic_kernel
 from neurodsp.utils.norm import normalize_sig
 
 
-def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=1, mu=None,
-                        refract=None, isi=None, var_noise=None, return_sum=True):
+def sim_spikes_synaptic(n_seconds, fs, tau, mu=None, refract=None, isi=None, var_noise=None):
     """Simulate a spiking autocorrelation as a synaptic kernel.
 
     Parameters
@@ -21,8 +20,6 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=1, mu=None,
         Sampling rate, in hz.
     tau : float
         Timescale, in seconds.
-    n_neurons : int, optional, default: 1
-        Number of neurons to simulate.
     mu : float, optional, default: None
         Mean of the isi exponential distribuion. Only used if isi is None.
     refract : int, optional, default: None
@@ -37,10 +34,8 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=1, mu=None,
 
     Returns
     -------
-    probs : 1d array
-        Probability distribution of spikes.
-    spikes : 1d or 2d array
-        Sum of spike counts across neurons.
+    spikes : 1d
+        Spike counts.
     """
 
     if (tau * fs) < 1:
@@ -54,15 +49,9 @@ def sim_spikes_synaptic(n_seconds, fs, tau, n_neurons=1, mu=None,
     probs = sim_spikes_prob(n_seconds, fs, kernel, isi, mu, refract, var_noise)
 
     # Select [0=no spike, 1=spike] using probabilities
-    spikes = np.zeros((n_neurons, len(probs)), dtype=bool)
+    spikes = (probs > np.random.rand(*probs.shape))
 
-    for ind in range(n_neurons):
-        spikes[ind] = (probs > np.random.rand(*probs.shape))
-
-    if return_sum:
-        spikes = spikes.sum(axis=0)
-
-    return probs, spikes
+    return spikes
 
 
 def sim_spikes_prob(n_seconds, fs, kernel, isi=None, mu=None, refract=None, var_noise=None):
@@ -193,57 +182,70 @@ def sim_poisson(n_seconds, fs, kernel, isi=None, mu=None, refract=None):
     return poisson
 
 
-def sim_probs_combined(n_seconds, fs, ap_freq, pe_freq,
-                        ap_sim_kwargs=None, heights=None):
-    """Simulate spiking probabilities with aperiodic and periodic timescales.
+def sample_spikes(probs):
+    """Randomly sample spikes from a probability array.
 
     Parameters
     ----------
-    n_seconds : float
-        Length of the signal, in seconds.
-    ap_freq : float
-        Aperiodic frequency. Determines aperiodic timescale.
-    pe_freq : float
-        Periodic frequency. Determines periodic timescale.
-    ap_sim_kwargs : dict, optional, default: None
-        Keyword arguments to pass to sim_spike_prob.
-    heights : tuple of float, optional, default: None
-        Max probabilities as tuple of (aperiodic, periodic).
+    probs : 1d or 2d array
+        Probabilities to sample. Assumed to be between zero and one.
 
     Returns
     -------
-    probs_ap : 1d array
-        Probability of aperiodic spiking.
-    probs_pe : 1d array
-        Probability of periodic spiking.
+    spikes : 1d or 2d array
+        Spike counts.
     """
 
-    from timescales.fit import convert_knee_val
-
-    if isinstance(heights, (list, tuple, np.ndarray)):
-        height_ap, height_pe = heights
+    if probs.ndim == 2:
+        spikes = np.zeros((len(probs), len(probs[0])), dtype=bool)
+        for ind in range(len(probs)):
+            spikes[ind] = sample_spikes(probs[ind])
     else:
-        height_ap = .5
-        height_pe = .5
+        spikes = (probs > np.random.rand(*probs.shape))
 
-    if ap_sim_kwargs is None:
-        ap_sim_kwargs = {}
+    return spikes
 
-    # Aperiodic
-    ap_tau = convert_knee_val(ap_freq)
 
-    kernel = sim_synaptic_kernel(10 * ap_tau, fs, 0, ap_tau)
-    kernel = kernel.round(6)
+def bin_spikes(spikes, fs, bin_size, mean=None, variance=None):
+    """Bin spikes.
 
-    probs_ap = sim_spikes_prob(n_seconds, fs, kernel=kernel, **ap_sim_kwargs)
-    probs_ap -= probs_ap.min()
-    probs_ap /= probs_ap.max()
-    probs_ap *= height_ap
+    Parameters
+    ----------
+    spikes : 1d or 2d array
+        Spike counts.
+    fs : float
+        Sampling rate, in Hertz.
+    bin_size : int
+        Number of samples per bin.
+    mean : float, optional, default: None
+        Mean to normalize signal to.
+    variance : float, optional, default: None
+        Variance to normalize signal to.
 
-    # Periodic
-    probs_pe = sim_oscillation(n_seconds, fs, pe_freq)
-    probs_pe -= probs_pe.min()
-    probs_pe /= probs_pe.max()
-    probs_pe *= height_pe
+    Returns
+    -------
+    spikes_bin : 1d or 2d array
+        Binned spike counts
+    fs_bin : float
+        Updated sampling rate.
+    """
 
-    return probs_ap, probs_pe
+    if spikes.ndim == 2:
+        for ind in range(len(spikes)):
+
+            _spikes_bin, fs_bin = bin_spikes(spikes, bin_size, fs)
+
+            if ind == 0:
+                spikes_bin = np.zeros((len(spikes), len(_spikes_bin)))
+
+            spikes_bin[ind] = _spikes_bin
+    else:
+
+        spikes_bin = spikes.reshape(-1, bin_size).sum(axis=1)
+
+        if mean is not None or variance is not None:
+            spikes_bin = normalize_sig(spikes_bin, mean=mean, variance=variance)
+
+        fs_bin = fs / bin_size
+
+    return spikes_bin, fs_bin

@@ -6,7 +6,7 @@ import pytest
 from neurodsp.utils.norm import normalize_sig
 
 from timescales.sim import sim_branching
-from timescales.fit import convert_knee_val
+from timescales.conversions import convert_knee
 from timescales.autoreg import compute_ar_spectrum
 
 
@@ -17,7 +17,7 @@ def test_compute_ar_spectrum(method):
     n_seconds = 1
     fs = 1000
     knee_freq = 10
-    tau = convert_knee_val(knee_freq)
+    tau = convert_knee(knee_freq)
     sig = normalize_sig(sim_branching(n_seconds, fs, tau, 200), 0, 1)
     nfft=4096
 
