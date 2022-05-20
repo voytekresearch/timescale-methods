@@ -14,7 +14,7 @@ including PSD and ACF.
 .. |BuildStatus| image:: https://github.com/github/docs/actions/workflows/main.yml/badge.svg
 .. _BuildStatus: https://github.com/voytekresearch/timescale-methods/actions/workflows/build.yml
 
-.. |Coverage| image:: https://codecov.io/gh/voytekresearch/timescale-methods/branch/main/graph/badge.svg
+.. |Coverage| image:: https://codecov.io/gh/voytekresearch/timescale-methods/branch/main/graph/badge.svg?token=vxK8jrHm9O
 .. _Coverage: https://codecov.io/gh/voytekresearch/timescale-methods
 
 
