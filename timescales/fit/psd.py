@@ -12,7 +12,7 @@ from neurodsp.spectral import compute_spectrum
 from timescales.autoreg import compute_ar_spectrum
 
 from fooof import FOOOF, FOOOFGroup
-from fooof.core.funcs import expo_const_function
+from fooof.core.funcs import expo_const_function, expo_double_const_function
 
 from timescales.conversions import convert_knee
 from timescales.utils import normalize as normalize_psd
@@ -101,15 +101,18 @@ class PSD:
             self.powers = normalize_psd(self.powers, *norm_range)
 
 
-    def fit(self, f_range=None, method='huber', fooof_init=None, bounds=None,
-            guess=None, f_scale=.1, n_jobs=1, maxfev=1000, progress=None):
+    def fit(self, f_range=None, ap_mode='single', method='huber', fooof_init=None,
+            bounds=None, guess=None, f_scale=.1, n_jobs=1, maxfev=1000, progress=None):
         """Fit power spectra.
 
         Parameters
         ----------
         f_range : tuple of (float, float)
             Frequency range of interest, inclusive.
-        method : {'huber', 'fooof'}
+        ap_mode : {'single', 'double'}
+            Aperiodic mode as a single or double timescales (knee) process.
+            Only availble for non-fooof methods.
+        method : {'huber', 'cauchy', 'fooof'}
             Fit using a single scipy curve_fit call using robust regression ('huber') or use the
             fooof model ('fooof').
         fooof_init : dict, optional, default: None
@@ -141,8 +144,8 @@ class PSD:
         if method != 'fooof' and fooof_init is None:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_robust(
-                self.freqs, self.powers, loss=method, f_scale=f_scale, bounds=bounds,
-                  guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
+                self.freqs, self.powers, ap_mode=ap_mode, loss=method, f_scale=f_scale,
+                   bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
             )
         elif method == 'fooof' or fooof_init is not None:
             # Fooof can't, but should, handle 0 hertz
@@ -189,7 +192,6 @@ class PSD:
 
         if self.freqs is None or self.powers is None:
             raise ValueError('freqs and powers are undefined.')
-
 
         # Plot spectra
         if self.powers.ndim == 1:
@@ -297,7 +299,7 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False
         return params, powers_fit
 
 
-def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=.1,
+def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', f_scale=.1,
                    bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 
@@ -309,6 +311,8 @@ def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=.1,
         Power spectral density.
     f_range : tuple of (float, float)
         Frequency range of interest.
+    ap_mode : {'single', 'double'}
+        Aperiodic mode as a single or double timescales (knee) process.
     loss : {'huber', 'soft_l1', 'cauchy', 'arctan'}
         Loss function.
     f_scale : float, optional, default: 0.1
@@ -348,6 +352,15 @@ def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=.1,
     if guess is None:
         guess = [0, 1, 1, 1e-6]
 
+    if ap_mode == 'double':
+        # Double knee model
+        guess = guess * 2
+        bounds = [i*2 for i in bounds]
+        expo_func = expo_double_const_function
+    else:
+        # Single knee model
+        expo_func = expo_const_function
+
     if powers.ndim == 2:
         # Recursively call 1d in parallel
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
@@ -366,10 +379,10 @@ def fit_psd_robust(freqs, powers, f_range=None, loss='huber', f_scale=.1,
 
     else:
         # 1d
-        params, _ = curve_fit(expo_const_function, freqs, np.log10(powers),
+        params, _ = curve_fit(expo_func, freqs, np.log10(powers),
                               loss=loss, f_scale=f_scale, maxfev=maxfev,
                               p0=guess, bounds=bounds)
 
-        powers_fit = 10**expo_const_function(freqs, *params)
+        powers_fit = 10**expo_func(freqs, *params)
 
     return params, powers_fit
