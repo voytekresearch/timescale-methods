@@ -101,8 +101,8 @@ class PSD:
             self.powers = normalize_psd(self.powers, *norm_range)
 
 
-    def fit(self, f_range=None, ap_mode='single', method='huber', fooof_init=None,
-            bounds=None, guess=None, f_scale=.1, n_jobs=1, maxfev=1000, progress=None):
+    def fit(self, f_range=None, ap_mode='single', method='huber', fooof_init=None, bounds=None,
+            guess=None, f_scale=.1, r_thresh=None, n_jobs=1, maxfev=1000, progress=None):
         """Fit power spectra.
 
         Parameters
@@ -112,15 +112,18 @@ class PSD:
         ap_mode : {'single', 'double'}
             Aperiodic mode as a single or double timescales (knee) process.
             Only availble for non-fooof methods.
-        method : {'huber', 'cauchy', 'fooof'}
-            Fit using a single scipy curve_fit call using robust regression ('huber') or use the
-            fooof model ('fooof').
+        method : {'huber', 'cauchy', 'soft_l1', 'arctan', 'fooof'}
+            Fit using a single scipy curve_fit call using robust regression or use the
+            fooof model.
         fooof_init : dict, optional, default: None
             Fooof initialization arguments.
             Only used if method is 'fooof'.
-        f_scale : float, optional, default: 0.1
+        f_scale : float or 1d array-like, optional, default: 0.1
             Value of soft margin between inlier and outlier residuals.
-            Only used if method is 'huber'.
+            Only used if method is in {'huber', 'cauchy', 'soft_l1', 'arctan'}.
+        r_thresh : float, optional, default: None
+            Minimum r-squared required to accept f_scale. Only used when f_scale is a 1d array.
+            When None, all f_scale values are attempted and the highest resulting r-squared is accepted.
         bounds : 2d array-like
             Parameter bounds.
         guess : 1d array-like
@@ -145,8 +148,8 @@ class PSD:
         if method != 'fooof' and fooof_init is None:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_robust(
-                self.freqs, self.powers, ap_mode=ap_mode, loss=method, f_scale=f_scale,
-                   bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
+                self.freqs, self.powers, ap_mode=ap_mode, loss=method, f_scale=f_scale, r_thresh=r_thresh,
+                bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
             )
         elif method == 'fooof' or fooof_init is not None:
             # Fooof can't, but should, handle 0 hertz
@@ -160,7 +163,7 @@ class PSD:
                 ap_bounds=bounds, ap_guess=guess, n_jobs=n_jobs, progress=progress
             )
         else:
-            raise ValueError('method must be in [\'huber\', \'fooof\'].')
+            raise ValueError('method must be in \{\'huber\', \'cauchy\', \'soft_l1\', \'arctan\', \'fooof\'\}.')
 
         # Get r-squared, knee freqs, and taus
         if self.powers_fit.ndim == 1:
@@ -301,7 +304,7 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False
 
 
 def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', f_scale=.1,
-                   bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
+                   r_thresh=None, bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 
     Parameters
@@ -316,8 +319,11 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
         Aperiodic mode as a single or double timescales (knee) process.
     loss : {'huber', 'soft_l1', 'cauchy', 'arctan'}
         Loss function.
-    f_scale : float, optional, default: 0.1
-            Value of soft margin between inlier and outlier residuals.
+    f_scale : float or 1d array-like, optional, default: 0.1
+        Value of soft margin between inlier and outlier residuals.
+    r_thresh : float, optional, default: None
+        Minimum r-squared required to accept f_scale. When None, all f_scale values are
+        attempted and the highest resulting r-squared is accepted.
     bounds : 2d array-like
         Parameter bounds.
     guess : 1d array-like
@@ -330,7 +336,8 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
     Returns
     -------
     params : 1d or 2d array
-        Parameters as [offset, knee_freq, exp, const].
+        Parameters as [offset, knee_freq, exp, const, (f_scale, r_squared)].
+        Note: f_scale and r_squared only returned when optimizing f_scale using an array input.
     powers_fit : 1d or 2d array
         Aperiodic fit.
     """
@@ -386,15 +393,45 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
 
     else:
         # 1d
-        params, _ = curve_fit(expo_func, freqs, np.log10(powers),
-                              loss=loss, f_scale=f_scale, maxfev=maxfev,
-                              p0=guess, bounds=bounds)
+        if isinstance(f_scale, (float, int)):
+            params, _ = curve_fit(expo_func, freqs, np.log10(powers),
+                                  loss=loss, f_scale=f_scale, maxfev=maxfev,
+                                  p0=guess, bounds=bounds)
+            powers_fit = 10**expo_func(freqs, *params)
+        else:
+            rsq = -np.inf
 
+            for f in f_scale:
+
+                # Catch non-convergence exceptions
+                try:
+                    _params, _ = curve_fit(expo_func, freqs, np.log10(powers),
+                                           loss=loss, f_scale=f, maxfev=maxfev,
+                                           p0=guess, bounds=bounds)
+                except RuntimeError:
+                    continue
+
+                # Get fit
+                _powers_fit = 10**expo_func(freqs, *_params)
+
+                # Get r-squared from fit
+                _rsq = np.corrcoef(np.log10(powers),
+                                   np.log10(_powers_fit))[0][1] ** 2
+
+                if r_thresh is not None and _rsq > r_thresh:
+                    # Above r-squared threshold
+                    params = _params
+                    powers_fit = _powers_fit
+                    break
+                elif _rsq > rsq:
+                    # Track the current best r-squared
+                    params = _params
+                    powers_fit = _powers_fit
+                    rsq = _rsq
+
+        # Sort parameters using ascending knee frequency
         if ap_mode == 'double':
-
             if params[1] > params[5]:
                 params = np.hstack((params[4:], params[:4]))
-
-        powers_fit = 10**expo_func(freqs, *params)
 
     return params, powers_fit
