@@ -132,6 +132,7 @@ class PSD:
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
+
         self.bounds = bounds
         self.guess = guess
 
@@ -345,17 +346,23 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
         powers = powers[:, inds] if powers.ndim == 2 else powers[inds]
 
     # Parameter bounds and guess
-    if bounds is None:
-        bounds = [[-np.inf, 1e-6,             0,      0],
-                  [ np.inf, freqs.max(), np.inf, np.inf]]
+    fmax = freqs.max()
 
-    if guess is None:
-        guess = [0, 1, 1, 1e-6]
+    if bounds is None and ap_mode == 'single':
+        bounds = [[-np.inf, 1e-3,  0,  0],
+                  [ np.inf, fmax, 10, 10]]
+    elif bounds is None and ap_mode == 'double':
+        bounds = [[-np.inf, 1e-3,  0,  0, -np.inf, 1e-3,  0,  0],
+                  [ np.inf, fmax, 10, 10,  np.inf, fmax, 10, 10]]
+
+    if guess is None and ap_mode == 'single':
+         guess = [1, 1, 2, 1e-3]
+    elif guess is None and ap_mode == 'double':
+         guess = [1,  1, 2, 1e-3,
+                  0, 10, 2, 1e-3]
 
     if ap_mode == 'double':
         # Double knee model
-        guess = guess * 2
-        bounds = [i*2 for i in bounds]
         expo_func = expo_double_const_function
     else:
         # Single knee model
@@ -368,8 +375,8 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
 
         with Pool(processes=n_jobs) as pool:
             mapping = pool.imap(
-                partial(fit_psd_robust, powers=None, loss=loss, bounds=bounds,
-                        guess=guess, maxfev=maxfev, n_jobs=n_jobs),
+                partial(fit_psd_robust, powers=None, ap_mode=ap_mode, loss=loss,
+                        bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs),
                 zip(_freqs, powers)
             )
             results = list(progress_bar(mapping, progress, len(powers), pbar_desc='Fitting PSD'))
@@ -382,6 +389,11 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
         params, _ = curve_fit(expo_func, freqs, np.log10(powers),
                               loss=loss, f_scale=f_scale, maxfev=maxfev,
                               p0=guess, bounds=bounds)
+
+        if ap_mode == 'double':
+
+            if params[1] > params[5]:
+                params = np.hstack((params[4:], params[:4]))
 
         powers_fit = 10**expo_func(freqs, *params)
 
