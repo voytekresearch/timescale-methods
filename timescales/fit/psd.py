@@ -16,6 +16,7 @@ from fooof.core.funcs import expo_const_function, expo_double_const_function
 
 from timescales.conversions import convert_knee
 from timescales.utils import normalize as normalize_psd
+from timescales.utils import resample_logspace
 from timescales.fit.utils import progress_bar
 
 
@@ -102,7 +103,7 @@ class PSD:
 
 
     def fit(self, f_range=None, ap_mode='single', method='huber', fooof_init=None, bounds=None,
-            guess=None, f_scale=.1, r_thresh=None, n_jobs=1, maxfev=1000, progress=None):
+            guess=None, n_resample=None, f_scale=.1, r_thresh=None, n_jobs=1, maxfev=1000, progress=None):
         """Fit power spectra.
 
         Parameters
@@ -124,6 +125,8 @@ class PSD:
         r_thresh : float, optional, default: None
             Minimum r-squared required to accept f_scale. Only used when f_scale is a 1d array.
             When None, all f_scale values are attempted and the highest resulting r-squared is accepted.
+        n_resample : int, optional, default: None:
+            Evenly resample in log-log space to improve robust regression.
         bounds : 2d array-like
             Parameter bounds.
         guess : 1d array-like
@@ -145,18 +148,19 @@ class PSD:
             self.freqs = self.freqs[inds]
             self.powers = self.powers[:, inds] if self.powers.ndim == 2 else self.powers[inds]
 
+        # Skip 0 hz if using fooof or resampling
+        if (method == 'fooof' or n_resample is not None) and self.freqs[0] == 0:
+            self.freqs = self.freqs[1:]
+            self.powers = self.powers[1:] if self.powers.ndim == 1 else self.powers[:, 1:]
+
+        # Fit
         if method != 'fooof' and fooof_init is None:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_robust(
                 self.freqs, self.powers, ap_mode=ap_mode, loss=method, f_scale=f_scale, r_thresh=r_thresh,
-                bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
+                n_resample=n_resample, bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
             )
         elif method == 'fooof' or fooof_init is not None:
-            # Fooof can't, but should, handle 0 hertz
-            if self.freqs[0] == 0:
-                self.freqs = self.freqs[1:]
-                self.powers = self.powers[1:] if self.powers.ndim == 1 else self.powers[:, 1:]
-
             # Aperiodic and periodic model
             self.params, self.powers_fit, self.rsq_full = fit_psd_fooof(
                 self.freqs, self.powers, fooof_init=fooof_init, return_rsq=True,
@@ -303,8 +307,8 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False
         return params, powers_fit
 
 
-def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', f_scale=.1,
-                   r_thresh=None, bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
+def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', f_scale=.1, r_thresh=None,
+                   n_resample=None, bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 
     Parameters
@@ -324,6 +328,8 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
     r_thresh : float, optional, default: None
         Minimum r-squared required to accept f_scale. When None, all f_scale values are
         attempted and the highest resulting r-squared is accepted.
+    n_resample : int, optional, default: None:
+        Evenly resample in log-log space to improve robust regression.
     bounds : 2d array-like
         Parameter bounds.
     guess : 1d array-like
@@ -382,8 +388,8 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
 
         with Pool(processes=n_jobs) as pool:
             mapping = pool.imap(
-                partial(fit_psd_robust, powers=None, ap_mode=ap_mode, loss=loss,
-                        bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs),
+                partial(fit_psd_robust, powers=None, ap_mode=ap_mode,  n_resample=n_resample,
+                        loss=loss, bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs),
                 zip(_freqs, powers)
             )
             results = list(progress_bar(mapping, progress, len(powers), pbar_desc='Fitting PSD'))
@@ -393,11 +399,15 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
 
     else:
         # 1d
+        if n_resample is not None:
+            # Evenly resample in log-log space for improved robust regression
+            freqs_orig = freqs.copy()
+            freqs, powers = resample_logspace(freqs, powers, n_resample)
+
         if isinstance(f_scale, (float, int)):
             params, _ = curve_fit(expo_func, freqs, np.log10(powers),
                                   loss=loss, f_scale=f_scale, maxfev=maxfev,
                                   p0=guess, bounds=bounds)
-            powers_fit = 10**expo_func(freqs, *params)
         else:
             rsq = -np.inf
 
@@ -428,6 +438,12 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
                     params = _params
                     powers_fit = _powers_fit
                     rsq = _rsq
+
+         # Move back to original frequency space if resampling
+        if n_resample is not None:
+            powers_fit = 10**expo_func(freqs_orig, *params)
+        else:
+            powers_fit = 10**expo_func(freqs, *params)
 
         # Sort parameters using ascending knee frequency
         if ap_mode == 'double':
