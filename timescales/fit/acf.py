@@ -176,12 +176,16 @@ class ACF:
             self.corrs = normalize_acf(self.corrs, 0, 1)
 
 
-    def fit(self, gen_fits=True, gen_components=False, with_cos=False,
+    def fit(self, lags=None, corrs=None, gen_fits=True, gen_components=False, with_cos=False,
             guess=None, bounds=None, maxfev=1000, n_jobs=-1, progress=None):
         """Fit without an oscillitory component.
 
         Parameters
         ----------
+        lags : 1d array
+            Time lag definitions.
+        corrs : 1d or 2d array
+            Autocorrelation coefficients.
         gen_fits : bool, optional, default: False
             Generates fit array and r-squared when True.
             Does not generate full fits when False to prevent OOM.
@@ -203,6 +207,11 @@ class ACF:
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
+        if lags is not None:
+            self.lags = lags
+
+        if corrs is not None:
+            self.corrs = corrs
 
         if self.corrs is None or self.lags is None:
             raise ValueError('Initialize with lags, corrs, and fs. '

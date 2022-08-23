@@ -102,12 +102,16 @@ class PSD:
             self.powers = normalize_psd(self.powers, *norm_range)
 
 
-    def fit(self, f_range=None, ap_mode='single', method='huber', fooof_init=None, bounds=None,
+    def fit(self, freqs=None, powers=None, f_range=None, ap_mode='single', method='huber', fooof_init=None, bounds=None,
             guess=None, n_resample=None, f_scale=.1, r_thresh=None, n_jobs=1, maxfev=1000, progress=None):
         """Fit power spectra.
 
         Parameters
         ----------
+        freqs : 1d array
+            Frequencies at which the measure was calculated.
+        powers : 1d or 2d array
+            Power spectral density.
         f_range : tuple of (float, float)
             Frequency range of interest, inclusive.
         ap_mode : {'single', 'double'}
@@ -138,6 +142,12 @@ class PSD:
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
+
+        if freqs is not None:
+            self.freqs = freqs
+
+        if powers is not None:
+            self.powers = powers
 
         self.bounds = bounds
         self.guess = guess
