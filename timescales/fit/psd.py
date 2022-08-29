@@ -103,7 +103,7 @@ class PSD:
 
 
     def fit(self, freqs=None, powers=None, f_range=None, ap_mode='single', method='huber', fooof_init=None, bounds=None,
-            guess=None, n_resample=None, f_scale=.1, r_thresh=None, n_jobs=1, maxfev=1000, progress=None):
+            guess=None, n_resample=None, f_scale=.1, r_thresh=None, maxfev=1000, sigma=None, n_jobs=1, progress=None):
         """Fit power spectra.
 
         Parameters
@@ -123,22 +123,24 @@ class PSD:
         fooof_init : dict, optional, default: None
             Fooof initialization arguments.
             Only used if method is 'fooof'.
+        bounds : 2d array-like
+            Parameter bounds.
+        guess : 1d array-like
+            Initial parameter estimates.
+        n_resample : int, optional, default: None:
+            Evenly resample in log-log space to improve robust regression.
         f_scale : float or 1d array-like, optional, default: 0.1
             Value of soft margin between inlier and outlier residuals.
             Only used if method is in {'huber', 'cauchy', 'soft_l1', 'arctan'}.
         r_thresh : float, optional, default: None
             Minimum r-squared required to accept f_scale. Only used when f_scale is a 1d array.
             When None, all f_scale values are attempted and the highest resulting r-squared is accepted.
-        n_resample : int, optional, default: None:
-            Evenly resample in log-log space to improve robust regression.
-        bounds : 2d array-like
-            Parameter bounds.
-        guess : 1d array-like
-            Initial parameter estimates.
-        n_jobs : int
-            Number of jobs to run in parralel, when powers is 2d.
         maxfev : int
             Maximum number of fitting iterations. Only availble for huber method.
+        sigma : dict, optional, default: None
+            Target error per sample.
+        n_jobs : int
+            Number of jobs to run in parralel, when powers is 2d.
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
         """
@@ -168,7 +170,8 @@ class PSD:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_robust(
                 self.freqs, self.powers, ap_mode=ap_mode, loss=method, f_scale=f_scale, r_thresh=r_thresh,
-                n_resample=n_resample, bounds=bounds, guess=guess, maxfev=maxfev, n_jobs=n_jobs, progress=progress
+                n_resample=n_resample, bounds=bounds, guess=guess, maxfev=maxfev, sigma=sigma,
+                n_jobs=n_jobs, progress=progress
             )
         elif method == 'fooof' or fooof_init is not None:
             # Aperiodic and periodic model
@@ -318,7 +321,7 @@ def fit_psd_fooof(freqs, powers, f_range=None, fooof_init=None, return_rsq=False
 
 
 def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', f_scale=.1, r_thresh=None,
-                   n_resample=None, bounds=None, guess=None, maxfev=1000, n_jobs=-1, progress=None):
+                   n_resample=None, bounds=None, guess=None, maxfev=1000, sigma=None, n_jobs=-1, progress=None):
     """Fit the aperiodic spectrum using robust regression.
 
     Parameters
@@ -346,8 +349,12 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
         Initial parameter estimates.
     maxfev : int
         Maximum number of fitting iterations.
+    sigma : dict, optional, default: None
+        Target error per sample.
     n_jobs : int
         Number of jobs to run in parralel, when powers is 2d.
+    progress : tqdm, optional, default: None
+        Progress bar.
 
     Returns
     -------
@@ -417,7 +424,7 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
         if isinstance(f_scale, (float, int)):
             params, _ = curve_fit(expo_func, freqs, np.log10(powers),
                                   loss=loss, f_scale=f_scale, maxfev=maxfev,
-                                  p0=guess, bounds=bounds)
+                                  p0=guess, bounds=bounds, sigma=sigma)
         else:
             rsq = -np.inf
 
@@ -427,7 +434,7 @@ def fit_psd_robust(freqs, powers, f_range=None, ap_mode='single', loss='huber', 
                 try:
                     _params, _ = curve_fit(expo_func, freqs, np.log10(powers),
                                            loss=loss, f_scale=f, maxfev=maxfev,
-                                           p0=guess, bounds=bounds)
+                                           p0=guess, bounds=bounds, sigma=sigma)
                 except RuntimeError:
                     continue
 
