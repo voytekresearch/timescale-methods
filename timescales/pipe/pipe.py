@@ -5,7 +5,6 @@ import operator as op
 from multiprocessing import Pool, cpu_count
 
 import numpy as np
-from pydantic import NoneStr
 from scipy.signal import resample
 
 from timescales.sim import bin_spikes
