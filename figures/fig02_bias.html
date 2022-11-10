@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -538,6 +538,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -546,10 +547,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -561,12 +566,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -575,25 +583,25 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
 
-<span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">ifft</span><span class="p">,</span> <span class="n">fftfreq</span>
+from scipy.fft import fft, ifft, fftfreq
 
-<span class="kn">from</span> <span class="nn">fooof.sim.gen</span> <span class="kn">import</span> <span class="n">gen_aperiodic</span><span class="p">,</span> <span class="n">gen_periodic</span>
+from fooof.sim.gen import gen_aperiodic, gen_periodic
 
-<span class="kn">from</span> <span class="nn">neurodsp.spectral</span> <span class="kn">import</span> <span class="n">compute_spectrum</span>
-<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
+from neurodsp.spectral import compute_spectrum
+from neurodsp.utils.norm import normalize_sig
 
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_branching</span>
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span>
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span><span class="p">,</span> <span class="n">psd_to_acf</span>
-<span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
+from timescales.sim import sim_branching
+from timescales.fit import PSD
+from timescales.conversions import convert_knee, psd_to_acf
+from timescales.autoreg import compute_ar_spectrum
+from timescales.plts import set_default_rc
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.gridspec</span> <span class="kn">import</span> <span class="n">GridSpec</span>
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
-<span class="n">set_default_rc</span><span class="p">()</span>
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -606,43 +614,43 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Oscillations</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Oscillations
+tau = convert_knee(10)
+freqs = np.linspace(1, 500, 10000)
 
-<span class="n">pe</span> <span class="o">=</span> <span class="n">gen_periodic</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="n">ap</span> <span class="o">=</span> <span class="n">gen_aperiodic</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+pe = gen_periodic(freqs, [10, .5, 2])
+ap = gen_aperiodic(freqs, [0, 10, 2])
 
-<span class="n">powers</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">ap</span> <span class="o">+</span> <span class="n">pe</span><span class="p">)</span>
-<span class="n">powers</span> <span class="o">/=</span> <span class="n">powers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+powers = 10**(ap + pe)
+powers /= powers[0]
 
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">f_scale</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+psd = PSD(freqs, powers)
+psd.fit(f_scale=1e-4)
 
-<span class="c1"># ACF via iFFT</span>
-<span class="n">acf_ap_osc</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
-<span class="n">acf_ap_osc</span> <span class="o">=</span> <span class="n">acf_ap_osc</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">][:</span><span class="mi">200</span><span class="p">]</span>
+# ACF via iFFT
+acf_ap_osc = ifft(psd.powers_fit).real
+acf_ap_osc = acf_ap_osc[:len(acf_ap_osc)//2][:200]
 
-<span class="n">acf_osc</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">powers</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
-<span class="n">acf_osc</span> <span class="o">=</span> <span class="n">acf_osc</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_osc</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">][:</span><span class="mi">200</span><span class="p">]</span>
-<span class="n">acf_pe_osc</span> <span class="o">=</span> <span class="n">acf_osc</span> <span class="o">-</span> <span class="n">acf_ap_osc</span>
+acf_osc = ifft(psd.powers).real
+acf_osc = acf_osc[:len(acf_osc)//2][:200]
+acf_pe_osc = acf_osc - acf_ap_osc
 
-<span class="n">rescale</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">acf_pe_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">acf_pe_osc</span> <span class="o">*=</span> <span class="n">rescale</span>
-<span class="n">acf_ap_osc</span> <span class="o">*=</span> <span class="n">rescale</span>
+rescale = 1/(acf_ap_osc[0] + acf_pe_osc[0])
+acf_pe_osc *= rescale
+acf_ap_osc *= rescale
 
-<span class="n">lags_osc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">inds_osc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_osc</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
-<span class="n">lags_osc</span> <span class="o">=</span> <span class="n">lags_osc</span><span class="p">[</span><span class="n">inds_osc</span><span class="p">]</span>
+lags_osc = np.arange(1, 2*len(acf_ap_osc)+1, 2)
+inds_osc = np.where(lags_osc &lt;= 300)
+lags_osc = lags_osc[inds_osc]
 
-<span class="n">acf_pe_osc</span> <span class="o">=</span> <span class="n">acf_pe_osc</span><span class="p">[</span><span class="n">inds_osc</span><span class="p">]</span>
-<span class="n">acf_ap_osc</span> <span class="o">=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">inds_osc</span><span class="p">]</span>
+acf_pe_osc = acf_pe_osc[inds_osc]
+acf_ap_osc = acf_ap_osc[inds_osc]
 
-<span class="c1"># PSD</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
-<span class="n">ap_fit_osc</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span>
-<span class="n">knee_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freqs</span><span class="o">-</span><span class="n">psd</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
+# PSD
+psd = PSD(freqs, powers)
+psd.fit(f_range=(0, 100), f_scale=1e-4)
+ap_fit_osc = psd.powers_fit
+knee_ind = np.argmin(np.abs(freqs-psd.knee_freq))
 </pre></div>
 </div>
 </div>
@@ -653,48 +661,48 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Finite</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">sig_finite</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sim_branching</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Finite
+np.random.seed(3)
+fs = 1000
+sig_finite = normalize_sig(sim_branching(1, fs, tau, 20), 0, 1)
 
-<span class="n">freqs_finite</span><span class="p">,</span> <span class="n">powers_finite</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig_finite</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-<span class="n">corrs_finite</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">powers_finite</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
-<span class="n">lags_finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs_finite</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+freqs_finite, powers_finite = compute_spectrum(sig_finite, fs)
+corrs_finite = ifft(powers_finite).real
+lags_finite = np.arange(1, 2*len(corrs_finite)+1, 2)
 
-<span class="c1"># Trim and rescale ACF</span>
-<span class="n">inds_finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_finite</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
-<span class="n">lags_finite</span> <span class="o">=</span> <span class="n">lags_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
-<span class="n">corrs_finite</span> <span class="o">=</span> <span class="n">corrs_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
+# Trim and rescale ACF
+inds_finite = np.where(lags_finite &lt;= 300)
+lags_finite = lags_finite[inds_finite]
+corrs_finite = corrs_finite[inds_finite]
 
-<span class="n">corrs_finite</span> <span class="o">/=</span> <span class="n">corrs_finite</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">corrs_finite</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+corrs_finite /= corrs_finite.max()
+corrs_finite *= acf_ap_osc[0]
 
-<span class="c1"># Trim PSD</span>
-<span class="n">inds_finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freqs_finite</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_finite</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">))</span>
-<span class="n">powers_finite</span> <span class="o">=</span> <span class="n">powers_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
-<span class="n">powers_finite</span> <span class="o">/=</span> <span class="n">powers_finite</span><span class="p">[:</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="n">freqs_finite</span> <span class="o">=</span> <span class="n">freqs_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
+# Trim PSD
+inds_finite = np.where((freqs_finite &gt;= 1) &amp; (freqs_finite &lt;= 100))
+powers_finite = powers_finite[inds_finite]
+powers_finite /= powers_finite[:15].mean()
+freqs_finite = freqs_finite[inds_finite]
 
-<span class="c1"># AR-PSD and AR-ACF via iFFT</span>
-<span class="n">freqs_finite_burg</span><span class="p">,</span> <span class="n">powers_finite_burg</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">sig_finite</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">corrs_finite_burg</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">powers_finite_burg</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
-<span class="n">corrs_finite_burg</span> <span class="o">=</span> <span class="n">corrs_finite_burg</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs_finite_burg</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">lags_finite_burg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs_finite_burg</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+# AR-PSD and AR-ACF via iFFT
+freqs_finite_burg, powers_finite_burg = compute_ar_spectrum(sig_finite, fs, 5)
+corrs_finite_burg = ifft(powers_finite_burg).real
+corrs_finite_burg = corrs_finite_burg[:len(corrs_finite_burg)//2]
+lags_finite_burg = np.arange(1, 2*len(corrs_finite_burg)+1, 2)
 
-<span class="c1"># Trim and rescale AR-ACF</span>
-<span class="n">inds_burg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_finite_burg</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
-<span class="n">lags_finite_burg</span> <span class="o">=</span> <span class="n">lags_finite_burg</span><span class="p">[</span><span class="n">inds_burg</span><span class="p">]</span>
-<span class="n">corrs_finite_burg</span> <span class="o">=</span> <span class="n">corrs_finite_burg</span><span class="p">[</span><span class="n">inds_burg</span><span class="p">]</span>
+# Trim and rescale AR-ACF
+inds_burg = np.where(lags_finite_burg &lt;= 300)
+lags_finite_burg = lags_finite_burg[inds_burg]
+corrs_finite_burg = corrs_finite_burg[inds_burg]
 
-<span class="n">corrs_finite_burg</span> <span class="o">/=</span> <span class="n">corrs_finite_burg</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">corrs_finite_burg</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+corrs_finite_burg /= corrs_finite_burg.max()
+corrs_finite_burg *= acf_ap_osc[0]
 
-<span class="c1"># Trim AR-PSD</span>
-<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freqs_finite_burg</span> <span class="o">&gt;=</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_finite_burg</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">freqs_finite_burg</span> <span class="o">=</span> <span class="n">freqs_finite_burg</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
-<span class="n">powers_finite_burg</span> <span class="o">=</span> <span class="n">powers_finite_burg</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
-<span class="n">powers_finite_burg</span> <span class="o">/=</span> <span class="n">powers_finite_burg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+# Trim AR-PSD
+inds = np.where((freqs_finite_burg &gt;= .5) &amp; (freqs_finite_burg &lt;= 100))[0]
+freqs_finite_burg = freqs_finite_burg[inds]
+powers_finite_burg = powers_finite_burg[inds]
+powers_finite_burg /= powers_finite_burg[0]
 </pre></div>
 </div>
 </div>
@@ -705,51 +713,51 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dynamic</span>
-<span class="n">knees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Dynamic
+knees = np.linspace(5, 15, 100)
 
-<span class="c1"># Compute PSD across all knees</span>
-<span class="n">freqs_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
-<span class="n">powers_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">freqs_dynamic</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">knees</span><span class="p">])</span>
+# Compute PSD across all knees
+freqs_dynamic = np.linspace(1, 1000, 10000)
+powers_dynamic = np.array([(1/(k**2 + freqs_dynamic**2)) for k in knees])
 
-<span class="n">corrs_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
-<span class="n">lags_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+corrs_dynamic = np.zeros((len(powers_dynamic), len(powers_dynamic[0])//2))
+lags_dynamic = np.arange(1, len(powers_dynamic[0])+1, 2)
 
-<span class="c1"># ACF via iFFT</span>
-<span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">power</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">):</span>
+# ACF via iFFT
+for ind, power in enumerate(powers_dynamic):
 
-    <span class="n">acf</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">power</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">power</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">acf</span> <span class="o">-=</span> <span class="n">acf</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-    <span class="n">acf</span> <span class="o">/=</span> <span class="n">acf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="n">acf</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    acf = ifft(power).real[:len(power)//2]
+    acf -= acf.min()
+    acf /= acf.max()
+    acf *= acf_ap_osc[0]
 
-    <span class="n">corrs_dynamic</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">acf</span>
+    corrs_dynamic[ind] = acf
 
-<span class="c1"># Mean PSD</span>
-<span class="n">powers_mid</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">freqs_dynamic</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">powers_mid</span> <span class="o">/=</span> <span class="n">powers_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+# Mean PSD
+powers_mid = 1 / (10**2 + freqs_dynamic**2)
+powers_mid /= powers_mid[0]
 
-<span class="c1"># Mean ACF</span>
-<span class="n">corrs_mid</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">powers_mid</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">powers_mid</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">corrs_mid</span> <span class="o">-=</span> <span class="n">corrs_mid</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-<span class="n">corrs_mid</span> <span class="o">/=</span> <span class="n">corrs_mid</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">corrs_mid</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+# Mean ACF
+corrs_mid = ifft(powers_mid).real[:len(powers_mid)//2]
+corrs_mid -= corrs_mid.min()
+corrs_mid /= corrs_mid.max()
+corrs_mid *= acf_ap_osc[0]
 
-<span class="n">lags_mid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+lags_mid = np.arange(1, 2*len(acf_ap_osc)+1, 2)
 
-<span class="c1"># Trim PSD and ACF</span>
-<span class="n">inds_mid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_mid</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
-<span class="n">lags_mid</span> <span class="o">=</span> <span class="n">lags_mid</span><span class="p">[</span><span class="n">inds_mid</span><span class="p">]</span>
-<span class="n">corrs_mid</span> <span class="o">=</span> <span class="n">corrs_mid</span><span class="p">[</span><span class="n">inds_mid</span><span class="p">]</span>
+# Trim PSD and ACF
+inds_mid = np.where(lags_mid &lt;= 300)
+lags_mid = lags_mid[inds_mid]
+corrs_mid = corrs_mid[inds_mid]
 
-<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_dynamic</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">lags_dynamic</span> <span class="o">=</span> <span class="n">lags_dynamic</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
-<span class="n">corrs_dynamic</span> <span class="o">=</span> <span class="n">corrs_dynamic</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">]</span>
+inds = np.where(lags_dynamic &lt;= 300)[0]
+lags_dynamic = lags_dynamic[inds]
+corrs_dynamic = corrs_dynamic[:, inds]
 
-<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs_dynamic</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">freqs_dynamic</span> <span class="o">=</span> <span class="n">freqs_dynamic</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
-<span class="n">powers_dynamic</span> <span class="o">=</span> <span class="n">powers_dynamic</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">]</span>
-<span class="n">powers_mid</span> <span class="o">=</span> <span class="n">powers_mid</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+inds = np.where(freqs_dynamic &lt;= 100)[0]
+freqs_dynamic = freqs_dynamic[inds]
+powers_dynamic = powers_dynamic[:, inds]
+powers_mid = powers_mid[inds]
 </pre></div>
 </div>
 </div>
@@ -760,84 +768,84 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(figsize=(16, 9), nrows=2, ncols=3)
 
-<span class="c1"># Oscillations - ACF</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">acf_ap_osc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Aperiodic Fit&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">acf_pe_osc</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
-
-
-<span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lags_osc</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="mf">.04</span><span class="p">,</span> <span class="mf">.06</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.05</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\tau$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-
-<span class="c1"># Oscillations - PSD</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Aperiodic&#39;</span><span class="p">)</span>
-
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">],</span> <span class="n">ap_fit_osc</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">ap_fit_osc</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.009</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ap_fit_osc</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.3</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s1">&#39;$\mathregular</span><span class="si">{f_k}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-
-<span class="c1"># Finite - ACF</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">lags_finite_burg</span><span class="p">,</span> <span class="n">corrs_finite_burg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AR(5)&#39;</span><span class="p">)</span>
-
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">lags_finite</span><span class="p">,</span> <span class="n">corrs_finite</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;1 Second&#39;</span><span class="p">)</span>
-
-<span class="c1"># Finite - PSD</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_finite_burg</span><span class="p">,</span> <span class="n">powers_finite_burg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AR(5)&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_finite_burg</span><span class="p">,</span> <span class="n">powers_finite_burg</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_finite</span><span class="p">,</span> <span class="n">powers_finite</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Welch&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
-
-<span class="c1"># Dynamic - ACF</span>
-<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs_dynamic</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">)</span>
-
-<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">knees</span><span class="p">)))</span>
-
-<span class="k">for</span> <span class="n">_corrs</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">corrs_dynamic</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_dynamic</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="n">_corrs</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">corrs_mid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Mean&#39;</span><span class="p">)</span>
-
-<span class="c1"># Dynamic - PSD</span>
-<span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_dynamic</span><span class="p">,</span> <span class="n">p</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs_dynamic</span><span class="p">,</span> <span class="n">powers_mid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+# Oscillations - ACF
+axes[0][0].plot(lags_osc, acf_ap_osc, color=&#39;C0&#39;, label=&#39;Aperiodic Fit&#39;)
+axes[0][0].plot(lags_osc, acf_pe_osc, ls=&#39;--&#39;, color=&#39;C1&#39;, label=&#39;Oscillation&#39;)
 
 
-<span class="c1"># Axes</span>
-<span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">.0075</span><span class="p">,</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">5</span><span class="p">]</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+ind = np.argmin(np.abs(lags_osc-int(convert_knee(10) * fs)))
+axes[0][0].scatter(lags_osc[ind], acf_ap_osc[ind], color=&#39;k&#39;, zorder=4)
+axes[0][0].axhline(acf_ap_osc[ind], .04, .06, ls=&#39;--&#39;, color=&#39;k&#39;)
+axes[0][0].text(lags_osc[ind]+7, acf_ap_osc[ind]-.05, r&#39;$\tau$&#39;, size=18)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">())</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">())</span>
+# Oscillations - PSD
+axes[1][0].loglog(psd.freqs, psd.powers, color=&#39;C1&#39;, ls=&#39;--&#39;, label=&#39;Oscillation&#39;)
+axes[1][0].loglog(psd.freqs, psd.powers_fit, color=&#39;C0&#39;, label=&#39;Aperiodic&#39;)
 
-<span class="c1"># Titles and labels</span>
-<span class="n">xlabsize</span> <span class="o">=</span> <span class="mi">14</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+axes[1][0].scatter(freqs[knee_ind], ap_fit_osc[knee_ind], color=&#39;k&#39;, zorder=3)
+axes[1][0].axhline(ap_fit_osc[knee_ind]-.009, 0.045, .5, color=&#39;k&#39;, ls=&#39;--&#39;)
+axes[1][0].text(freqs[knee_ind]-1, ap_fit_osc[knee_ind]-.3,
+                r&#39;$\mathregular{f_k}$&#39;, size=18)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Autocorrelation&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Power Spectral Density&#39;</span><span class="p">)</span>
+# Finite - ACF
+axes[0][1].plot(
+    lags_finite_burg, corrs_finite_burg, color=&#39;C0&#39;, label=&#39;AR(5)&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Finite Duration&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Dynamic&#39;</span><span class="p">)</span>
+axes[0][1].plot(
+    lags_finite, corrs_finite, color=&#39;C1&#39;, ls=&#39;--&#39;, label=&#39;1 Second&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+# Finite - PSD
+axes[1][1].loglog(freqs_finite_burg, powers_finite_burg, color=&#39;C0&#39;, label=&#39;AR(5)&#39;)
+axes[1][1].loglog(freqs_finite_burg, powers_finite_burg)
+axes[1][1].loglog(freqs_finite, powers_finite, color=&#39;C1&#39;, label=&#39;Welch&#39;, ls=&#39;--&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig02_bias.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+# Dynamic - ACF
+inds = np.where(freqs_dynamic &lt;= 100)
+
+colors = plt.cm.viridis(np.linspace(0, 1, len(knees)))
+
+for _corrs, c in zip(corrs_dynamic, colors):
+    axes[0][2].plot(lags_dynamic[:200], _corrs[:200], color=c)
+axes[0][2].plot(lags_osc, corrs_mid, color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Mean&#39;)
+
+# Dynamic - PSD
+for p, c in zip(powers_dynamic, colors):
+    axes[1][2].loglog(freqs_dynamic, p/p[0], color=c)
+axes[1][2].plot(freqs_dynamic, powers_mid, color=&#39;k&#39;, ls=&#39;--&#39;)
+
+
+# Axes
+ylims = [axes[1][0].get_ylim()[0]-.0075, axes[1][0].get_ylim()[1]+5]
+axes[1][0].set_ylim(ylims)
+axes[1][1].set_ylim(ylims)
+axes[1][2].set_ylim(ylims)
+
+axes[0][1].set_ylim(axes[0][0].get_ylim())
+axes[0][2].set_ylim(axes[0][0].get_ylim())
+
+# Titles and labels
+xlabsize = 14
+axes[0][0].set_xlabel(&#39;Lags&#39;, size=xlabsize)
+axes[0][1].set_xlabel(&#39;Lags&#39;, size=xlabsize)
+axes[0][2].set_xlabel(&#39;Lags&#39;, size=xlabsize)
+axes[1][0].set_xlabel(&#39;Frequency&#39;, size=xlabsize)
+axes[1][1].set_xlabel(&#39;Frequency&#39;, size=xlabsize)
+axes[1][2].set_xlabel(&#39;Frequency&#39;, size=xlabsize)
+
+axes[0][0].set_ylabel(&#39;Autocorrelation&#39;)
+axes[1][0].set_ylabel(&#39;Power Spectral Density&#39;)
+
+axes[0][0].set_title(&#39;Oscillation&#39;)
+axes[0][1].set_title(&#39;Finite Duration&#39;)
+axes[0][2].set_title(&#39;Dynamic&#39;)
+
+axes[0][0].legend(fontsize=16)
+axes[0][1].legend(fontsize=16)
+axes[0][2].legend(fontsize=16)
+
+plt.savefig(&#39;fig02_bias.png&#39;, dpi=300, facecolor=&#39;w&#39;);
 </pre></div>
 </div>
 </div>

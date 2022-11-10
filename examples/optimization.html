@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>03. ACF Objects &#8212; timescales 0.0.1-dev documentation</title>
+    <title>&lt;no title&gt; &#8212; timescales 0.0.1-dev documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -45,8 +45,6 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="04. Simulations" href="tutorial_04_simulations.html" />
-    <link rel="prev" title="02. PSD Objects" href="tutorial_02_PSD.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -100,7 +98,7 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="index.html">
+  <a class="reference internal" href="../tutorials/index.html">
    Tutorials
   </a>
  </li>
@@ -253,22 +251,7 @@ title="Print to PDF"
         <i class="fas fa-list"></i> Contents
     </div>
     <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-1d">
-   Fitting: 1d
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-2d">
-   Fitting: 2d
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Results">
-   Results
-  </a>
- </li>
+        <ul class="simple visible nav section-nav flex-column">
 </ul>
 
     </nav>
@@ -278,7 +261,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>03. ACF Objects</h1>
+                <h1><no title></h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -287,22 +270,7 @@ title="Print to PDF"
                             <h2> Contents </h2>
                         </div>
                         <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-1d">
-   Fitting: 1d
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fitting:-2d">
-   Fitting: 2d
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Results">
-   Results
-  </a>
- </li>
+                            <ul class="simple visible nav section-nav flex-column">
 </ul>
 
                         </nav>
@@ -573,85 +541,154 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
 
-import matplotlib.pyplot as plt
-
-from statsmodels.tsa.stattools import acf as compute_acf
-
-from neurodsp.sim import sim_oscillation
-from neurodsp.spectral import compute_spectrum
-
-from timescales.sim import sim_ou
-from timescales.fit import ACF
-from timescales.conversions import convert_knee
-from timescales.autoreg import compute_ar_spectrum
+from timescales.sim import sim_lorentzian
+from timescales.utils import resample_logspace
 from timescales.plts import set_default_rc
+
+import torch
+from torch import nn
+from torch.functional import F
+
 set_default_rc()
 </pre></div>
 </div>
 </div>
-<section id="03.-ACF-Objects">
-<h1>03. ACF Objects<a class="headerlink" href="#03.-ACF-Objects" title="Permalink to this headline">#</a></h1>
-<p>This tutorials explores the use of the ACF objects.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
-n_seconds = 20
-fs = 1000
-knee_freq = 10
-tau = convert_knee(knee_freq)
-ar_order = 50
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>class Model(nn.Module):
+    &quot;&quot;&quot;Custom Pytorch model for gradient optimization. &quot;&quot;&quot;
 
-# Simulate a signal
-np.random.seed(0)
-sig = sim_ou(n_seconds, fs, tau, mu=0, std=2)
-sig_osc = sig + sim_oscillation(n_seconds, fs, knee_freq)
+    def __init__(self, bounds, guess):
+
+        super().__init__()
+
+        # Initialize weights
+        weights = torch.zeros(4)
+
+        for ind in range(len(guess)):
+            weights[ind] = torch.clamp(guess[ind], bounds[0][ind], bounds[1][ind])
+
+        # Create torch parameters
+        self.weights = nn.Parameter(weights)
+
+    def forward(self, X):
+        &quot;&quot;&quot;Implement function to be optimised.&quot;&quot;&quot;
+
+        knee_freq, exponent, offset, constant = self.weights
+
+        if knee_freq &lt; 0:
+            knee_freq = 0
+        if exponent &lt; 0:
+            exopnent = 0
+
+        return sim_lorentzian(X, knee_freq, exponent, offset, constant)
+
+
+def training_loop(model, optimizer, x, y, n=1000):
+    &quot;&quot;&quot;Train model.&quot;&quot;&quot;
+
+    losses = []
+
+    for i in range(n):
+        preds = model(x)
+
+        loss = F.mse_loss(preds, y).sqrt()
+        loss.backward()
+
+
+        optimizer.step()
+        optimizer.zero_grad()
+        losses.append(loss)
+
+    return losses
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Compute spectrum using method
-acf = ACF()
-acf.compute_acf(sig, fs)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>freqs = np.arange(1, 1001)
+
+knee_freq = 20
+exponent = 2
+offset = 0
+constant = 1e-5
+
+powers = np.log10(sim_lorentzian(freqs, knee_freq, exponent, offset, constant))
+powers += np.random.rand(len(powers)) * .1
+powers = 10**powers
+
+freqs, powers = resample_logspace(freqs, powers, 2000)
+
+freqs = np.log10(freqs)
+powers = np.log10(powers)
+
+freqs = torch.from_numpy(freqs).float()
+powers = torch.from_numpy(powers).float()
+
+plt.plot(freqs, powers, ls=&#39;&#39;, marker=&#39;.&#39;)
 </pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x7f5ef24bfd00&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_optimization_2_1.png" src="../_images/examples_optimization_2_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Or using an external function
-corrs = compute_acf(sig, nlags=500, qstat=False, fft=True)
-lags = np.arange(len(corrs))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>guess = torch.tensor([1, 2, 0, 0])
 
-acf = ACF(lags, corrs, fs)
+bounds = torch.tensor([
+    [1,    1, -1, 0],
+    [100,  4,  1, 1e-3]
+])
+
+model = Model(bounds, guess)
+opt = torch.optim.Adam(model.parameters(), lr=0.01)
+
+losses = training_loop(
+    model,
+    opt,
+    freqs,
+    powers,
+    n=2000
+)
+
+# Get prediction
+preds = model(freqs)
 </pre></div>
 </div>
 </div>
-<section id="Fitting:-1d">
-<h2>Fitting: 1d<a class="headerlink" href="#Fitting:-1d" title="Permalink to this headline">#</a></h2>
-<p>PSD objects support two ACF models. The first is a simple exponential decay - appropropriate when no oscillations are present. A second damped cosine model is available when oscillations are present. However, when multiple oscillatons are present, the PSD models is suggested.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(ncols=2, figsize=(14, 6))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(8, 6))
 
-# Exponential
-acf.fit()
-acf.plot(ax=axes[0], title=&#39;Exponential Decay Model&#39;)
-
-# Damped cosine
-acf_cos = ACF()
-acf_cos.compute_acf(sig_osc, fs, nlags=500)
-acf_cos.fit(with_cos=True)
-acf_cos.plot(ax=axes[1], title=&#39;Damped Cosine&#39;)
+plt.title(&#39;Loss x Epochs&#39;)
+plt.plot([l.item() for l in losses])
+plt.xlabel(&#39;Epoch&#39;)
+plt.ylabel(&#39;Loss&#39;);
 </pre></div>
 </div>
 </div>
@@ -659,41 +696,19 @@ acf_cos.plot(ax=axes[1], title=&#39;Damped Cosine&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_tutorial_03_ACF_6_0.png" src="../_images/tutorials_tutorial_03_ACF_6_0.png" />
+<img alt="../_images/examples_optimization_4_0.png" src="../_images/examples_optimization_4_0.png" />
 </div>
 </div>
-</section>
-<section id="Fitting:-2d">
-<h2>Fitting: 2d<a class="headerlink" href="#Fitting:-2d" title="Permalink to this headline">#</a></h2>
-<p>2d arrays of signals or correlations are supported.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulate
-fs = 1000
-n_seconds = 5
-
-nsigs = 20
-
-sigs = np.zeros((nsigs, int(n_seconds * fs)))
-
-for ind in range(nsigs):
-    np.random.seed(ind)
-    sigs[ind] = sim_ou(n_seconds, fs, tau, mu=0, std=2)
-    sigs[ind] += sim_oscillation(n_seconds, fs, knee_freq)
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Fit
-acf = ACF()
-acf.compute_acf(sigs, fs, nlags=500)
-acf.fit(with_cos=True, n_jobs=-1)
-acf.plot()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(8, 6))
+plt.title(&#39;Fit&#39;)
+plt.loglog(10**freqs, 10**powers, label=&#39;Simulated&#39;)
+plt.loglog(10**freqs, 10**preds.detach().numpy(), label=&#39;Fit&#39;)
+plt.xlabel(&#39;Frequency&#39;)
+plt.ylabel(&#39;Power&#39;);
 </pre></div>
 </div>
 </div>
@@ -701,81 +716,9 @@ acf.plot()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_tutorial_03_ACF_9_0.png" src="../_images/tutorials_tutorial_03_ACF_9_0.png" />
+<img alt="../_images/examples_optimization_5_0.png" src="../_images/examples_optimization_5_0.png" />
 </div>
 </div>
-</section>
-<section id="Results">
-<h2>Results<a class="headerlink" href="#Results" title="Permalink to this headline">#</a></h2>
-<p>Optimized parameters, labels, and model r-squared values are stored as attributes.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>acf.param_names
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[&#39;exp_tau&#39;,
- &#39;osc_tau&#39;,
- &#39;osc_gamma&#39;,
- &#39;osc_freq&#39;,
- &#39;amp_ratio&#39;,
- &#39;height&#39;,
- &#39;offset&#39;]
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>acf.params[:5]
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-array([[1.41596274e-02, 5.75828900e-02, 1.00000000e-01, 4.96851887e+00,
-        6.11214625e-01, 7.78241857e-01, 2.19397589e-01],
-       [1.78506249e-02, 3.44993307e-05, 2.96296520e-12, 5.00368526e+00,
-        8.07856339e-01, 7.74575854e-01, 1.86776492e-01],
-       [1.94496772e-02, 9.99999989e-01, 9.60349691e-02, 5.00253943e+00,
-        7.34143279e-01, 8.31915435e-01, 1.78194125e-01],
-       [1.75063738e-02, 4.35207947e-03, 7.12521139e-04, 4.99162831e+00,
-        8.10755871e-01, 7.76777111e-01, 2.05387302e-01],
-       [1.50673823e-02, 9.99999997e-01, 1.17410465e-13, 5.00554451e+00,
-        7.77721345e-01, 8.14000705e-01, 1.95504667e-01]])
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>acf.rsq[:5]
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-array([0.97198941, 0.97247628, 0.96448355, 0.95324171, 0.96872868])
-</pre></div></div>
-</div>
-</section>
-</section>
 
 
               </div>
@@ -785,20 +728,6 @@ array([0.97198941, 0.97247628, 0.96448355, 0.95324171, 0.96872868])
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="tutorial_02_PSD.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">02. PSD Objects</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="tutorial_04_simulations.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">04. Simulations</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
 </div>
             </footer>
         </div>

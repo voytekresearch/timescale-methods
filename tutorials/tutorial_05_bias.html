@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -528,6 +528,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -536,10 +537,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -551,12 +556,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -565,16 +573,16 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_oscillation</span>
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_ou</span>
+from neurodsp.sim import sim_oscillation
+from timescales.sim import sim_ou
 
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+from timescales.conversions import convert_knee
+from timescales.fit import PSD
+from timescales.plts import set_default_rc
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -588,35 +596,35 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 100
+fs = 1000
+f_range = (1, 100)
+freq = 10
+tau = convert_knee(freq)
 
-<span class="c1"># Simulate</span>
-<span class="n">sig_ap</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-<span class="n">sig_pe</span> <span class="o">=</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">sig_ap</span> <span class="o">+</span> <span class="n">sig_pe</span>
+# Simulate
+sig_ap = sim_ou(n_seconds, fs, tau)
+sig_pe = sim_oscillation(n_seconds, fs, freq, mean=0, variance=.5)
+sig = sig_ap + sig_pe
 
-<span class="c1"># Fit: robust regression</span>
-<span class="n">psd_robust</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_robust</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">)</span>
-<span class="n">psd_robust</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
+# Fit: robust regression
+psd_robust = PSD()
+psd_robust.compute_spectrum(sig, fs, f_range=f_range)
+psd_robust.fit(method=&#39;cauchy&#39;)
 
-<span class="n">psd_linear</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_linear</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">)</span>
-<span class="n">psd_linear</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+psd_linear = PSD()
+psd_linear.compute_spectrum(sig, fs, f_range=f_range)
+psd_linear.fit(method=&#39;linear&#39;)
 
-<span class="c1"># Fit: fooof</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">)</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+# Fit: fooof
+psd = PSD()
+psd.compute_spectrum(sig, fs, f_range=f_range)
+psd.fit(method=&#39;fooof&#39;, fooof_init={&#39;max_n_peaks&#39;: 1})
 
-<span class="n">psd_nopeak</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_nopeak</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">)</span>
-<span class="n">psd_nopeak</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+psd_nopeak = PSD()
+psd_nopeak.compute_spectrum(sig, fs, f_range=f_range)
+psd_nopeak.fit(method=&#39;fooof&#39;, fooof_init={&#39;max_n_peaks&#39;: 0})
 </pre></div>
 </div>
 </div>
@@ -624,16 +632,16 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 8))
 
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_robust</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_robust</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Powers&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_robust</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_robust</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Robust&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_linear</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_linear</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Linear&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+plt.loglog(psd_robust.freqs, psd_robust.powers, label=&#39;Powers&#39;, alpha=.5, lw=3)
+plt.loglog(psd_robust.freqs, psd_robust.powers_fit, label=&#39;Robust&#39;, lw=3)
+plt.loglog(psd_linear.freqs, psd_linear.powers_fit, label=&#39;Linear&#39;, lw=3)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Linear vs Robust Regression&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+plt.title(&#39;Linear vs Robust Regression&#39;)
+plt.xlabel(&#39;Frequency&#39;)
+plt.ylabel(&#39;Power&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>
@@ -648,19 +656,19 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 8))
 
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span>
-           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Powers&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span>
-           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;With Peak&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_nopeak</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span>
-           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Without Peak&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+plt.loglog(psd.freqs, psd.powers,
+           label=&#39;Powers&#39;, alpha=.5, lw=3)
+plt.loglog(psd.freqs, psd.powers_fit,
+           label=&#39;With Peak&#39;, lw=3)
+plt.loglog(psd.freqs, psd_nopeak.powers_fit,
+           label=&#39;Without Peak&#39;, lw=3)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;FOOOF With vs Without Peaks&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+plt.title(&#39;FOOOF With vs Without Peaks&#39;)
+plt.xlabel(&#39;Frequency&#39;)
+plt.ylabel(&#39;Power&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>
@@ -679,23 +687,23 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
-<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">2</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 2
+fs = 1000
+freq = 10
+tau = convert_knee(freq)
+ar_order = 2
 
-<span class="c1"># Simulate</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+# Simulate
+np.random.seed(0)
+sig = sim_ou(n_seconds, fs, tau)
 
-<span class="c1"># Compute spectra</span>
-<span class="n">psd_ar</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_ar</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">)</span>
+# Compute spectra
+psd_ar = PSD()
+psd_ar.compute_spectrum(sig, fs, ar_order=ar_order)
 
-<span class="n">psd_welch</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_welch</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+psd_welch = PSD()
+psd_welch.compute_spectrum(sig, fs)
 </pre></div>
 </div>
 </div>
@@ -703,17 +711,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 8))
 
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_welch</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_welch</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span>
-           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Welch&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_ar</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_ar</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span>
-           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AR&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+plt.loglog(psd_welch.freqs, psd_welch.powers,
+           label=&#39;Welch&#39;, lw=3)
+plt.loglog(psd_ar.freqs, psd_ar.powers,
+           label=&#39;AR&#39;, lw=3)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Finite Bias&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+plt.title(&#39;Finite Bias&#39;)
+plt.xlabel(&#39;Frequency&#39;)
+plt.ylabel(&#39;Power&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>
@@ -732,26 +740,26 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
-<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">50</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 1
+fs = 1000
+freq = 10
+tau = convert_knee(freq)
+ar_order = 50
 
-<span class="c1"># Simulate</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">+=</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+# Simulate
+np.random.seed(0)
+sig = sim_ou(n_seconds, fs, tau)
+sig += sim_oscillation(n_seconds, fs, freq, variance=1)
 
-<span class="c1"># Fit</span>
-<span class="n">psd_ar</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_ar</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
-<span class="n">psd_ar</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
+# Fit
+psd_ar = PSD()
+psd_ar.compute_spectrum(sig, fs, ar_order=ar_order, f_range=(1, 100), nfft=10000)
+psd_ar.fit(method=&#39;cauchy&#39;)
 
-<span class="n">psd_welch</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_welch</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
-<span class="n">psd_welch</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
+psd_welch = PSD()
+psd_welch.compute_spectrum(sig, fs, f_range=(1, 100))
+psd_welch.fit(method=&#39;cauchy&#39;)
 </pre></div>
 </div>
 </div>
@@ -759,30 +767,30 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 8))
 
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_ar</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_ar</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span>
-           <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_welch</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_welch</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span>
-           <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+plt.loglog(psd_ar.freqs, psd_ar.powers,
+           lw=3, alpha=.2, color=&#39;C1&#39;)
+plt.loglog(psd_welch.freqs, psd_welch.powers,
+           lw=3, alpha=.2, color=&#39;C0&#39;)
 
 
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_ar</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_ar</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span>
-           <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_welch</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_welch</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span>
-           <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+plt.loglog(psd_ar.freqs, psd_ar.powers_fit,
+           lw=3, color=&#39;C1&#39;)
+plt.loglog(psd_welch.freqs, psd_welch.powers_fit,
+           lw=3, color=&#39;C0&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Truth&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">psd_ar</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AR PSD&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">psd_welch</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Welch</span><span class="se">\&#39;</span><span class="s1">s PSD&#39;</span><span class="p">)</span>
+plt.axvline(freq, .02, .98, lw=3,
+            color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Truth&#39;)
+plt.axvline(psd_ar.params[1], .02, .98, lw=3,
+            color=&#39;C1&#39;, ls=&#39;--&#39;, label=&#39;AR PSD&#39;)
+plt.axvline(psd_welch.params[1], .02, .98, lw=3,
+            color=&#39;C0&#39;, ls=&#39;--&#39;, label=&#39;Welch\&#39;s PSD&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Finite + Oscillatory Bias&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+plt.title(&#39;Finite + Oscillatory Bias&#39;)
+plt.xlabel(&#39;Frequency&#39;)
+plt.ylabel(&#39;Power&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>

@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -295,7 +295,7 @@ title="Print to PDF"
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table class="longtable table autosummary">
+<table class="autosummary longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -307,7 +307,7 @@ title="Print to PDF"
 <tr class="row-even"><td><p><a class="reference internal" href="#timescales.fit.PSD.compute_spectrum" title="timescales.fit.PSD.compute_spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_spectrum</span></code></a>(sig, fs[, ar_order, ...])</p></td>
 <td><p>Compute powers spectral density.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.PSD.fit" title="timescales.fit.PSD.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>([f_range, method, fooof_init, bounds, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#timescales.fit.PSD.fit" title="timescales.fit.PSD.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>([freqs, powers, f_range, ap_mode, ...])</p></td>
 <td><p>Fit power spectra.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#timescales.fit.PSD.plot" title="timescales.fit.PSD.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([ax, title])</p></td>
@@ -344,29 +344,43 @@ Only available when using an ar_order.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="timescales.fit.PSD.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'huber'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fooof_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxfev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/psd.html#PSD.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.PSD.fit" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">powers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ap_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'huber'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fooof_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxfev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/timescales/fit/psd.html#PSD.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#timescales.fit.PSD.fit" title="Permalink to this definition">#</a></dt>
 <dd><p>Fit power spectra.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>freqs</strong><span class="classifier">1d array</span></dt><dd><p>Frequencies at which the measure was calculated.</p>
+</dd>
+<dt><strong>powers</strong><span class="classifier">1d or 2d array</span></dt><dd><p>Power spectral density.</p>
+</dd>
 <dt><strong>f_range</strong><span class="classifier">tuple of (float, float)</span></dt><dd><p>Frequency range of interest, inclusive.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier">{‘huber’, ‘fooof’}</span></dt><dd><p>Fit using a single scipy curve_fit call using robust regression (‘huber’) or use the
-fooof model (‘fooof’).</p>
+<dt><strong>ap_mode</strong><span class="classifier">{‘single’, ‘double’}</span></dt><dd><p>Aperiodic mode as a single or double timescales (knee) process.
+Only availble for non-fooof methods.</p>
+</dd>
+<dt><strong>method</strong><span class="classifier">{‘huber’, ‘cauchy’, ‘soft_l1’, ‘arctan’, ‘fooof’}</span></dt><dd><p>Fit using a single scipy curve_fit call using robust regression or use the
+fooof model.</p>
 </dd>
 <dt><strong>fooof_init</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Fooof initialization arguments.
 Only used if method is ‘fooof’.</p>
-</dd>
-<dt><strong>f_scale</strong><span class="classifier">float, optional, default: 0.1</span></dt><dd><p>Value of soft margin between inlier and outlier residuals.
-Only used if method is ‘huber’.</p>
 </dd>
 <dt><strong>bounds</strong><span class="classifier">2d array-like</span></dt><dd><p>Parameter bounds.</p>
 </dd>
 <dt><strong>guess</strong><span class="classifier">1d array-like</span></dt><dd><p>Initial parameter estimates.</p>
 </dd>
-<dt><strong>n_jobs</strong><span class="classifier">int</span></dt><dd><p>Number of jobs to run in parralel, when powers is 2d.</p>
+<dt><strong>n_resample</strong><span class="classifier">int, optional, default: None:</span></dt><dd><p>Evenly resample in log-log space to improve robust regression.</p>
+</dd>
+<dt><strong>f_scale</strong><span class="classifier">float or 1d array-like, optional, default: 0.1</span></dt><dd><p>Value of soft margin between inlier and outlier residuals.
+Only used if method is in {‘huber’, ‘cauchy’, ‘soft_l1’, ‘arctan’}.</p>
+</dd>
+<dt><strong>r_thresh</strong><span class="classifier">float, optional, default: None</span></dt><dd><p>Minimum r-squared required to accept f_scale. Only used when f_scale is a 1d array.
+When None, all f_scale values are attempted and the highest resulting r-squared is accepted.</p>
 </dd>
 <dt><strong>maxfev</strong><span class="classifier">int</span></dt><dd><p>Maximum number of fitting iterations. Only availble for huber method.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Target error per sample.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int</span></dt><dd><p>Number of jobs to run in parralel, when powers is 2d.</p>
 </dd>
 <dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}</span></dt><dd><p>Specify whether to display a progress bar. Uses ‘tqdm’, if installed.</p>
 </dd>

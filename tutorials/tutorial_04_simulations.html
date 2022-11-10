@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -532,6 +532,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -540,10 +541,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -555,12 +560,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -569,17 +577,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+import numpy as np
 
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
+from timescales.conversions import convert_knee
 
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="p">(</span><span class="n">sim_spikes_synaptic</span><span class="p">,</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">sim_synaptic_kernel</span><span class="p">,</span>
-    <span class="n">sample_spikes</span><span class="p">,</span> <span class="n">bin_spikes</span><span class="p">,</span> <span class="n">sim_branching</span><span class="p">,</span> <span class="n">sim_ou</span><span class="p">)</span>
+from timescales.sim import (sim_spikes_synaptic, sim_spikes_prob, sim_synaptic_kernel,
+    sample_spikes, bin_spikes, sim_branching, sim_ou)
 
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+from timescales.plts import set_default_rc
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -593,14 +601,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">10000</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 2
+fs = 10000
+tau = convert_knee(10)
+times = np.arange(0, n_seconds, 1/fs)
 
-<span class="c1"># Simulate Spikes</span>
-<span class="n">spikes</span> <span class="o">=</span> <span class="n">sim_spikes_synaptic</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">refract</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+# Simulate Spikes
+spikes = sim_spikes_synaptic(n_seconds, fs, tau, mu=500, refract=500)
 </pre></div>
 </div>
 </div>
@@ -608,17 +616,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The above simulation call is broken down below:</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># The above simulation call is broken down below:
+np.random.seed(0)
 
-<span class="c1"># Define the kernel with an instantaneous rise and decay defined by tau</span>
-<span class="n">kernel</span> <span class="o">=</span> <span class="n">sim_synaptic_kernel</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">tau</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+# Define the kernel with an instantaneous rise and decay defined by tau
+kernel = sim_synaptic_kernel(10 * tau, fs, 0, tau)
 
-<span class="c1"># Define spiking probability</span>
-<span class="n">probs</span> <span class="o">=</span> <span class="n">sim_spikes_prob</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">refract</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+# Define spiking probability
+probs = sim_spikes_prob(n_seconds, fs, kernel, mu=500, refract=50)
 
-<span class="c1"># Sample spikes from probabiltiies</span>
-<span class="n">spikes</span> <span class="o">=</span> <span class="n">sample_spikes</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
+# Sample spikes from probabiltiies
+spikes = sample_spikes(probs)
 </pre></div>
 </div>
 </div>
@@ -626,14 +634,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">probs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Probability&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">eventplot</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">spikes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">linelengths</span><span class="o">=</span><span class="mf">.05</span><span class="p">,</span>
-              <span class="n">lineoffsets</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Spikes&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Spike Probability&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">);</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
+plt.figure(figsize=(16, 4))
+plt.plot(times, probs, label=&#39;Probability&#39;)
+plt.eventplot(times[np.where(spikes)[0]], linelengths=.05,
+              lineoffsets=1., color=&#39;C1&#39;, label=&#39;Spikes&#39;)
+plt.xlabel(&#39;Time (seconds)&#39;)
+plt.ylabel(&#39;Spike Probability&#39;)
+plt.legend(loc=&#39;lower right&#39;);
 </pre></div>
 </div>
 </div>
@@ -651,10 +659,10 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate</span>
-<span class="n">bin_size</span> <span class="o">=</span> <span class="mi">50</span>
-<span class="n">spikes_bin</span><span class="p">,</span> <span class="n">fs_bin</span> <span class="o">=</span> <span class="n">bin_spikes</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span>
-<span class="n">times_bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs_bin</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulate
+bin_size = 50
+spikes_bin, fs_bin = bin_spikes(spikes, fs, bin_size)
+times_bin = np.arange(0, n_seconds, 1/fs_bin)
 </pre></div>
 </div>
 </div>
@@ -662,12 +670,12 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times_bin</span><span class="p">,</span> <span class="n">spikes_bin</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Spike Counts&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Binned Spikes&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
+plt.figure(figsize=(16, 4))
+plt.plot(times_bin, spikes_bin)
+plt.xlabel(&#39;Time (seconds)&#39;)
+plt.ylabel(&#39;Spike Counts&#39;)
+plt.title(&#39;Binned Spikes&#39;)
 </pre></div>
 </div>
 </div>
@@ -696,10 +704,10 @@ Text(0.5, 1.0, &#39;Binned Spikes&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">sig_branching</span> <span class="o">=</span> <span class="n">sim_branching</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sig_ou</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulate
+fs = 1000
+sig_branching = sim_branching(n_seconds, fs, tau, 10, mean=0, variance=1)
+sig_ou = sim_ou(n_seconds, fs, tau, mean=0, variance=1)
 </pre></div>
 </div>
 </div>
@@ -707,17 +715,17 @@ Text(0.5, 1.0, &#39;Binned Spikes&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
+plt.figure(figsize=(16, 4))
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig_branching</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Branching&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig_ou</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ornstein-Uhlenbeck&#39;</span><span class="p">)</span>
+plt.plot(sig_branching, label=&#39;Branching&#39;)
+plt.plot(sig_ou, label=&#39;Ornstein-Uhlenbeck&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage&#39;</span><span class="p">)</span>
+plt.xlabel(&#39;Time (seconds)&#39;)
+plt.ylabel(&#39;Voltage&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;LFP Simulations&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+plt.title(&#39;LFP Simulations&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>

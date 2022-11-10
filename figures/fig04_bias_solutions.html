@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -518,6 +518,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -526,10 +527,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -541,12 +546,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -555,17 +563,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_oscillation</span><span class="p">,</span> <span class="n">sim_synaptic_kernel</span>
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_spikes_prob</span>
+from neurodsp.sim import sim_oscillation, sim_synaptic_kernel
+from timescales.sim import sim_spikes_prob
 
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
-<span class="kn">from</span> <span class="nn">timescales.pipe</span> <span class="kn">import</span> <span class="n">Pipe</span>
+from timescales.conversions import convert_knee
+from timescales.pipe import Pipe
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">plot_connected_scatter</span><span class="p">,</span> <span class="n">set_default_rc</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+import matplotlib.pyplot as plt
+from timescales.plts import plot_connected_scatter, set_default_rc
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -578,29 +586,29 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">5000</span>
-<span class="n">tau</span> <span class="o">=</span>  <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">kernel</span> <span class="o">=</span> <span class="n">sim_synaptic_kernel</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">tau</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-<span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 100
+fs = 5000
+tau =  convert_knee(10)
+kernel = sim_synaptic_kernel(5 * tau, fs, 0, tau)
+seeds = np.arange(200)
 
-<span class="c1"># Create and run a pipeline for oscillatory bias</span>
-<span class="n">pipe_osc</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+# Create and run a pipeline for oscillatory bias
+pipe_osc = Pipe(n_seconds, fs, seeds)
 
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.8</span><span class="p">))</span>
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_oscillation</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.2</span><span class="p">))</span>
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+pipe_osc.add_step(&#39;simulate&#39;, sim_spikes_prob, kernel, mu=250, rescale=(0, .8))
+pipe_osc.add_step(&#39;simulate&#39;, sim_oscillation, 20, rescale=(0, .2))
+pipe_osc.add_step(&#39;sample&#39;, fs=10000)
+pipe_osc.add_step(&#39;bin&#39;, 5)
 
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
+pipe_osc.add_step(&#39;transform&#39;, &#39;PSD&#39;)
 
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span>
-                  <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fooof_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span>
-                  <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fooof_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+pipe_osc.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;],
+                  f_range=(1, 100), fooof_init={&#39;max_n_peaks&#39;: 0})
+pipe_osc.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;],
+                  f_range=(1, 100), fooof_init={&#39;max_n_peaks&#39;: 1})
 
-<span class="n">pipe_osc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+pipe_osc.run(progress=&#39;tqdm.notebook&#39;)
 </pre></div>
 </div>
 </div>
@@ -617,27 +625,27 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">5000</span>
-<span class="n">tau</span> <span class="o">=</span>  <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">kernel</span> <span class="o">=</span> <span class="n">sim_synaptic_kernel</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">tau</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-<span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 2
+fs = 5000
+tau =  convert_knee(10)
+kernel = sim_synaptic_kernel(10 * tau, fs, 0, tau)
+seeds = np.arange(200)
 
-<span class="c1"># Create and run a pipeline for finite bias</span>
-<span class="n">pipe_finite</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+# Create and run a pipeline for finite bias
+pipe_finite = Pipe(n_seconds, fs, seeds)
 
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+pipe_finite.add_step(&#39;simulate&#39;, sim_spikes_prob, kernel, mu=250, rescale=(0, 1))
+pipe_finite.add_step(&#39;sample&#39;, fs=10000)
+pipe_finite.add_step(&#39;bin&#39;, 5)
 
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+pipe_finite.add_step(&#39;transform&#39;, &#39;PSD&#39;)
+pipe_finite.add_step(&#39;transform&#39;, &#39;PSD&#39;, ar_order=20)
 
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span>
-                     <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fooof_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+pipe_finite.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;],
+                     f_range=(1, 100), fooof_init={&#39;max_n_peaks&#39;: 0})
 
-<span class="n">pipe_finite</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+pipe_finite.run(progress=&#39;tqdm.notebook&#39;)
 </pre></div>
 </div>
 </div>
@@ -651,31 +659,31 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(ncols=2, figsize=(14, 5))
 
-<span class="n">plot_connected_scatter</span><span class="p">(</span><span class="n">pipe_osc</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pipe_osc</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                       <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">line_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">line_alpha</span><span class="o">=</span><span class="mf">.025</span><span class="p">,</span> <span class="n">scatter_jit</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                       <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="s1">&#39;C1&#39;</span><span class="p">],</span> <span class="n">xticklabels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Zero</span><span class="se">\n</span><span class="s1">Peaks&#39;</span><span class="p">,</span> <span class="s1">&#39;One</span><span class="se">\n</span><span class="s1">Peak&#39;</span><span class="p">])</span>
+plot_connected_scatter(pipe_osc.results[:, 0, 0], pipe_osc.results[:, 1, 0],
+                       axes[0], line_color=&#39;k&#39;, line_alpha=.025, scatter_jit=.1,
+                       colors=[&#39;C0&#39;, &#39;C1&#39;], xticklabels=[&#39;Zero\nPeaks&#39;, &#39;One\nPeak&#39;])
 
-<span class="n">plot_connected_scatter</span><span class="p">(</span><span class="n">pipe_finite</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pipe_finite</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                       <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">line_alpha</span><span class="o">=</span><span class="mf">.025</span><span class="p">,</span> <span class="n">scatter_jit</span><span class="o">=</span><span class="mf">.15</span><span class="p">,</span>
-                       <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">],</span> <span class="n">xticklabels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Welch</span><span class="se">\&#39;</span><span class="s1">s</span><span class="se">\n</span><span class="s1">PSD&#39;</span><span class="p">,</span> <span class="s1">&#39;AR</span><span class="se">\n</span><span class="s1">PSD&#39;</span><span class="p">])</span>
+plot_connected_scatter(pipe_finite.results[:, 0, 0], pipe_finite.results[:, 1, 0],
+                       axes[1], line_color=&#39;k&#39;, line_alpha=.025, scatter_jit=.15,
+                       colors=[&#39;C2&#39;, &#39;C3&#39;], xticklabels=[&#39;Welch\&#39;s\nPSD&#39;, &#39;AR\nPSD&#39;])
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.04</span><span class="p">,</span> <span class="mf">.96</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.04</span><span class="p">,</span> <span class="mf">.96</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+axes[0].axhline(10, .04, .96, color=&#39;k&#39;, ls=&#39;--&#39;)
+axes[1].axhline(10, .04, .96, color=&#39;k&#39;, label=&#39;Ground Truth&#39;, ls=&#39;--&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+axes[0].set_ylim(0, 30)
+axes[1].set_ylim(0, 30)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Oscillatory Bias&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Finite Bias&#39;</span><span class="p">)</span>
+axes[0].set_title(&#39;Oscillatory Bias&#39;)
+axes[1].set_title(&#39;Finite Bias&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Knee (Hertz)&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Knee (Hertz)&#39;</span><span class="p">)</span>
+axes[0].set_ylabel(&#39;Knee (Hertz)&#39;)
+axes[1].set_ylabel(&#39;Knee (Hertz)&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+axes[1].legend()
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig04_bias_solutions.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">);</span>
+plt.savefig(&#39;fig04_bias_solutions.png&#39;, dpi=300, facecolor=&#39;white&#39;);
 </pre></div>
 </div>
 </div>

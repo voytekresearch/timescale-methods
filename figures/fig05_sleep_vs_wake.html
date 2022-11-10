@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -557,6 +557,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -565,10 +566,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -580,12 +585,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -594,24 +602,24 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os.path as op
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+import numpy as np
 
-<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_ind</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">,</span> <span class="n">pearsonr</span>
+from scipy.io import loadmat
+from scipy.stats import ttest_ind, ttest_rel, pearsonr
 
-<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
+from neurodsp.utils.norm import normalize_sig
 
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span>
-<span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
-<span class="kn">from</span> <span class="nn">timescales.utils</span> <span class="kn">import</span> <span class="n">create_windows</span>
+from timescales.fit import PSD
+from timescales.autoreg import compute_ar_spectrum
+from timescales.plts import set_default_rc
+from timescales.utils import create_windows
 
-<span class="n">set_default_rc</span><span class="p">()</span>
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -630,46 +638,46 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_spectra_trials</span><span class="p">(</span><span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span>
-                           <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">kwargs_ar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute Welch&#39;s and AR PSD for exciatatory and inhibitory spikes.&quot;&quot;&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_spectra_trials(spikes_e, spikes_i, start_end, f_range,
+                           bin_size, ar_order, kwargs_ar=None):
+    &quot;&quot;&quot;Compute Welch&#39;s and AR PSD for exciatatory and inhibitory spikes.&quot;&quot;&quot;
 
-    <span class="c1"># Ensure unpackable</span>
-    <span class="k">if</span> <span class="n">kwargs_ar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">kwargs_ar</span> <span class="o">=</span> <span class="p">{}</span>
+    # Ensure unpackable
+    if kwargs_ar is None:
+        kwargs_ar = {}
 
-    <span class="c1"># Compute AR-PSD and Welch&#39;s-PSD for each window</span>
-    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">start_end</span><span class="p">):</span>
+    # Compute AR-PSD and Welch&#39;s-PSD for each window
+    for ind, (s, e) in enumerate(start_end):
 
-        <span class="c1"># Normalize</span>
-        <span class="n">spikes_bin_e</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span>
-            <span class="n">spikes_e</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        # Normalize
+        spikes_bin_e = normalize_sig(
+            spikes_e[s:e].reshape(-1, bin_size).sum(axis=1), 0, 1)
 
-        <span class="n">spikes_bin_i</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span>
-            <span class="n">spikes_i</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        spikes_bin_i = normalize_sig(
+            spikes_i[s:e].reshape(-1, bin_size).sum(axis=1), 0, 1)
 
-        <span class="c1"># Compute excitatory spectra</span>
-        <span class="n">freqs_ar</span><span class="p">,</span> <span class="n">powers_ar_e</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_e</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
-                                                    <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
+        # Compute excitatory spectra
+        freqs_ar, powers_ar_e = compute_ar_spectrum(spikes_bin_e, fs/bin_size, ar_order,
+                                                    f_range=f_range, **kwargs_ar)
 
-        <span class="c1"># Compute inhibitory spectra</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">powers_ar_i</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_i</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
-                                             <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
+        # Compute inhibitory spectra
+        _, powers_ar_i = compute_ar_spectrum(spikes_bin_i, fs/bin_size, ar_order,
+                                             f_range=f_range, **kwargs_ar)
 
-        <span class="c1"># Initalize arrays</span>
-        <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        # Initalize arrays
+        if ind == 0:
 
-            <span class="n">freqs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="n">freqs_ar</span><span class="p">}</span>
+            freqs = {&#39;ar&#39;: freqs_ar}
 
-            <span class="n">powers</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;excitatory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_ar_e</span><span class="p">))),</span>
-                       <span class="s1">&#39;inhibitory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_ar_i</span><span class="p">)))}</span>
-            <span class="p">}</span>
+            powers = {
+                &#39;ar&#39;: {&#39;excitatory&#39;: np.zeros((len(start_end), len(powers_ar_e))),
+                       &#39;inhibitory&#39;: np.zeros((len(start_end), len(powers_ar_i)))}
+            }
 
-        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_ar_e</span>
-        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_ar_i</span>
+        powers[&#39;ar&#39;][&#39;excitatory&#39;][ind] = powers_ar_e
+        powers[&#39;ar&#39;][&#39;inhibitory&#39;][ind] = powers_ar_i
 
-    <span class="k">return</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span>
+    return freqs, powers
 </pre></div>
 </div>
 </div>
@@ -677,37 +685,37 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
-<span class="n">base_name</span> <span class="o">=</span> <span class="s1">&#39;20140526_277um&#39;</span>
-<span class="n">dir_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/rph/Projects/timescale-methods/fcx1/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load data
+base_name = &#39;20140526_277um&#39;
+dir_path = f&#39;/home/rph/Projects/timescale-methods/fcx1/{base_name}&#39;
 
-<span class="n">subtype_dict</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dir_path</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">_SSubtypes.mat&#39;</span><span class="p">)</span>
-<span class="n">subtype_e</span> <span class="o">=</span> <span class="n">subtype_dict</span><span class="p">[</span><span class="s1">&#39;Se_CellFormat&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">subtype_i</span> <span class="o">=</span> <span class="n">subtype_dict</span><span class="p">[</span><span class="s1">&#39;Si_CellFormat&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+subtype_dict = loadmat(f&#39;{dir_path}/{base_name}_SSubtypes.mat&#39;)
+subtype_e = subtype_dict[&#39;Se_CellFormat&#39;][0]
+subtype_i = subtype_dict[&#39;Si_CellFormat&#39;][0]
 
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">20000</span>
+fs = 20000
 
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_i</span><span class="p">],</span>
-                         <span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_e</span><span class="p">]]))</span>
+n_seconds = np.ceil(max([*[np.max(i) for i in subtype_i],
+                         *[np.max(i) for i in subtype_e]]))
 
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
+times = np.arange(0, n_seconds, 1/fs)
 
-<span class="c1"># Extract behavioral data</span>
-<span class="n">beh_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dir_path</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">_WSRestrictedIntervals.mat&#39;</span>
-<span class="n">beh</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">beh_file</span><span class="p">)</span>
+# Extract behavioral data
+beh_file = f&#39;{dir_path}/{base_name}_WSRestrictedIntervals.mat&#39;
+beh = loadmat(beh_file)
 
-<span class="n">nrem</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;SWSPacketTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span>
-<span class="n">wake</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;WakeTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span>  <span class="n">fs</span>
+nrem = beh[&#39;SWSPacketTimePairFormat&#39;].astype(int) * fs
+wake = beh[&#39;WakeTimePairFormat&#39;].astype(int) *  fs
 
-<span class="c1"># Window by trial type</span>
-<span class="n">win_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
-<span class="n">win_spacing</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
+# Window by trial type
+win_len = int(5*fs)
+win_spacing = int(5*fs)
 
-<span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_mids</span><span class="p">,</span> <span class="n">wake_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">wake</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
-<span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_mids</span><span class="p">,</span> <span class="n">nrem_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">nrem</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
+wake_starts, wake_mids, wake_ends = create_windows(wake, win_len, win_spacing)
+nrem_starts, nrem_mids, nrem_ends = create_windows(nrem, win_len, win_spacing)
 
-<span class="n">start_end_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-<span class="n">start_end_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+start_end_wake = np.vstack((wake_starts, wake_ends)).T
+start_end_nrem = np.vstack((nrem_starts, nrem_ends)).T
 </pre></div>
 </div>
 </div>
@@ -718,28 +726,28 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sum spikes across E/I sub-units</span>
-<span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Sum spikes across E/I sub-units
+spikes = np.zeros((2, int(n_seconds * fs)))
 
-<span class="k">for</span> <span class="n">sind</span><span class="p">,</span> <span class="n">subtype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">subtype_e</span><span class="p">,</span> <span class="n">subtype_i</span><span class="p">]):</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subtype</span><span class="p">:</span>
-        <span class="n">spikes</span><span class="p">[</span><span class="n">sind</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+for sind, subtype in enumerate([subtype_e, subtype_i]):
+    for s in subtype:
+        spikes[sind, (s[:, 0] * fs).astype(int)] = 1
 
-<span class="n">spikes_e</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">spikes_i</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+spikes_e = spikes[0]
+spikes_i = spikes[1]
 
-<span class="c1"># Compute Spectra</span>
-<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">bin_size</span> <span class="o">=</span> <span class="mi">200</span>
-<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">5</span>
+# Compute Spectra
+f_range = (0, 100)
+bin_size = 200
+ar_order = 5
 
-<span class="n">freqs_wake</span><span class="p">,</span> <span class="n">powers_wake</span> <span class="o">=</span> <span class="n">compute_spectra_trials</span><span class="p">(</span>
-    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_wake</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span>
-<span class="p">)</span>
+freqs_wake, powers_wake = compute_spectra_trials(
+    spikes_e, spikes_i, start_end_wake, f_range, bin_size, ar_order
+)
 
-<span class="n">freqs_nrem</span><span class="p">,</span> <span class="n">powers_nrem</span> <span class="o">=</span> <span class="n">compute_spectra_trials</span><span class="p">(</span>
-    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_nrem</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span>
-<span class="p">)</span>
+freqs_nrem, powers_nrem = compute_spectra_trials(
+    spikes_e, spikes_i, start_end_nrem, f_range, bin_size, ar_order
+)
 </pre></div>
 </div>
 </div>
@@ -750,34 +758,34 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fooof_init</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;aperiodic_mode&#39;</span><span class="p">:</span> <span class="s1">&#39;knee_constant&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s1">&#39;peak_threshold&#39;</span><span class="p">:</span> <span class="mf">2.5</span>
-<span class="p">}</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fooof_init = {
+    &#39;aperiodic_mode&#39;: &#39;knee_constant&#39;,
+    &#39;max_n_peaks&#39;: 4,
+    &#39;peak_threshold&#39;: 2.5
+}
 
-<span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-20</span><span class="p">],</span>
-    <span class="p">[</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>     <span class="mi">10</span><span class="p">,</span>  <span class="mf">1e-2</span><span class="p">]</span>
-<span class="p">]</span>
+bounds = [
+    [-10, 1e-3, 1e-3, 1e-20],
+    [ 10, 20,     10,  1e-2]
+]
 
-<span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">]</span>
+guess = [-2, 1, 1, 1e-2]
 
-<span class="n">psd_ex_nrem</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">])</span>
-<span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
-                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+psd_ex_nrem = PSD(freqs_nrem[&#39;ar&#39;], powers_nrem[&#39;ar&#39;][&#39;excitatory&#39;])
+psd_ex_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
+                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
 
-<span class="n">psd_in_nrem</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_nrem</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">])</span>
-<span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
-                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+psd_in_nrem = PSD(freqs_nrem[&#39;ar&#39;], powers_nrem[&#39;ar&#39;][&#39;inhibitory&#39;])
+psd_in_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
+                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
 
-<span class="n">psd_ex_wake</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">])</span>
-<span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
-                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+psd_ex_wake = PSD(freqs_wake[&#39;ar&#39;], powers_wake[&#39;ar&#39;][&#39;excitatory&#39;])
+psd_ex_wake.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
+                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
 
-<span class="n">psd_in_wake</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="n">powers_wake</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">])</span>
-<span class="n">psd_in_wake</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
-                <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+psd_in_wake = PSD(freqs_wake[&#39;ar&#39;], powers_wake[&#39;ar&#39;][&#39;inhibitory&#39;])
+psd_in_wake.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
+                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
 </pre></div>
 </div>
 </div>
@@ -813,28 +821,28 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># R-squared stats</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Spike R-Squared Statistics</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: Wake vs NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: Wake vs NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq_full</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># R-squared stats
+print(&#39;Spike R-Squared Statistics\n&#39;)
+print(&#39;Excitatory Wake: &#39;, &#39;mean =&#39;, psd_ex_wake.rsq_full.mean(),
+      &#39;std =&#39;, psd_ex_wake.rsq_full.std())
+print(&#39;Excitatory NREM: &#39;, &#39;mean =&#39;, psd_ex_nrem.rsq_full.mean(),
+      &#39;std =&#39;, psd_ex_nrem.rsq_full.std())
+print(&#39;Inhibitory Wake: &#39;, &#39;mean =&#39;, psd_in_wake.rsq_full.mean(),
+      &#39;std =&#39;, psd_in_wake.rsq_full.std())
+print(&#39;Inhibitory NREM: &#39;, &#39;mean =&#39;, psd_in_nrem.rsq_full.mean(),
+      &#39;std =&#39;, psd_in_nrem.rsq_full.std())
+print()
+print(&#39;Excitatory: Wake vs NREM&#39;)
+print(ttest_ind(psd_ex_wake.rsq_full, psd_ex_nrem.rsq_full))
+print()
+print(&#39;Inhibitory: Wake vs NREM&#39;)
+print(ttest_ind(psd_in_wake.rsq_full, psd_in_nrem.rsq_full))
+print()
+print(&#39;Wake: Excitatory vs Inhibitory&#39;)
+print(ttest_ind(psd_ex_wake.rsq_full, psd_in_wake.rsq_full))
+print()
+print(&#39;NREM: Excitatory vs Inhibitory&#39;)
+print(ttest_ind(psd_ex_nrem.rsq_full, psd_in_nrem.rsq_full))
 </pre></div>
 </div>
 </div>
@@ -867,29 +875,29 @@ Ttest_indResult(statistic=-3.312942925626916, pvalue=0.0009541012302210045)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Knee freq stats</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Spike Knee Frequency Statistics</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Knee freq stats
+print(&#39;Spike Knee Frequency Statistics\n&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory Wake: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory NREM: &#39;</span><span class="p">,</span> <span class="s1">&#39;mean =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-      <span class="s1">&#39;std =&#39;</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: Wake vs NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: Wake vs NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: Excitatory vs Inhibitory&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
+print(&#39;Excitatory Wake: &#39;, &#39;mean =&#39;, psd_ex_wake.knee_freq.mean(),
+      &#39;std =&#39;, psd_ex_wake.knee_freq.std())
+print(&#39;Excitatory NREM: &#39;, &#39;mean =&#39;, psd_ex_nrem.knee_freq.mean(),
+      &#39;std =&#39;, psd_ex_nrem.knee_freq.std())
+print(&#39;Inhibitory Wake: &#39;, &#39;mean =&#39;, psd_in_wake.knee_freq.mean(),
+      &#39;std =&#39;, psd_in_wake.knee_freq.std())
+print(&#39;Inhibitory NREM: &#39;, &#39;mean =&#39;, psd_in_nrem.knee_freq.mean(),
+      &#39;std =&#39;, psd_in_nrem.knee_freq.std())
+print()
+print(&#39;Excitatory: Wake vs NREM&#39;)
+print(ttest_ind(psd_ex_wake.knee_freq, psd_ex_nrem.knee_freq))
+print()
+print(&#39;Inhibitory: Wake vs NREM&#39;)
+print(ttest_ind(psd_in_wake.knee_freq, psd_in_nrem.knee_freq))
+print()
+print(&#39;Wake: Excitatory vs Inhibitory&#39;)
+print(ttest_ind(psd_ex_wake.knee_freq, psd_in_wake.knee_freq))
+print()
+print(&#39;NREM: Excitatory vs Inhibitory&#39;)
+print(ttest_ind(psd_ex_nrem.knee_freq, psd_in_nrem.knee_freq))
 </pre></div>
 </div>
 </div>
@@ -926,48 +934,48 @@ Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load LFP</span>
-<span class="n">data_id</span> <span class="o">=</span> <span class="s1">&#39;20140526_277um&#39;</span>
-<span class="n">data_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/rph/Projects/timescale-methods/fcx1/data_mats/</span><span class="si">{</span><span class="n">data_id</span><span class="si">}</span><span class="s1">&#39;</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1250</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load LFP
+data_id = &#39;20140526_277um&#39;
+data_dir = f&#39;/home/rph/Projects/timescale-methods/fcx1/data_mats/{data_id}&#39;
+fs = 1250
 
-<span class="c1"># Infer shape using one channel</span>
-<span class="n">lfp_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;data01.mat&#39;</span><span class="p">)</span>
-<span class="n">sig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loadmat</span><span class="p">(</span><span class="n">lfp_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+# Infer shape using one channel
+lfp_file = op.join(data_dir, &#39;data01.mat&#39;)
+sig_len = len(loadmat(lfp_file)[&#39;data&#39;][0])
 
-<span class="c1"># Get PFC channels</span>
-<span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">49</span><span class="p">))</span>
-<span class="n">sig_lfp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sig_len</span><span class="p">)</span>
+# Get PFC channels
+channels = list(range(17, 49))
+sig_lfp = np.zeros(sig_len)
 
-<span class="k">for</span> <span class="n">cind</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
-    <span class="n">lfp_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;data</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s1">.mat&#39;</span><span class="p">)</span>
-    <span class="n">sig_lfp</span> <span class="o">+=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">lfp_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+for cind, ch in enumerate(channels):
+    lfp_file = op.join(data_dir, f&#39;data{ch}.mat&#39;)
+    sig_lfp += loadmat(lfp_file)[&#39;data&#39;][0]
 
-<span class="n">sig_lfp</span> <span class="o">=</span> <span class="n">sig_lfp</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
-<span class="n">sig_lfp</span> <span class="o">=</span>  <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sig_lfp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+sig_lfp = sig_lfp / len(channels)
+sig_lfp =  normalize_sig(sig_lfp, 0, 1)
 
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_lfp</span><span class="p">)</span><span class="o">/</span><span class="n">fs</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
+times = np.arange(0, len(sig_lfp)/fs, 1/fs)
 
-<span class="c1"># Windows</span>
-<span class="n">nrem</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;SWSPacketTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span>
-<span class="n">wake</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;WakeTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span>
+# Windows
+nrem = beh[&#39;SWSPacketTimePairFormat&#39;].astype(int) * fs
+wake = beh[&#39;WakeTimePairFormat&#39;].astype(int) * fs
 
-<span class="c1"># Window by trial type</span>
-<span class="n">win_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
-<span class="n">win_spacing</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
+# Window by trial type
+win_len = int(5*fs)
+win_spacing = int(5*fs)
 
-<span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_mids</span><span class="p">,</span> <span class="n">wake_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">wake</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
-<span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_mids</span><span class="p">,</span> <span class="n">nrem_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">nrem</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
+wake_starts, wake_mids, wake_ends = create_windows(wake, win_len, win_spacing)
+nrem_starts, nrem_mids, nrem_ends = create_windows(nrem, win_len, win_spacing)
 
-<span class="n">start_end_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-<span class="n">start_end_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+start_end_wake = np.vstack((wake_starts, wake_ends)).T
+start_end_nrem = np.vstack((nrem_starts, nrem_ends)).T
 
-<span class="c1"># Create 2d arrays</span>
-<span class="n">sig_lfp_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig_lfp</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>
-                         <span class="nb">zip</span><span class="p">(</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">)])</span>
+# Create 2d arrays
+sig_lfp_wake = np.array([sig_lfp[s:e] for s, e in
+                         zip(wake_starts, wake_ends)])
 
-<span class="n">sig_lfp_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig_lfp</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>
-                         <span class="nb">zip</span><span class="p">(</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">)])</span>
+sig_lfp_nrem = np.array([sig_lfp[s:e] for s, e in
+                         zip(nrem_starts, nrem_ends)])
 </pre></div>
 </div>
 </div>
@@ -978,28 +986,28 @@ Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fooof_init</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;aperiodic_mode&#39;</span><span class="p">:</span> <span class="s1">&#39;knee_constant&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;max_n_peaks&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s1">&#39;peak_threshold&#39;</span><span class="p">:</span> <span class="mf">2.5</span>
-<span class="p">}</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fooof_init = {
+    &#39;aperiodic_mode&#39;: &#39;knee_constant&#39;,
+    &#39;max_n_peaks&#39;: 4,
+    &#39;peak_threshold&#39;: 2.5
+}
 
-<span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-20</span><span class="p">],</span>
-    <span class="p">[</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>     <span class="mi">10</span><span class="p">,</span>  <span class="mf">1e-2</span><span class="p">]</span>
-<span class="p">]</span>
+bounds = [
+    [-10, 1e-3, 1e-3, 1e-20],
+    [ 10, 20,     10,  1e-2]
+]
 
-<span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">]</span>
+guess = [-2, 1, 1, 1e-2]
 
-<span class="n">psd_lfp_wake</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig_lfp_wake</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
-                 <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+psd_lfp_wake = PSD()
+psd_lfp_wake.compute_spectrum(sig_lfp_wake, fs, f_range=(0, 100), ar_order=10)
+psd_lfp_wake.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
+                 n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
 
-<span class="n">psd_lfp_nrem</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig_lfp_nrem</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span>
-                 <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+psd_lfp_nrem = PSD()
+psd_lfp_nrem.compute_spectrum(sig_lfp_nrem, fs, f_range=(0, 100), ar_order=10)
+psd_lfp_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
+                 n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
 </pre></div>
 </div>
 </div>
@@ -1022,45 +1030,45 @@ Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_overlapping_densities</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">overlap_hspace</span><span class="o">=-</span><span class="mf">.5</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def plot_overlapping_densities(df, xlim, overlap_hspace=-.5):
 
-    <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;axes.facecolor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)})</span>
+    sns.set_theme(style=&quot;white&quot;, rc={&quot;axes.facecolor&quot;: (0, 0, 0, 0)})
 
-    <span class="c1"># Initialize the FacetGrid object</span>
-    <span class="n">pal</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">cubehelix_palette</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">rot</span><span class="o">=-</span><span class="mf">.25</span><span class="p">,</span> <span class="n">light</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+    # Initialize the FacetGrid object
+    pal = sns.cubehelix_palette(6, rot=-.25, light=.5)
 
-    <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">FacetGrid</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                         <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">pal</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="n">xlim</span><span class="p">)</span>
+    grid = sns.FacetGrid(df, row=&quot;labels&quot;, hue=&quot;labels&quot;, aspect=10,
+                         height=2, palette=pal, xlim=xlim)
 
-    <span class="c1"># Draw the densities in a few steps</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;knees&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-             <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    # Draw the densities in a few steps
+    grid.map(sns.kdeplot, &quot;knees&quot;, clip_on=True,
+             fill=True, alpha=1, linewidth=2)
 
-    <span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;knees&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">bw_adjust</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    grid.map(sns.kdeplot, &quot;knees&quot;, clip_on=True, color=&quot;w&quot;, lw=2.5, bw_adjust=1)
 
-    <span class="n">grid</span><span class="o">.</span><span class="n">refline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    grid.refline(y=0, linewidth=2, linestyle=&quot;-&quot;, color=None, clip_on=False)
 
-    <span class="c1"># Label the plot in axes coordinates</span>
-    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.2</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
-                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    # Label the plot in axes coordinates
+    def label(x, color, label):
+        ax = plt.gca()
+        ax.text(0, .2, label, fontweight=&quot;bold&quot;, color=color,
+                ha=&quot;left&quot;, va=&quot;center&quot;, transform=ax.transAxes, size=20)
 
-    <span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;knees&quot;</span><span class="p">)</span>
+    grid.map(label, &quot;knees&quot;)
 
-    <span class="c1"># Set the subplots to overlap</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="n">overlap_hspace</span><span class="p">)</span>
+    # Set the subplots to overlap
+    grid.figure.subplots_adjust(hspace=overlap_hspace)
 
-    <span class="c1"># Remove axes details that don&#39;t play well with overlap</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">yticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    # Remove axes details that don&#39;t play well with overlap
+    grid.set_titles(&quot;&quot;)
+    grid.set(yticks=[], ylabel=&quot;&quot;)
+    grid.set(xticks=np.arange(0, xlim[1]+1))
+    grid.despine(bottom=False, left=True)
 
-    <span class="n">grid</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">set_xlabels</span><span class="p">(</span><span class="s1">&#39;Knee Frequency (Hertz)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+    grid.set_xticklabels(np.arange(0, xlim[1]+1), size=24)
+    grid.set_xlabels(&#39;Knee Frequency (Hertz)&#39;, size=28)
 
-    <span class="k">return</span> <span class="n">grid</span>
+    return grid
 </pre></div>
 </div>
 </div>
@@ -1068,45 +1076,45 @@ Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
 
-<span class="c1"># Apply r-squared threshold</span>
-<span class="n">rsq_thresh</span> <span class="o">=</span> <span class="mf">.25</span>
+# Apply r-squared threshold
+rsq_thresh = .25
 
-<span class="n">nrem_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span>
-<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+nrem_inds = np.where(
+    (psd_ex_nrem.rsq &gt; rsq_thresh) &amp;
+    (psd_in_nrem.rsq &gt; rsq_thresh) &amp;
+    (psd_lfp_nrem.rsq &gt; rsq_thresh)
+)[0]
 
-<span class="n">wake_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">rsq</span> <span class="o">&gt;</span> <span class="n">rsq_thresh</span><span class="p">)</span>
-<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+wake_inds = np.where(
+    (psd_ex_wake.rsq &gt; rsq_thresh) &amp;
+    (psd_in_wake.rsq &gt; rsq_thresh) &amp;
+    (psd_lfp_wake.rsq &gt; rsq_thresh)
+)[0]
 
-<span class="c1"># Merge knees</span>
-<span class="n">knees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
-    <span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-    <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-    <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-    <span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-    <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-    <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span>
-<span class="p">])</span>
+# Merge knees
+knees = np.concatenate([
+    psd_lfp_nrem.knee_freq[nrem_inds],
+    psd_ex_nrem.knee_freq[nrem_inds],
+    psd_in_nrem.knee_freq[nrem_inds],
+    psd_lfp_wake.knee_freq[wake_inds],
+    psd_ex_wake.knee_freq[wake_inds],
+    psd_in_wake.knee_freq[wake_inds]
+])
 
-<span class="c1"># Merge labels</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Excitatory : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Inhibitory : NREM&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nrem_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Excitatory : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">),</span>
-    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes : Inhibitory : Wake&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wake_inds</span><span class="p">)</span>
-<span class="p">]</span>
+# Merge labels
+labels = [
+    *[&#39;LFP : NREM&#39;] * len(nrem_inds),
+    *[&#39;Spikes : Excitatory : NREM&#39;] * len(nrem_inds),
+    *[&#39;Spikes : Inhibitory : NREM&#39;] * len(nrem_inds),
+    *[&#39;LFP : Wake&#39;] * len(wake_inds),
+    *[&#39;Spikes : Excitatory : Wake&#39;] * len(wake_inds),
+    *[&#39;Spikes : Inhibitory : Wake&#39;] * len(wake_inds)
+]
 
-<span class="c1"># To dataframe</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">knees</span><span class="o">=</span><span class="n">knees</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">))</span>
+# To dataframe
+df = pd.DataFrame(dict(knees=knees, labels=labels))
 </pre></div>
 </div>
 </div>
@@ -1114,10 +1122,10 @@ Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
-<span class="n">plot_overlapping_densities</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">overlap_hspace</span><span class="o">=-</span><span class="mf">0.75</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
+plot_overlapping_densities(df, (-4, 12), overlap_hspace=-0.75)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig05_sleep_vs_wake.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+plt.savefig(&#39;fig05_sleep_vs_wake.png&#39;, dpi=300, facecolor=&#39;w&#39;);
 </pre></div>
 </div>
 </div>
@@ -1132,28 +1140,28 @@ Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LFP               : mean=</span><span class="si">{</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
-      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Wake&#39;)
+print(f&#39;LFP               : mean={psd_lfp_wake.knee_freq[wake_inds].mean()}, &#39;\
+      f&#39;std={psd_lfp_wake.knee_freq[wake_inds].std()}&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Excitatory: mean=</span><span class="si">{</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
-      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+print(f&#39;Spikes, Excitatory: mean={psd_ex_wake.knee_freq[wake_inds].mean()}, &#39;\
+      f&#39;std={psd_ex_wake.knee_freq[wake_inds].std()}&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Inhibitory: mean=</span><span class="si">{</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
-      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+print(f&#39;Spikes, Inhibitory: mean={psd_in_wake.knee_freq[wake_inds].mean()}, &#39;\
+      f&#39;std={psd_in_wake.knee_freq[wake_inds].std()}&#39;)
 
-<span class="nb">print</span><span class="p">()</span>
+print()
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NREM&#39;</span><span class="p">)</span>
+print(f&#39;NREM&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LFP               : mean=</span><span class="si">{</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
-      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+print(f&#39;LFP               : mean={psd_lfp_nrem.knee_freq[nrem_inds].mean()}, &#39;\
+      f&#39;std={psd_lfp_nrem.knee_freq[nrem_inds].std()}&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Excitatory: mean=</span><span class="si">{</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
-      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+print(f&#39;Spikes, Excitatory: mean={psd_ex_nrem.knee_freq[nrem_inds].mean()}, &#39;\
+      f&#39;std={psd_ex_nrem.knee_freq[nrem_inds].std()}&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spikes, Inhibitory: mean=</span><span class="si">{</span><span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span>\
-      <span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+print(f&#39;Spikes, Inhibitory: mean={psd_in_nrem.knee_freq[nrem_inds].mean()}, &#39;\
+      f&#39;std={psd_in_nrem.knee_freq[nrem_inds].std()}&#39;)
 </pre></div>
 </div>
 </div>
@@ -1177,30 +1185,30 @@ Spikes, Inhibitory: mean=4.061209976351796, std=1.9957308268995413
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake vs NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP       : &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                <span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Wake vs NREM&#39;)
+print(&#39;LFP       : &#39;, ttest_ind(psd_lfp_wake.knee_freq[wake_inds],
+                                psd_lfp_nrem.knee_freq[nrem_inds]))
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Excitatory: &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+print(&#39;Excitatory: &#39;, ttest_ind(psd_ex_wake.knee_freq[wake_inds],
+                                psd_ex_nrem.knee_freq[nrem_inds]))
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Inhibitory: &#39;</span><span class="p">,</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+print(&#39;Inhibitory: &#39;, ttest_ind(psd_in_wake.knee_freq[wake_inds],
+                                psd_in_nrem.knee_freq[nrem_inds]))
 
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Excitatory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                      <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
+print()
+print(&#39;Wake&#39;)
+print(&#39;LFP vs Excitatory:&#39;, ttest_rel(psd_lfp_wake.knee_freq[wake_inds],
+                                      psd_ex_wake.knee_freq[wake_inds]))
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Inhibitory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span>
-                                      <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NREM&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Excitatory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-                                      <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+print(&#39;LFP vs Inhibitory:&#39;, ttest_rel(psd_lfp_wake.knee_freq[wake_inds],
+                                      psd_in_wake.knee_freq[wake_inds]))
+print()
+print(f&#39;NREM&#39;)
+print(&#39;LFP vs Excitatory:&#39;, ttest_rel(psd_lfp_nrem.knee_freq[nrem_inds],
+                                      psd_ex_nrem.knee_freq[nrem_inds]))
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LFP vs Inhibitory:&#39;</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span>
-                                      <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
+print(&#39;LFP vs Inhibitory:&#39;, ttest_rel(psd_lfp_nrem.knee_freq[nrem_inds],
+                                      psd_in_nrem.knee_freq[nrem_inds]))
 </pre></div>
 </div>
 </div>
@@ -1227,25 +1235,25 @@ LFP vs Inhibitory: Ttest_relResult(statistic=-12.6061404963828, pvalue=4.4365469
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Correlation&#39;)
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: LFP vs Excitatory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">psd_ex_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
-<span class="p">)</span>
+print(&#39;Wake: LFP vs Excitatory: r={:.4f}, p={:.4f}&#39;.format(
+    *pearsonr(psd_lfp_wake.knee_freq[wake_inds], psd_ex_wake.knee_freq[wake_inds]))
+)
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wake: LFP vs Inhibitory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">],</span> <span class="n">psd_in_wake</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">wake_inds</span><span class="p">]))</span>
-<span class="p">)</span>
+print(&#39;Wake: LFP vs Inhibitory: r={:.4f}, p={:.4f}&#39;.format(
+    *pearsonr(psd_lfp_wake.knee_freq[wake_inds], psd_in_wake.knee_freq[wake_inds]))
+)
 
-<span class="nb">print</span><span class="p">()</span>
+print()
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: LFP vs Excitatory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span> <span class="n">psd_ex_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
-<span class="p">)</span>
+print(&#39;NREM: LFP vs Excitatory: r={:.4f}, p={:.4f}&#39;.format(
+    *pearsonr(psd_lfp_nrem.knee_freq[nrem_inds], psd_ex_nrem.knee_freq[nrem_inds]))
+)
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NREM: LFP vs Inhibitory: r=</span><span class="si">{:.4f}</span><span class="s1">, p=</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="o">*</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">psd_lfp_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">],</span> <span class="n">psd_in_nrem</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">[</span><span class="n">nrem_inds</span><span class="p">]))</span>
-<span class="p">)</span>
+print(&#39;NREM: LFP vs Inhibitory: r={:.4f}, p={:.4f}&#39;.format(
+    *pearsonr(psd_lfp_nrem.knee_freq[nrem_inds], psd_in_nrem.knee_freq[nrem_inds]))
+)
 </pre></div>
 </div>
 </div>

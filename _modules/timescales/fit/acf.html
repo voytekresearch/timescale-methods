@@ -20,13 +20,13 @@
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -37,7 +37,7 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../../../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -384,12 +384,16 @@ title="Source repository"
             <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span> <span class="o">=</span> <span class="n">normalize_acf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ACF.fit"><a class="viewcode-back" href="../../../generated/timescales.fit.ACF.html#timescales.fit.ACF.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_fits</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gen_components</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">with_cos</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="ACF.fit"><a class="viewcode-back" href="../../../generated/timescales.fit.ACF.html#timescales.fit.ACF.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">corrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gen_fits</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gen_components</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">with_cos</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Fit without an oscillitory component.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        lags : 1d array</span>
+<span class="sd">            Time lag definitions.</span>
+<span class="sd">        corrs : 1d or 2d array</span>
+<span class="sd">            Autocorrelation coefficients.</span>
 <span class="sd">        gen_fits : bool, optional, default: False</span>
 <span class="sd">            Generates fit array and r-squared when True.</span>
 <span class="sd">            Does not generate full fits when False to prevent OOM.</span>
@@ -411,6 +415,11 @@ title="Source repository"
 <span class="sd">        progress : {None, &#39;tqdm&#39;, &#39;tqdm.notebook&#39;}</span>
 <span class="sd">            Specify whether to display a progress bar. Uses &#39;tqdm&#39;, if installed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">lags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="o">=</span> <span class="n">lags</span>
+
+        <span class="k">if</span> <span class="n">corrs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span> <span class="o">=</span> <span class="n">corrs</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Initialize with lags, corrs, and fs. &#39;</span>

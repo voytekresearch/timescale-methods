@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -538,6 +538,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -546,10 +547,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -561,12 +566,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -575,17 +583,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import matplotlib.pyplot as plt
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_oscillation</span>
+from neurodsp.sim import sim_oscillation
 
-<span class="kn">from</span> <span class="nn">timescales.pipe</span> <span class="kn">import</span> <span class="n">Pipe</span>
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">sim_synaptic_kernel</span>
+from timescales.pipe import Pipe
+from timescales.conversions import convert_knee
+from timescales.sim import sim_spikes_prob, sim_synaptic_kernel
 
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+from timescales.plts import set_default_rc
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -608,12 +616,12 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize a pipeline</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">5000</span>
-<span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Initialize a pipeline
+n_seconds = 2
+fs = 5000
+seeds = np.arange(100)
 
-<span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+pipe = Pipe(n_seconds, fs, seeds)
 </pre></div>
 </div>
 </div>
@@ -624,15 +632,15 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tau</span> <span class="o">=</span>  <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">kernel</span> <span class="o">=</span> <span class="n">sim_synaptic_kernel</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">tau</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tau =  convert_knee(10)
+kernel = sim_synaptic_kernel(10 * tau, fs, 0, tau)
 
 
-<span class="c1"># Simulation Steps</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_spikes_prob</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">sim_oscillation</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.1</span><span class="p">))</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;sample&#39;</span><span class="p">)</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+# Simulation Steps
+pipe.add_step(&#39;simulate&#39;, sim_spikes_prob, kernel, rescale=(0, .9))
+pipe.add_step(&#39;simulate&#39;, sim_oscillation, 10, rescale=(0, .1))
+pipe.add_step(&#39;sample&#39;)
+pipe.add_step(&#39;bin&#39;, 5)
 </pre></div>
 </div>
 </div>
@@ -644,17 +652,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Welch&#39;s PSD</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Welch&#39;s PSD
+pipe.add_step(&#39;transform&#39;, &#39;PSD&#39;)
 
-<span class="c1"># AR PSD</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;PSD&#39;</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+# AR PSD
+pipe.add_step(&#39;transform&#39;, &#39;PSD&#39;, ar_order=100)
 
-<span class="c1"># ACF from Welch&#39;s PSD</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;ACF&#39;</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">from_psd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+# ACF from Welch&#39;s PSD
+pipe.add_step(&#39;transform&#39;, &#39;ACF&#39;, nlags=200, from_psd=True)
 
-<span class="c1"># ACF from AR PSD</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="s1">&#39;ACF&#39;</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">from_psd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">psd_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ar_order&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
+# ACF from AR PSD
+pipe.add_step(&#39;transform&#39;, &#39;ACF&#39;, nlags=200, from_psd=True, psd_kwargs={&#39;ar_order&#39;: 100})
 </pre></div>
 </div>
 </div>
@@ -666,10 +674,10 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cauchy&#39;</span><span class="p">)</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">])</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;knee_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pipe.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;], method=&#39;cauchy&#39;)
+pipe.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;], method=&#39;cauchy&#39;)
+pipe.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;])
+pipe.add_step(&#39;fit&#39;, [&#39;knee_freq&#39;, &#39;rsq&#39;, &#39;tau&#39;])
 </pre></div>
 </div>
 </div>
@@ -681,8 +689,8 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run pipeline</span>
-<span class="n">pipe</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Run pipeline
+pipe.run(progress=&#39;tqdm.notebook&#39;, n_jobs=-1)
 </pre></div>
 </div>
 </div>
@@ -696,21 +704,21 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(12, 8))
 
-<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">results</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+plt.violinplot(pipe.results[:, 0, 0], positions=[1], showmeans=True)
+plt.violinplot(pipe.results[:, 1, 0], positions=[2], showmeans=True)
+plt.violinplot(pipe.results[:, 2, 0], positions=[3], showmeans=True)
+plt.violinplot(pipe.results[:, 3, 0], positions=[4], showmeans=True)
 
 
-<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Truth&#39;</span><span class="p">)</span>
+plt.axhline(10, .02, .98,  color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Truth&#39;)
 
-<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Welch</span><span class="se">\&#39;</span><span class="s1">s PSD&#39;</span><span class="p">,</span>  <span class="s1">&#39;AR PSD&#39;</span><span class="p">,</span> <span class="s1">&#39;Welch</span><span class="se">\&#39;</span><span class="s1">s ACF&#39;</span><span class="p">,</span> <span class="s1">&#39;AR ACF&#39;</span><span class="p">]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+labels = [&#39;Welch\&#39;s PSD&#39;,  &#39;AR PSD&#39;, &#39;Welch\&#39;s ACF&#39;, &#39;AR ACF&#39;]
+plt.xticks([1, 2, 3, 4], labels=labels)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Knee Frequency (Hertz)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Pipe Results&#39;</span><span class="p">);</span>
+plt.ylabel(&#39;Knee Frequency (Hertz)&#39;)
+plt.title(&#39;Pipe Results&#39;);
 </pre></div>
 </div>
 </div>

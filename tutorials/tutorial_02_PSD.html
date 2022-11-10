@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -538,6 +538,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -546,10 +547,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -561,12 +566,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -575,19 +583,19 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+import matplotlib.pyplot as plt
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_oscillation</span>
-<span class="kn">from</span> <span class="nn">neurodsp.spectral</span> <span class="kn">import</span> <span class="n">compute_spectrum</span>
+from neurodsp.sim import sim_oscillation
+from neurodsp.spectral import compute_spectrum
 
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_ou</span>
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">PSD</span>
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
-<span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+from timescales.sim import sim_ou
+from timescales.fit import PSD
+from timescales.conversions import convert_knee
+from timescales.autoreg import compute_ar_spectrum
+from timescales.plts import set_default_rc
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -598,17 +606,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">knee_freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="n">knee_freq</span><span class="p">)</span>
-<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">50</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+n_seconds = 20
+fs = 1000
+knee_freq = 10
+tau = convert_knee(knee_freq)
+ar_order = 50
 
-<span class="c1"># Simulate a signal</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">+=</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">knee_freq</span><span class="p">)</span>
+# Simulate a signal
+np.random.seed(0)
+sig = sim_ou(n_seconds, fs, tau, mu=0, std=1)
+sig += sim_oscillation(n_seconds, fs, knee_freq)
 </pre></div>
 </div>
 </div>
@@ -619,14 +627,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute spectrum using method</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Compute spectrum using method
+psd = PSD()
+psd.compute_spectrum(sig, fs, ar_order)
 
-<span class="c1"># Or using an external function</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
+# Or using an external function
+psd = PSD()
+freqs, powers = compute_spectrum(sig, fs)
+psd = PSD(freqs, powers)
 </pre></div>
 </div>
 </div>
@@ -638,9 +646,9 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%timeit
 
-<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fooof&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;peak_threshold&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">})</span>
+psd.fit(method=&#39;fooof&#39;, fooof_init={&#39;peak_threshold&#39;: 2.5})
 </pre></div>
 </div>
 </div>
@@ -656,9 +664,9 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%timeit
 
-<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">)</span>
+psd.fit(method=&#39;huber&#39;)
 </pre></div>
 </div>
 </div>
@@ -674,7 +682,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">psd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>psd.plot()
 </pre></div>
 </div>
 </div>
@@ -693,18 +701,18 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate signals</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">5</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulate signals
+fs = 1000
+n_seconds = 5
 
-<span class="n">nsigs</span> <span class="o">=</span> <span class="mi">20</span>
+nsigs = 20
 
-<span class="n">sigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nsigs</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+sigs = np.zeros((nsigs, int(n_seconds * fs)))
 
-<span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsigs</span><span class="p">):</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-    <span class="n">sigs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_ou</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">sigs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sim_oscillation</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">knee_freq</span><span class="p">)</span>
+for ind in range(nsigs):
+    np.random.seed(ind)
+    sigs[ind] = sim_ou(n_seconds, fs, tau, mu=0, std=1)
+    sigs[ind] += sim_oscillation(n_seconds, fs, knee_freq)
 </pre></div>
 </div>
 </div>
@@ -712,11 +720,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-<span class="n">psd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Fit
+psd = PSD()
+psd.compute_spectrum(sigs, fs, n_jobs=-1)
+psd.fit()
+psd.plot()
 </pre></div>
 </div>
 </div>
@@ -735,7 +743,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">psd</span><span class="o">.</span><span class="n">param_names</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>psd.param_names
 </pre></div>
 </div>
 </div>
@@ -752,7 +760,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">psd</span><span class="o">.</span><span class="n">params</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>psd.params[:5]
 </pre></div>
 </div>
 </div>
@@ -773,7 +781,7 @@ array([[1.21103820e+00, 1.58865485e+01, 2.22213869e+00, 4.26877247e-05],
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">psd</span><span class="o">.</span><span class="n">rsq</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>psd.rsq[:5]
 </pre></div>
 </div>
 </div>

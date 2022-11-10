@@ -20,13 +20,13 @@
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -37,7 +37,7 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../../../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -220,10 +220,11 @@ title="Source repository"
 <span class="kn">from</span> <span class="nn">timescales.autoreg</span> <span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
 
 <span class="kn">from</span> <span class="nn">fooof</span> <span class="kn">import</span> <span class="n">FOOOF</span><span class="p">,</span> <span class="n">FOOOFGroup</span>
-<span class="kn">from</span> <span class="nn">fooof.core.funcs</span> <span class="kn">import</span> <span class="n">expo_const_function</span>
+<span class="kn">from</span> <span class="nn">fooof.core.funcs</span> <span class="kn">import</span> <span class="n">expo_const_function</span><span class="p">,</span> <span class="n">expo_double_const_function</span>
 
 <span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
 <span class="kn">from</span> <span class="nn">timescales.utils</span> <span class="kn">import</span> <span class="n">normalize</span> <span class="k">as</span> <span class="n">normalize_psd</span>
+<span class="kn">from</span> <span class="nn">timescales.utils</span> <span class="kn">import</span> <span class="n">resample_logspace</span>
 <span class="kn">from</span> <span class="nn">timescales.fit.utils</span> <span class="kn">import</span> <span class="n">progress_bar</span>
 
 
@@ -309,34 +310,55 @@ title="Source repository"
             <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="o">=</span> <span class="n">normalize_psd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="o">*</span><span class="n">norm_range</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PSD.fit"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PSD.fit"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ap_mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_resample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_thresh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Fit power spectra.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        freqs : 1d array</span>
+<span class="sd">            Frequencies at which the measure was calculated.</span>
+<span class="sd">        powers : 1d or 2d array</span>
+<span class="sd">            Power spectral density.</span>
 <span class="sd">        f_range : tuple of (float, float)</span>
 <span class="sd">            Frequency range of interest, inclusive.</span>
-<span class="sd">        method : {&#39;huber&#39;, &#39;fooof&#39;}</span>
-<span class="sd">            Fit using a single scipy curve_fit call using robust regression (&#39;huber&#39;) or use the</span>
-<span class="sd">            fooof model (&#39;fooof&#39;).</span>
+<span class="sd">        ap_mode : {&#39;single&#39;, &#39;double&#39;}</span>
+<span class="sd">            Aperiodic mode as a single or double timescales (knee) process.</span>
+<span class="sd">            Only availble for non-fooof methods.</span>
+<span class="sd">        method : {&#39;huber&#39;, &#39;cauchy&#39;, &#39;soft_l1&#39;, &#39;arctan&#39;, &#39;fooof&#39;}</span>
+<span class="sd">            Fit using a single scipy curve_fit call using robust regression or use the</span>
+<span class="sd">            fooof model.</span>
 <span class="sd">        fooof_init : dict, optional, default: None</span>
 <span class="sd">            Fooof initialization arguments.</span>
 <span class="sd">            Only used if method is &#39;fooof&#39;.</span>
-<span class="sd">        f_scale : float, optional, default: 0.1</span>
-<span class="sd">            Value of soft margin between inlier and outlier residuals.</span>
-<span class="sd">            Only used if method is &#39;huber&#39;.</span>
 <span class="sd">        bounds : 2d array-like</span>
 <span class="sd">            Parameter bounds.</span>
 <span class="sd">        guess : 1d array-like</span>
 <span class="sd">            Initial parameter estimates.</span>
-<span class="sd">        n_jobs : int</span>
-<span class="sd">            Number of jobs to run in parralel, when powers is 2d.</span>
+<span class="sd">        n_resample : int, optional, default: None:</span>
+<span class="sd">            Evenly resample in log-log space to improve robust regression.</span>
+<span class="sd">        f_scale : float or 1d array-like, optional, default: 0.1</span>
+<span class="sd">            Value of soft margin between inlier and outlier residuals.</span>
+<span class="sd">            Only used if method is in {&#39;huber&#39;, &#39;cauchy&#39;, &#39;soft_l1&#39;, &#39;arctan&#39;}.</span>
+<span class="sd">        r_thresh : float, optional, default: None</span>
+<span class="sd">            Minimum r-squared required to accept f_scale. Only used when f_scale is a 1d array.</span>
+<span class="sd">            When None, all f_scale values are attempted and the highest resulting r-squared is accepted.</span>
 <span class="sd">        maxfev : int</span>
 <span class="sd">            Maximum number of fitting iterations. Only availble for huber method.</span>
+<span class="sd">        sigma : dict, optional, default: None</span>
+<span class="sd">            Target error per sample.</span>
+<span class="sd">        n_jobs : int</span>
+<span class="sd">            Number of jobs to run in parralel, when powers is 2d.</span>
 <span class="sd">        progress : {None, &#39;tqdm&#39;, &#39;tqdm.notebook&#39;}</span>
 <span class="sd">            Specify whether to display a progress bar. Uses &#39;tqdm&#39;, if installed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">freqs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span>
+
+        <span class="k">if</span> <span class="n">powers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="o">=</span> <span class="n">powers</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">guess</span> <span class="o">=</span> <span class="n">guess</span>
 
@@ -346,25 +368,27 @@ title="Source repository"
             <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
 
+        <span class="c1"># Skip 0 hz if using fooof or resampling</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fooof&#39;</span> <span class="ow">or</span> <span class="n">n_resample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+
+        <span class="c1"># Fit</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;fooof&#39;</span> <span class="ow">and</span> <span class="n">fooof_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Robust regression (aperiodic only)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers_fit</span> <span class="o">=</span> <span class="n">fit_psd_robust</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="n">f_scale</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
-                  <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">ap_mode</span><span class="o">=</span><span class="n">ap_mode</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="n">f_scale</span><span class="p">,</span> <span class="n">r_thresh</span><span class="o">=</span><span class="n">r_thresh</span><span class="p">,</span>
+                <span class="n">n_resample</span><span class="o">=</span><span class="n">n_resample</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fooof&#39;</span> <span class="ow">or</span> <span class="n">fooof_init</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Fooof can&#39;t, but should, handle 0 hertz</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-
             <span class="c1"># Aperiodic and periodic model</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsq_full</span> <span class="o">=</span> <span class="n">fit_psd_fooof</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="n">fooof_init</span><span class="p">,</span> <span class="n">return_rsq</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">ap_bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">ap_guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;method must be in [</span><span class="se">\&#39;</span><span class="s1">huber</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">fooof</span><span class="se">\&#39;</span><span class="s1">].&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;method must be in \{</span><span class="se">\&#39;</span><span class="s1">huber</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">cauchy</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">soft_l1</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">arctan</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">fooof</span><span class="se">\&#39;</span><span class="s1">\}.&#39;</span><span class="p">)</span>
 
         <span class="c1"># Get r-squared, knee freqs, and taus</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers_fit</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -397,7 +421,6 @@ title="Source repository"
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;freqs and powers are undefined.&#39;</span><span class="p">)</span>
-
 
         <span class="c1"># Plot spectra</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">powers</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -505,8 +528,8 @@ title="Source repository"
         <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">powers_fit</span>
 
 
-<span class="k">def</span> <span class="nf">fit_psd_robust</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                   <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">fit_psd_robust</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ap_mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_thresh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">n_resample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Fit the aperiodic spectrum using robust regression.</span>
 
 <span class="sd">    Parameters</span>
@@ -517,23 +540,35 @@ title="Source repository"
 <span class="sd">        Power spectral density.</span>
 <span class="sd">    f_range : tuple of (float, float)</span>
 <span class="sd">        Frequency range of interest.</span>
+<span class="sd">    ap_mode : {&#39;single&#39;, &#39;double&#39;}</span>
+<span class="sd">        Aperiodic mode as a single or double timescales (knee) process.</span>
 <span class="sd">    loss : {&#39;huber&#39;, &#39;soft_l1&#39;, &#39;cauchy&#39;, &#39;arctan&#39;}</span>
 <span class="sd">        Loss function.</span>
-<span class="sd">    f_scale : float, optional, default: 0.1</span>
-<span class="sd">            Value of soft margin between inlier and outlier residuals.</span>
+<span class="sd">    f_scale : float or 1d array-like, optional, default: 0.1</span>
+<span class="sd">        Value of soft margin between inlier and outlier residuals.</span>
+<span class="sd">    r_thresh : float, optional, default: None</span>
+<span class="sd">        Minimum r-squared required to accept f_scale. When None, all f_scale values are</span>
+<span class="sd">        attempted and the highest resulting r-squared is accepted.</span>
+<span class="sd">    n_resample : int, optional, default: None:</span>
+<span class="sd">        Evenly resample in log-log space to improve robust regression.</span>
 <span class="sd">    bounds : 2d array-like</span>
 <span class="sd">        Parameter bounds.</span>
 <span class="sd">    guess : 1d array-like</span>
 <span class="sd">        Initial parameter estimates.</span>
 <span class="sd">    maxfev : int</span>
 <span class="sd">        Maximum number of fitting iterations.</span>
+<span class="sd">    sigma : dict, optional, default: None</span>
+<span class="sd">        Target error per sample.</span>
 <span class="sd">    n_jobs : int</span>
 <span class="sd">        Number of jobs to run in parralel, when powers is 2d.</span>
+<span class="sd">    progress : tqdm, optional, default: None</span>
+<span class="sd">        Progress bar.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    params : 1d or 2d array</span>
-<span class="sd">        Parameters as [offset, knee_freq, exp, const].</span>
+<span class="sd">        Parameters as [offset, knee_freq, exp, const, (f_scale, r_squared)].</span>
+<span class="sd">        Note: f_scale and r_squared only returned when optimizing f_scale using an array input.</span>
 <span class="sd">    powers_fit : 1d or 2d array</span>
 <span class="sd">        Aperiodic fit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -549,12 +584,27 @@ title="Source repository"
         <span class="n">powers</span> <span class="o">=</span> <span class="n">powers</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">]</span> <span class="k">if</span> <span class="n">powers</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">powers</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
 
     <span class="c1"># Parameter bounds and guess</span>
-    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span>             <span class="mi">0</span><span class="p">,</span>      <span class="mi">0</span><span class="p">],</span>
-                  <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">freqs</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]]</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">guess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ap_mode</span> <span class="o">==</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]]</span>
+    <span class="k">elif</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ap_mode</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span><span class="p">:</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]]</span>
+
+    <span class="k">if</span> <span class="n">guess</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ap_mode</span> <span class="o">==</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
+         <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">guess</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ap_mode</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span><span class="p">:</span>
+         <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span>
+                  <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ap_mode</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span><span class="p">:</span>
+        <span class="c1"># Double knee model</span>
+        <span class="n">expo_func</span> <span class="o">=</span> <span class="n">expo_double_const_function</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Single knee model</span>
+        <span class="n">expo_func</span> <span class="o">=</span> <span class="n">expo_const_function</span>
 
     <span class="k">if</span> <span class="n">powers</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># Recursively call 1d in parallel</span>
@@ -563,8 +613,8 @@ title="Source repository"
 
         <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
             <span class="n">mapping</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span>
-                <span class="n">partial</span><span class="p">(</span><span class="n">fit_psd_robust</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
-                        <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">),</span>
+                <span class="n">partial</span><span class="p">(</span><span class="n">fit_psd_robust</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ap_mode</span><span class="o">=</span><span class="n">ap_mode</span><span class="p">,</span>  <span class="n">n_resample</span><span class="o">=</span><span class="n">n_resample</span><span class="p">,</span>
+                        <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">),</span>
                 <span class="nb">zip</span><span class="p">(</span><span class="n">_freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">progress_bar</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers</span><span class="p">),</span> <span class="n">pbar_desc</span><span class="o">=</span><span class="s1">&#39;Fitting PSD&#39;</span><span class="p">))</span>
@@ -574,11 +624,56 @@ title="Source repository"
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># 1d</span>
-        <span class="n">params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">expo_const_function</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">powers</span><span class="p">),</span>
-                              <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="n">f_scale</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span>
-                              <span class="n">p0</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_resample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Evenly resample in log-log space for improved robust regression</span>
+            <span class="n">freqs_orig</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span> <span class="o">=</span> <span class="n">resample_logspace</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">n_resample</span><span class="p">)</span>
 
-        <span class="n">powers_fit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">expo_const_function</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f_scale</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="n">params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">expo_func</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">powers</span><span class="p">),</span>
+                                  <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="n">f_scale</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span>
+                                  <span class="n">p0</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rsq</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">f_scale</span><span class="p">:</span>
+
+                <span class="c1"># Catch non-convergence exceptions</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">expo_func</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">powers</span><span class="p">),</span>
+                                           <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="n">maxfev</span><span class="p">,</span>
+                                           <span class="n">p0</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Get fit</span>
+                <span class="n">_powers_fit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">expo_func</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="o">*</span><span class="n">_params</span><span class="p">)</span>
+
+                <span class="c1"># Get r-squared from fit</span>
+                <span class="n">_rsq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">powers</span><span class="p">),</span>
+                                   <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">_powers_fit</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+
+                <span class="k">if</span> <span class="n">r_thresh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_rsq</span> <span class="o">&gt;</span> <span class="n">r_thresh</span><span class="p">:</span>
+                    <span class="c1"># Above r-squared threshold</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="n">_params</span>
+                    <span class="n">powers_fit</span> <span class="o">=</span> <span class="n">_powers_fit</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">_rsq</span> <span class="o">&gt;</span> <span class="n">rsq</span><span class="p">:</span>
+                    <span class="c1"># Track the current best r-squared</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="n">_params</span>
+                    <span class="n">powers_fit</span> <span class="o">=</span> <span class="n">_powers_fit</span>
+                    <span class="n">rsq</span> <span class="o">=</span> <span class="n">_rsq</span>
+
+         <span class="c1"># Move back to original frequency space if resampling</span>
+        <span class="k">if</span> <span class="n">n_resample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">powers_fit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">expo_func</span><span class="p">(</span><span class="n">freqs_orig</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">powers_fit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">expo_func</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="c1"># Sort parameters using ascending knee frequency</span>
+        <span class="k">if</span> <span class="n">ap_mode</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">params</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">params</span><span class="p">[</span><span class="mi">4</span><span class="p">:],</span> <span class="n">params</span><span class="p">[:</span><span class="mi">4</span><span class="p">]))</span>
 
     <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">powers_fit</span>
 </pre></div>

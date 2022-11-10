@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -538,6 +538,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -546,10 +547,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -561,12 +566,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -575,18 +583,18 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
 
-<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_sig</span>
-<span class="kn">from</span> <span class="nn">neurodsp.spectral</span> <span class="kn">import</span> <span class="n">compute_spectrum</span>
+from neurodsp.utils.norm import normalize_sig
+from neurodsp.spectral import compute_spectrum
 
-<span class="kn">from</span> <span class="nn">timescales.fit</span> <span class="kn">import</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">PSD</span>
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span>
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_spikes_synaptic</span><span class="p">,</span> <span class="n">sim_branching</span>
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
+from timescales.fit import ACF, PSD
+from timescales.conversions import convert_knee
+from timescales.sim import sim_spikes_synaptic, sim_branching
+from timescales.plts import set_default_rc
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+import matplotlib.pyplot as plt
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -599,13 +607,13 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation settings</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulation settings
+np.random.seed(0)
 
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">n_seconds_plot</span> <span class="o">=</span> <span class="mf">.25</span>
+n_seconds = 20
+n_seconds_plot = .25
 
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+tau = convert_knee(10)
 </pre></div>
 </div>
 </div>
@@ -616,28 +624,28 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate spikes</span>
-<span class="n">fs_spikes</span> <span class="o">=</span> <span class="mi">10000</span>
-<span class="n">times_spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs_spikes</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulate spikes
+fs_spikes = 10000
+times_spikes = np.arange(0, n_seconds, 1/fs_spikes)
 
-<span class="n">spikes</span> <span class="o">=</span> <span class="n">sim_spikes_synaptic</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs_spikes</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+spikes = sim_spikes_synaptic(n_seconds, fs_spikes, tau, mu=500)
 
-<span class="c1"># Simulate LFP</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
+# Simulate LFP
+fs = 1000
+times = np.arange(0, n_seconds, 1/fs)
 
-<span class="n">lfp</span> <span class="o">=</span> <span class="n">sim_branching</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="n">lfp</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">lfp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+lfp = sim_branching(n_seconds, fs, tau, 20)
+lfp = normalize_sig(lfp, 0, 1)
 
-<span class="c1"># Bin spikes</span>
-<span class="n">nlags</span> <span class="o">=</span> <span class="mi">2000</span>
-<span class="n">bin_size</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">spikes_bin</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">spikes_bin</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">spikes_bin</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+# Bin spikes
+nlags = 2000
+bin_size = 10
+spikes_bin = spikes.reshape(-1, bin_size).sum(axis=1)
+spikes_bin = normalize_sig(spikes_bin, 0, 1)
 
-<span class="c1"># Get spike time array for plotting</span>
-<span class="n">spike_times</span> <span class="o">=</span> <span class="n">times_spikes</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">spikes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
-<span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_times</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">spike_times</span> <span class="o">&lt;=</span> <span class="n">n_seconds_plot</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+# Get spike time array for plotting
+spike_times = times_spikes[np.where(spikes)[0]]
+spike_times = spike_times[np.where(spike_times &lt;= n_seconds_plot)[0]]
 </pre></div>
 </div>
 </div>
@@ -648,20 +656,20 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute PSD</span>
-<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">norm_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Compute PSD
+ar_order = 10
+norm_range = (.01, 1)
+f_range = (1, 100)
 
-<span class="n">psd_spikes</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_spikes</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">spikes_bin</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span>
-                            <span class="n">norm_range</span><span class="o">=</span><span class="n">norm_range</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
-<span class="n">psd_spikes</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+psd_spikes = PSD()
+psd_spikes.compute_spectrum(spikes_bin, fs, f_range=f_range,
+                            norm_range=norm_range, ar_order=ar_order, nfft=20000)
+psd_spikes.fit()
 
-<span class="n">psd_lfp</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
-<span class="n">psd_lfp</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">lfp</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="n">norm_range</span><span class="o">=</span><span class="n">norm_range</span><span class="p">,</span>
-                         <span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
-<span class="n">psd_lfp</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+psd_lfp = PSD()
+psd_lfp.compute_spectrum(lfp, fs, f_range=f_range, norm_range=norm_range,
+                         ar_order=ar_order, nfft=20000)
+psd_lfp.fit()
 </pre></div>
 </div>
 </div>
@@ -669,20 +677,20 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute ACF</span>
-<span class="n">nlags</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">norm_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">psd_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span> <span class="n">norm_range</span><span class="o">=</span><span class="n">norm_range</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Compute ACF
+nlags = 100
+norm_range = (0, 1)
+psd_kwargs = dict(ar_order=ar_order, nfft=20000, norm_range=norm_range)
 
-<span class="n">acf_spikes</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">()</span>
-<span class="n">acf_spikes</span><span class="o">.</span><span class="n">compute_acf</span><span class="p">(</span><span class="n">spikes_bin</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="n">nlags</span><span class="p">,</span> <span class="n">from_psd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                       <span class="n">psd_kwargs</span><span class="o">=</span><span class="n">psd_kwargs</span><span class="p">)</span>
-<span class="n">acf_spikes</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+acf_spikes = ACF()
+acf_spikes.compute_acf(spikes_bin, fs, nlags=nlags, from_psd=True,
+                       psd_kwargs=psd_kwargs)
+acf_spikes.fit()
 
-<span class="n">acf_lfp</span> <span class="o">=</span> <span class="n">ACF</span><span class="p">()</span>
-<span class="n">acf_lfp</span><span class="o">.</span><span class="n">compute_acf</span><span class="p">(</span><span class="n">lfp</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="n">nlags</span><span class="p">,</span> <span class="n">from_psd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">psd_kwargs</span><span class="o">=</span><span class="n">psd_kwargs</span><span class="p">)</span>
-<span class="n">acf_lfp</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+acf_lfp = ACF()
+acf_lfp.compute_acf(lfp, fs, nlags=nlags, from_psd=True,
+                    psd_kwargs=psd_kwargs)
+acf_lfp.fit()
 </pre></div>
 </div>
 </div>
@@ -690,11 +698,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ground Truth   :  10.0 Hertz</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PSD Spikes Knee: &#39;</span><span class="p">,</span> <span class="n">psd_spikes</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Hertz&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PSD LFP    Knee: &#39;</span><span class="p">,</span> <span class="n">psd_lfp</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Hertz&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ACF Spikes Knee: &#39;</span><span class="p">,</span> <span class="n">acf_spikes</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Hertz&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ACF LFP    Knee: &#39;</span><span class="p">,</span> <span class="n">acf_lfp</span><span class="o">.</span><span class="n">knee_freq</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Hertz&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Ground Truth   :  10.0 Hertz\n&#39;)
+print(&#39;PSD Spikes Knee: &#39;, psd_spikes.knee_freq.round(2), &#39;Hertz&#39;)
+print(&#39;PSD LFP    Knee: &#39;, psd_lfp.knee_freq.round(2), &#39;Hertz&#39;)
+print(&#39;ACF Spikes Knee: &#39;, acf_spikes.knee_freq.round(2), &#39;Hertz&#39;)
+print(&#39;ACF LFP    Knee: &#39;, acf_lfp.knee_freq.round(2), &#39;Hertz&#39;)
 </pre></div>
 </div>
 </div>
@@ -718,56 +726,56 @@ ACF LFP    Knee:  9.86 Hertz
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spikes</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">gs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Spikes
+fig = plt.figure(constrained_layout=True, figsize=(12, 8))
+gs = plt.GridSpec(7, 2, figure=fig)
 
-<span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
-<span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">fs</span><span class="o">*</span><span class="n">n_seconds_plot</span><span class="p">)],</span> <span class="n">lfp</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">fs</span><span class="o">*</span><span class="n">n_seconds_plot</span><span class="p">)])</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">eventplot</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">lineoffsets</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-              <span class="n">linelengths</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+ax0 = fig.add_subplot(gs[0:2, :])
+ax1 = fig.add_subplot(gs[2:7, 0])
+ax2 = fig.add_subplot(gs[2:7, 1])
+ax0.plot(times[:int(fs*n_seconds_plot)], lfp[:int(fs*n_seconds_plot)])
+ax0.eventplot(spike_times, color=&#39;C1&#39;, alpha=.8, lineoffsets=0,
+              linelengths=4, zorder=1)
 
-<span class="c1"># ACF</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">acf_lfp</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="n">acf_lfp</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.9</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">acf_spikes</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="n">acf_spikes</span><span class="o">.</span><span class="n">corrs</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.9</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+# ACF
+ax1.plot(acf_lfp.lags, acf_lfp.corrs, zorder=1, alpha=.9)
+ax1.plot(acf_spikes.lags, acf_spikes.corrs, zorder=1, alpha=.9, ls=&#39;--&#39;)
 
-<span class="c1"># PSD</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_lfp</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_lfp</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;LFP&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.9</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_spikes</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd_spikes</span><span class="o">.</span><span class="n">powers</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Spikes&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.9</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+# PSD
+ax2.loglog(psd_lfp.freqs, psd_lfp.powers, label=&#39;LFP&#39;, alpha=.9)
+ax2.loglog(psd_spikes.freqs, psd_spikes.powers, label=&#39;Spikes&#39;, alpha=.9, ls=&#39;--&#39;)
+ax2.legend()
 
-<span class="c1"># Ground truth</span>
-<span class="n">y_psd</span> <span class="o">=</span> <span class="n">psd_lfp</span><span class="o">.</span><span class="n">powers</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">psd_lfp</span><span class="o">.</span><span class="n">freqs</span> <span class="o">==</span> <span class="mi">10</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
-<span class="n">x_psd</span> <span class="o">=</span> <span class="mi">10</span>
+# Ground truth
+y_psd = psd_lfp.powers[np.where(psd_lfp.freqs == 10)[0]]
+x_psd = 10
 
-<span class="n">x_acf</span> <span class="o">=</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
-<span class="n">y_acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+x_acf = (tau * fs)+1
+y_acf = np.exp(-1)
 
-<span class="n">ax1</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_acf</span><span class="p">,</span> <span class="n">y_acf</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_psd</span><span class="p">,</span> <span class="n">y_psd</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+ax1.scatter(x_acf, y_acf, zorder=2, color=&#39;k&#39;)
+ax2.scatter(x_psd, y_psd, zorder=2, color=&#39;k&#39;)
 
-<span class="n">ax1</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_acf</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mf">.35</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\tau$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_psd</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">.35</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\mathregular</span><span class="si">{f_k}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+ax1.text(x_acf+5, .35, r&#39;$\tau$&#39;, size=22)
+ax2.text(x_psd-1, .35, r&#39;$\mathregular{f_k}$&#39;, size=22)
 
-<span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_acf</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="mf">.045</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">.12</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_psd</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="mf">.045</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+ax1.axhline(y=y_acf, xmin=.045, xmax=.12, ls=&#39;--&#39;, color=&#39;k&#39;)
+ax2.axhline(y=y_psd, xmin=.045, xmax=.5, ls=&#39;--&#39;, color=&#39;k&#39;)
 
-<span class="c1"># Titles and axis labels</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Time Series&#39;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Autocorrelation&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power Spectral Density&#39;</span><span class="p">)</span>
+# Titles and axis labels
+ax0.set_title(&#39;Time Series&#39;)
+ax1.set_title(&#39;Autocorrelation&#39;)
+ax2.set_title(&#39;Power Spectral Density&#39;)
 
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage&#39;</span><span class="p">)</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
+ax0.set_ylabel(&#39;Voltage&#39;)
+ax0.set_xlabel(&#39;Time (seconds)&#39;)
+ax1.set_xlabel(&#39;Lags&#39;)
+ax1.set_ylabel(&#39;Correlation&#39;)
 
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
+ax2.set_xlabel(&#39;Frequency&#39;)
+ax2.set_ylabel(&#39;Power&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig01_acf_vs_psd.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+plt.savefig(&#39;fig01_acf_vs_psd.png&#39;, dpi=300, facecolor=&#39;w&#39;);
 </pre></div>
 </div>
 </div>

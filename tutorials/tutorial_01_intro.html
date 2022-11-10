@@ -21,13 +21,13 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,7 +38,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script src="../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -528,6 +528,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -536,10 +537,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -551,12 +556,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -565,17 +573,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">ifft</span>
+import numpy as np
+from scipy.fft import ifft
 
-<span class="kn">from</span> <span class="nn">timescales.conversions</span> <span class="kn">import</span> <span class="n">convert_knee</span><span class="p">,</span> <span class="n">psd_to_acf</span><span class="p">,</span> <span class="n">acf_to_psd</span>
-<span class="kn">from</span> <span class="nn">timescales.utils</span> <span class="kn">import</span> <span class="n">normalize</span>
-<span class="kn">from</span> <span class="nn">timescales.sim</span> <span class="kn">import</span> <span class="n">sim_lorentzian</span><span class="p">,</span> <span class="n">sim_exp_decay</span>
+from timescales.conversions import convert_knee, psd_to_acf, acf_to_psd
+from timescales.utils import normalize
+from timescales.sim import sim_lorentzian, sim_exp_decay
 
-<span class="kn">from</span> <span class="nn">timescales.plts</span> <span class="kn">import</span> <span class="n">set_default_rc</span>
-<span class="n">set_default_rc</span><span class="p">()</span>
+from timescales.plts import set_default_rc
+set_default_rc()
 </pre></div>
 </div>
 </div>
@@ -593,14 +601,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Settings</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">knee_freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="n">knee_freq</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Settings
+fs = 1000
+knee_freq = 10
+tau = convert_knee(knee_freq)
 
-<span class="c1"># Simulate</span>
-<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4001</span><span class="p">)</span>
-<span class="n">powers</span> <span class="o">=</span> <span class="n">sim_lorentzian</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">knee_freq</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+# Simulate
+freqs = np.linspace(0, 2000, 4001)
+powers = sim_lorentzian(freqs, knee_freq, constant=1e-4)
 </pre></div>
 </div>
 </div>
@@ -608,14 +616,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;PSD Model&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs</span><span class="p">[:</span><span class="mi">500</span><span class="p">],</span> <span class="n">powers</span><span class="p">[:</span><span class="mi">500</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">knee_freq</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Knee Frequency&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
+plt.figure(figsize=(8, 6))
+plt.title(&#39;PSD Model&#39;)
+plt.loglog(freqs[:500], powers[:500], label=&#39;PSD&#39;)
+plt.axvline(knee_freq, .02, .98, color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Knee Frequency&#39;)
+plt.xlabel(&#39;Frequency&#39;)
+plt.ylabel(&#39;Power&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>
@@ -634,10 +642,10 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate</span>
-<span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
-<span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4001</span><span class="p">)</span>
-<span class="n">corrs</span> <span class="o">=</span> <span class="n">sim_exp_decay</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulate
+lags = np.arange(0, 1001)
+lags = np.linspace(0, 2000, 4001)
+corrs = sim_exp_decay(lags, fs, tau, 1)
 </pre></div>
 </div>
 </div>
@@ -645,14 +653,14 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ACF Model&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags</span><span class="p">[:</span><span class="mi">250</span><span class="p">],</span> <span class="n">corrs</span><span class="p">[:</span><span class="mi">250</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ACF&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">fs</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Tau&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
+plt.figure(figsize=(8, 6))
+plt.title(&#39;ACF Model&#39;)
+plt.plot(lags[:250], corrs[:250], label=&#39;ACF&#39;)
+plt.axvline(tau * fs, .02, .98, color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Tau&#39;)
+plt.xlabel(&#39;Lags&#39;)
+plt.ylabel(&#39;Correlation&#39;)
+plt.legend();
 </pre></div>
 </div>
 </div>
@@ -671,22 +679,22 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># iFFT</span>
-<span class="n">lags_ifft</span><span class="p">,</span> <span class="n">corrs_ifft</span> <span class="o">=</span> <span class="n">psd_to_acf</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-<span class="n">freqs_ifft</span><span class="p">,</span> <span class="n">powers_ifft</span> <span class="o">=</span> <span class="n">acf_to_psd</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">corrs</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># iFFT
+lags_ifft, corrs_ifft = psd_to_acf(freqs, powers, fs)
+freqs_ifft, powers_ifft = acf_to_psd(lags, corrs, fs)
 
-<span class="c1"># Trim ranges and normalize</span>
-<span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">501</span><span class="p">]</span>
-<span class="n">freqs_ifft</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[:</span><span class="mi">500</span><span class="p">]</span>
+# Trim ranges and normalize
+freqs = freqs[1:501]
+freqs_ifft = freqs[:500]
 
-<span class="n">powers</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">powers</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">501</span><span class="p">],</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">powers_ifft</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">powers_ifft</span><span class="p">[:</span><span class="mi">500</span><span class="p">],</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+powers = normalize(powers[1:501], 1e-2, 1)
+powers_ifft = normalize(powers_ifft[:500], 1e-2, 1)
 
-<span class="n">lags</span> <span class="o">=</span> <span class="n">lags</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">201</span><span class="p">]</span>
-<span class="n">lags_ifft</span> <span class="o">=</span> <span class="n">lags</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span>
+lags = lags[1:201]
+lags_ifft = lags[:200]
 
-<span class="n">corrs</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">corrs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">201</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">corrs_ifft</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">corrs_ifft</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+corrs = normalize(corrs[1:201], 0, 1)
+corrs_ifft = normalize(corrs_ifft[:200], 0, 1)
 </pre></div>
 </div>
 </div>
@@ -694,31 +702,31 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(ncols=2, figsize=(14, 5))
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_ifft</span><span class="p">,</span> <span class="n">powers_ifft</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ifft(ACF)&#39;</span><span class="p">)</span>
+axes[0].loglog(freqs, powers, label=&#39;PSD&#39;)
+axes[0].loglog(freqs_ifft, powers_ifft, ls=&#39;--&#39;, label=&#39;ifft(ACF)&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">corrs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ACF&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_ifft</span><span class="p">,</span> <span class="n">corrs_ifft</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ifft(PSD)&#39;</span><span class="p">)</span>
+axes[1].plot(lags, corrs, label=&#39;ACF&#39;)
+axes[1].plot(lags_ifft, corrs_ifft, ls=&#39;--&#39;, label=&#39;ifft(PSD)&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">knee_freq</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Knee&#39;</span><span class="p">)</span>
+axes[0].axvline(knee_freq, .02, .98,
+                color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Knee&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">convert_knee</span><span class="p">(</span><span class="n">knee_freq</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.98</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Tau&#39;</span><span class="p">)</span>
+axes[1].axvline(convert_knee(knee_freq) * fs, .02, .98,
+                color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Tau&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PSD Model&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ACF Model&#39;</span><span class="p">)</span>
+axes[0].set_title(&#39;PSD Model&#39;)
+axes[1].set_title(&#39;ACF Model&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Power&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
+axes[0].set_ylabel(&#39;Power&#39;)
+axes[0].set_xlabel(&#39;Frequency&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Correlation&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">)</span>
+axes[1].set_ylabel(&#39;Correlation&#39;)
+axes[1].set_xlabel(&#39;Lags&#39;)
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">);</span>
+axes[0].legend(fontsize=16)
+axes[1].legend(fontsize=16);
 </pre></div>
 </div>
 </div>
