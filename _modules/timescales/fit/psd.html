@@ -7,18 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>timescales.fit.psd &#8212; timescales 0.0.1-dev documentation</title>
     
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-
+  
     
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -28,9 +31,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -49,7 +51,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
 <!-- Checkboxes to toggle the left sidebar -->
 <input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
 <label class="overlay overlay-navbar" for="__navigation">
@@ -229,7 +231,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="PSD"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD">[docs]</a><span class="k">class</span> <span class="nc">PSD</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Power spectral density class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Power spectral density class.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -257,7 +259,7 @@ title="Source repository"
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PSD.__init__"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize object.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">powers</span> <span class="o">=</span> <span class="n">powers</span>
@@ -280,7 +282,7 @@ title="Source repository"
 
 <div class="viewcode-block" id="PSD.compute_spectrum"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD.compute_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">compute_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ar_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">norm_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute powers spectral density.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute powers spectral density.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -312,7 +314,7 @@ title="Source repository"
 
 <div class="viewcode-block" id="PSD.fit"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ap_mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_resample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_thresh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Fit power spectra.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit power spectra.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -408,7 +410,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="PSD.plot"><a class="viewcode-back" href="../../../generated/timescales.fit.PSD.html#timescales.fit.PSD.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plot spectra.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot spectra.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -447,7 +449,7 @@ title="Source repository"
 
 <span class="k">def</span> <span class="nf">fit_psd_fooof</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fooof_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_rsq</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                   <span class="n">ap_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ap_guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fit a PSD, using SpecParam, and estimate tau.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a PSD, using SpecParam, and estimate tau.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -530,7 +532,7 @@ title="Source repository"
 
 <span class="k">def</span> <span class="nf">fit_psd_robust</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ap_mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_thresh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">n_resample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fit the aperiodic spectrum using robust regression.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit the aperiodic spectrum using robust regression.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -694,7 +696,7 @@ title="Source repository"
   
     By Ryan Hammonds<br/>
   
-      &copy; Copyright 2021-2022, VoytekLab.<br/>
+      &copy; Copyright 2021-2023, VoytekLab.<br/>
 </p>
         </footer>
     </div>
@@ -705,9 +707,8 @@ title="Source repository"
       </div>
     </div>
   
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  
 
   </body>
 </html>

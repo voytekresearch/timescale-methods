@@ -7,18 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>timescales.pipe.pipe &#8212; timescales 0.0.1-dev documentation</title>
     
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-
+  
     
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -28,9 +31,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -49,7 +51,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
 <!-- Checkboxes to toggle the left sidebar -->
 <input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
 <label class="overlay overlay-navbar" for="__navigation">
@@ -223,7 +225,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe">[docs]</a><span class="k">class</span> <span class="nc">Pipe</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Simulations, PSD/ACF, and fitting pipelines.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulations, PSD/ACF, and fitting pipelines.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -256,7 +258,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe.run"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run analysis pipeline.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run analysis pipeline.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -303,7 +305,7 @@ title="Source repository"
 
 
     <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sub-function to allow imap parallelziation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sub-function to allow imap parallelziation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -320,7 +322,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe.add_step"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.add_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a step to the pipeline.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a step to the pipeline.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -338,7 +340,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe.fit"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_attrs</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Fit timescale of simulation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit timescale of simulation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -380,7 +382,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe.transform"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">compute_kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Fit timescale of simulation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit timescale of simulation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -408,7 +410,7 @@ title="Source repository"
 
 <div class="viewcode-block" id="Pipe.simulate"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_func</span><span class="p">,</span> <span class="o">*</span><span class="n">sim_args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Simulate aperiodic signal.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulate aperiodic signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -465,7 +467,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe.sample"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sample binary array from probabilties.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample binary array from probabilties.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -485,7 +487,7 @@ title="Source repository"
 
 
 <div class="viewcode-block" id="Pipe.bin"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.bin">[docs]</a>    <span class="k">def</span> <span class="nf">bin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Bin signal.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bin signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -497,7 +499,7 @@ title="Source repository"
 
 <div class="viewcode-block" id="Pipe.rescale"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.rescale">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">norm_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
-        <span class="sd">&quot;&quot;&quot;Normalize signal from lower to upper.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize signal from lower to upper.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)):</span>
                 <span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">ACF</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
@@ -508,7 +510,7 @@ title="Source repository"
 
 <div class="viewcode-block" id="Pipe.normalize"><a class="viewcode-back" href="../../../generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.normalize">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Normalize signal with given mean and variance.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize signal with given mean and variance.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="p">)</span></div></div>
 </pre></div>
 
@@ -528,7 +530,7 @@ title="Source repository"
   
     By Ryan Hammonds<br/>
   
-      &copy; Copyright 2021-2022, VoytekLab.<br/>
+      &copy; Copyright 2021-2023, VoytekLab.<br/>
 </p>
         </footer>
     </div>
@@ -539,9 +541,8 @@ title="Source repository"
       </div>
     </div>
   
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  
 
   </body>
 </html>
