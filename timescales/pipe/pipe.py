@@ -1,6 +1,6 @@
 """Simulation, transformation, and fitting pipeline framework."""
 
-
+from copy import deepcopy
 import operator as op
 from multiprocessing import Pool, cpu_count
 
@@ -129,12 +129,12 @@ class Pipe:
         self.pipe.append({'step': step, 'args': args, 'kwargs': kwargs})
 
 
-    def fit(self, return_attrs, **fit_kwargs):
+    def fit(self, return_attrs=None, **fit_kwargs):
         """Fit timescale of simulation.
 
         Parameters
         ----------
-        return_attrs : str or list of str or {'knee_freq', 'tau', 'rsq'}
+        return_attrs : str or list of str, default: None
             Model attributes to specifically store. These are attributes
             of PSD or ACF objects set upon fitting.
         **fit_kwargs
@@ -154,17 +154,25 @@ class Pipe:
             for model in self.model:
                 if model.params is None:
                     model.fit(**fit_kwargs)
-                    res.append([getattr(model, r, None) for r in return_attrs])
+                    if return_attrs is None:
+                        res.append(model)
+                    else:
+                        res.append([getattr(model, r, None) for r in return_attrs])
 
             res = res[0] if len(res) == 1 else res
         # Single transform
         else:
             self.model.fit(**fit_kwargs)
-            res = [getattr(self.model, r, None) for r in return_attrs]
+            if return_attrs is None:
+                res = [deepcopy(self.model)]
+            else:
+                res = [getattr(self.model, r, None) for r in return_attrs]
 
         # Organize results
         if self.result is None:
             self.result = res
+        elif not isinstance(res, list):
+            self.result.append(res)
         elif not isinstance(self.result[0], list):
             self.result = [self.result, res]
         else:
