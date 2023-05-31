@@ -43,7 +43,7 @@ def plot_connected_scatter(dist0, dist1, ax0, paired=True, twin=False, fill_nans
     -------
     ax0 : AxesSubplot
         Drawn subplot.
-    ax : AxesSubplot, optional
+    ax1 : AxesSubplot, optional
         Drawn twin subplot.
     """
 
