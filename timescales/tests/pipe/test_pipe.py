@@ -106,17 +106,6 @@ def test_pipe_run():
     # AR-PSD is more Lorentzian than ACF
     assert pipe_psd.results[:, 1].mean() > pipe_acf.results[:, 1].mean()
 
-    print(pipe_psd.results[:, 1])
-    print(pipe_acf.results[:, 1])
-    print()
-    print(tau)
-    print(pipe_psd.results[:, 2])
-    print(pipe_acf.results[:, 2])
-    print()
-    print(10)
-    print(pipe_psd.results[:, 0])
-    print(pipe_acf.results[:, 0])
-
     # AR-PSD timescales are more accurate (MAE)
     assert np.abs(pipe_psd.results[:, 2] - tau).mean() < \
         np.abs(pipe_acf.results[:, 2] - tau).mean()

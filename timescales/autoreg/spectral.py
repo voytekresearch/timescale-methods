@@ -60,12 +60,11 @@ def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, 
 
     # 1d
     if method == 'burg':
-        ar, rho = burg(sig, order=order)
+        ar = burg(sig, order=order)
     else:
-        ar, rho = yule_walker(sig, order=order)
+        ar, _ = yule_walker(sig, order=order)
 
-    powers = arma2psd(A=-ar, rho=rho, T=fs, NFFT=nfft)
-
+    powers = arma2psd(A=-ar, rho=1., T=fs, NFFT=nfft)
     freqs = fftfreq(nfft, 1/fs)
     powers = powers[:len(freqs)//2]
     freqs = freqs[:len(freqs)//2]
@@ -77,7 +76,10 @@ def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, 
 
     return freqs, powers
 
-def burg(sig, order):
+def burg(sig, order, demean=True):
+
+    if demean:
+        sig = sig - sig.mean()
 
     # Initalize arrays for reflection coefficients
     #   and ar coefficients

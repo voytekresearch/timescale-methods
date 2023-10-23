@@ -10,10 +10,9 @@ from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
 from scipy.fft import fftfreq
 
-from statsmodels.regression.linear_model import burg
-
 from spectrum import eigen
 
+from timescales.autoreg import burg
 from timescales.sim import sim_asine_oscillation, sim_autoregressive
 
 class CAD:
@@ -378,7 +377,9 @@ def _fit(xs, sig, fs, osc_order, ar_order, *fit_args, return_params=False):
         return osc_fit, params
 
     # Fit AR Burg
-    ar_params, _ = burg(sig-osc_fit, order=ar_order, demean=True)
+    y = sig - osc_fit
+    y -= y.mean()
+    ar_params = burg(y, order=ar_order)
 
     params['params_ar'] = {'ar_' + str(ind):v for ind, v in enumerate(ar_params)}
 
