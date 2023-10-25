@@ -8,7 +8,7 @@ import numpy as np
 from scipy.fft import fftfreq
 
 from statsmodels.regression.linear_model import yule_walker
-from spectrum import arma2psd
+from timescales.conversions import ar_to_psd
 
 
 def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, n_jobs=1):
@@ -64,15 +64,7 @@ def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, 
     else:
         ar, _ = yule_walker(sig, order=order)
 
-    powers = arma2psd(A=-ar, rho=1., T=fs, NFFT=nfft)
-    freqs = fftfreq(nfft, 1/fs)
-    powers = powers[:len(freqs)//2]
-    freqs = freqs[:len(freqs)//2]
-
-    if f_range is not None:
-        inds = np.where((freqs >= f_range[0]) & (freqs <= f_range[1]))
-        freqs = freqs[inds]
-        powers = powers[inds]
+    freqs, powers = ar_to_psd(ar, fs, nfft, f_range=f_range)
 
     return freqs, powers
 

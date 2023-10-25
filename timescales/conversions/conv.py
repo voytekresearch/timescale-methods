@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.fft import ifft, fftfreq
-
+from spectrum import arma2psd
 from timescales.utils import normalize as _normalize
 
 
@@ -105,5 +105,39 @@ def acf_to_psd(lags, corrs, fs, normalize=None):
 
     if isinstance(normalize, (tuple, list)):
         powers = _normalize(powers, *normalize)
+
+    return freqs, powers
+
+def ar_to_psd(ar, fs, nfft, f_range=None):
+    """Convert AR coefficients to PSD.
+
+    Parameters
+    ----------
+    ar : 1d array
+        Positive AR coefficients in descending order.
+    fs : float
+        Sampling rate, in Hz.
+    nfft : int
+        Number of samples to use in the fft.
+        Determines frequency resolution.
+    f_range : tuple of (float, float)
+        Lower and upper frequency bounds.
+
+    Returns
+    -------
+    freqs : 1d array
+        Frequency definition.
+    powers : 1d array
+        AR power spectral density.
+    """
+    powers = arma2psd(A=-ar, rho=1., T=fs, NFFT=nfft)
+    freqs = fftfreq(nfft, 1/fs)
+    powers = powers[:len(freqs)//2]
+    freqs = freqs[:len(freqs)//2]
+
+    if f_range is not None:
+        inds = np.where((freqs >= f_range[0]) & (freqs <= f_range[1]))
+        freqs = freqs[inds]
+        powers = powers[inds]
 
     return freqs, powers
