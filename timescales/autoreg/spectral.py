@@ -64,8 +64,17 @@ def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, 
     else:
         ar, _ = yule_walker(sig, order=order)
 
-    powers = arma2psd(A=-ar, rho=1., T=fs, NFFT=nfft)
+    freqs, powers = ar_to_psd(ar, fs, nfft, f_range)
+
+    return freqs, powers
+
+
+def ar_to_psd(ar_coeffs, fs, nfft, f_range=None):
+    """Compute PSD from AR coefficients."""
+
+    powers = arma2psd(A=-ar_coeffs, rho=1., T=fs, NFFT=nfft)
     freqs = fftfreq(nfft, 1/fs)
+
     powers = powers[:len(freqs)//2]
     freqs = freqs[:len(freqs)//2]
 
@@ -75,6 +84,7 @@ def compute_ar_spectrum(sig, fs, order, f_range=None, method='burg', nfft=4096, 
         powers = powers[inds]
 
     return freqs, powers
+
 
 def burg(sig, order, demean=True):
 
