@@ -80,10 +80,6 @@ class ACF:
 
         self.rsq = None
 
-        # For comparison to PSD models
-        self.tau = None
-        self.knee_freq = None
-
 
     def compute_acf(self, sig, fs, nlags=None, normalize=True, from_psd=False,
                     psd_kwargs=None, n_jobs=-1, progress=None):
@@ -231,7 +227,7 @@ class ACF:
 
         if gen_fits and not np.isnan(self.params).any():
             self.gen_corrs_fit(gen_components)
-            self.tau = self.params[0]
+            self.tau = self.params[:, 0]
             self.knee_freq = convert_knee(self.tau)
         else:
             self.tau = np.nan
