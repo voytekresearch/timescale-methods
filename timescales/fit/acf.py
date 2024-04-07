@@ -227,7 +227,11 @@ class ACF:
 
         if gen_fits and not np.isnan(self.params).any():
             self.gen_corrs_fit(gen_components)
-            self.tau = self.params[:, 0]
+
+            if self.params.ndim == 1:
+                self.tau =self.params[0]
+            else:
+                self.tau = self.params[:, 0]
             self.knee_freq = convert_knee(self.tau)
         else:
             self.tau = np.nan
