@@ -496,10 +496,26 @@ def _fit_acf(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
             guess[ind] = (bounds[0][ind] + bounds[1][ind]) / 2
 
     try:
-        params, _ = curve_fit(
-            lambda lags, t, amp, off : sim_exp_decay(lags, fs, t, amp, off),
-            lags, corrs, p0=guess, bounds=bounds, maxfev=maxfev
-        )
+
+        if len(lags) == 2 and corrs[0] == 1.:
+            # Fitting only two points in ACF, directly derive tau
+            #   assuming corr[0] == 1.0. Useful for comparing to AR(1)
+            exp_tau = -1/(fs * np.log(corrs[1]))
+            params = np.array([exp_tau, 1., 0.])
+        elif len(lags) == 3:
+            # Fitting three points == number of params in model
+            #   Fix offset and scale parameters
+            params, _ = curve_fit(
+                lambda lags, t : sim_exp_decay(lags, fs, t, corrs[0], 0.),
+                lags, corrs
+            )
+            params = np.array([params[0], corrs[0], 0.])
+        else:
+            params, _ = curve_fit(
+                lambda lags, t, amp, off : sim_exp_decay(lags, fs, t, amp, off),
+                lags, corrs, p0=guess, bounds=bounds, maxfev=maxfev
+            )
+
     except RuntimeError:
         params = np.nan
 
