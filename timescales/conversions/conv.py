@@ -1,8 +1,6 @@
 """Conversion utilities."""
 
 import numpy as np
-from scipy.fft import ifft, fftfreq
-
 from timescales.utils import normalize as _normalize
 
 
@@ -42,7 +40,7 @@ def convert_tau(tau):
     return convert_knee(tau)
 
 
-def psd_to_acf(freqs, powers, fs, normalize=None):
+def psd_to_acf(freqs, powers, fs):
     """Convert a PSD to ACF.
 
     Parameters
@@ -53,8 +51,6 @@ def psd_to_acf(freqs, powers, fs, normalize=None):
         Power spectral density.
     fs : float
         Sampling rate, in Hertz.
-    normalize : tuple of (float, float), default: None
-        Normalize from (min, max).
 
     Returns
     -------
@@ -63,32 +59,23 @@ def psd_to_acf(freqs, powers, fs, normalize=None):
     corrs : 1d array
         Correlation coefficients.
     """
-    corrs = ifft(powers).real
-    corrs = corrs[1:len(powers)//2]
+    powers = powers / np.sum(powers)
 
-    if isinstance(normalize, (tuple, list)):
-        corrs = _normalize(corrs, *normalize)
-
-    f_res = freqs[1] - freqs[0]
-
-    lags = fftfreq(len(powers), 1)[1:len(powers)//2] / f_res * fs
+    corrs = np.fft.ifft(powers, norm='forward')[:len(powers)//2].real
+    lags = np.arange(len(corrs)) * (fs/freqs[-1])
 
     return lags, corrs
 
 
-def acf_to_psd(lags, corrs, fs, normalize=None):
+def acf_to_psd(corrs, fs):
     """Convert ACF to PSD.
 
     Parameters
     ----------
-    lags : 1d array
-        Lag definitions.
     corrs : 1d array
         Auto-correlations.
     fs : float
         Sampling rate, in Hertz.
-    normalize : tuple of (float, float), default: None
-        Normalize from (min, max).
 
     Returns
     -------
@@ -97,13 +84,12 @@ def acf_to_psd(lags, corrs, fs, normalize=None):
     powers : 1d
         Power spectral density.
     """
-    powers = ifft(corrs).real
-    freqs = fftfreq(len(powers), 1 / fs * (lags[1] - lags[0]))
+    # Compute power
+    powers = np.abs(np.fft.fft(corrs))**2
+    freqs = np.fft.fftfreq(len(corrs), 1/fs)
 
-    powers = powers[1:len(powers)//2]
-    freqs = freqs[1:len(freqs)//2]
-
-    if isinstance(normalize, (tuple, list)):
-        powers = _normalize(powers, *normalize)
+    # Drop imaginary
+    freqs = freqs[:len(corrs)//2]
+    powers = powers[:len(corrs)//2]
 
     return freqs, powers

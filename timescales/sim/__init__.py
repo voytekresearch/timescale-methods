@@ -6,5 +6,5 @@ from .psd import sim_lorentzian
 from .ou import sim_ou
 from .branching import sim_branching
 from .cad import sim_autoregressive, sim_asine_oscillation
-
+from .ar import sim_ar
 from neurodsp.sim import sim_synaptic_kernel
