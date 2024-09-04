@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 
 class ARPSD:
     """Fits AR(p) model to PSD."""
-    def __init__(self, order, fs, bounds=None, ar_bounds=None, guess=None):
+    def __init__(self, order, fs, bounds=None, ar_bounds=None,
+                 guess=None, maxfev=100, loss_fn='linear', f_scale=None):
         """Intialize object.
 
         Parameters
@@ -23,6 +24,12 @@ class ARPSD:
             Sets bounds across all AR weights.
         guess : list, optional, default: None
             Inital AR weights. Defaults to zeros.
+        maxfev : int, optional, default: None
+            Max number of optimization iterations.
+        loss_fn : str, optional, default: 'linear'
+            Name of loss function supported by curve_fit.
+        f_scale : float, optional, default: None
+            Robust regression. Determines inliers/outliers. Between [0, 1].
         """
         self.order = order
         self.fs = fs
@@ -33,10 +40,10 @@ class ARPSD:
         self.bounds = bounds
         self.ar_bounds = ar_bounds
         self.guess = guess
-
+        self.f_scale = f_scale
+        self.maxfev = maxfev
+        self.loss_fn = loss_fn
         self.params = None
-        self._info = None
-        self._msg = None
 
     def fit(self, freqs, powers):
         """Fit PSD.
@@ -53,7 +60,7 @@ class ARPSD:
         self.freqs = freqs
         self.powers = powers
         k = np.arange(1, self.order+1)
-        exp = np.exp(-2j * np.pi * np.outer(freqs, k) / self.fs).T
+        self._exp = np.exp(-2j * np.pi * np.outer(freqs, k) / self.fs).T
 
         # Inital parameters and bounds
         if self.bounds is None:
@@ -70,20 +77,20 @@ class ARPSD:
             ]
 
         if self.guess is None:
-            guess = [0.] * self.order
+            guess = [l[0]] * self.order
             self.guess = [*guess, 1.]
 
         # Fit
-        f = lambda freqs, *params : np.log10(ar_spectrum(exp, *params))
+        f = lambda freqs, *params : np.log10(ar_spectrum(self._exp, *params))
 
         if powers.ndim == 1:
 
-            self.params, _, self._info, self._msg, _ = curve_fit(
+            self.params, _ = curve_fit(
                 f, freqs, np.log10(powers), p0=self.guess, bounds=self.bounds,
-                maxfev=1000, full_output=True
+                maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn
             )
 
-            self.powers_fit = ar_spectrum(exp, *self.params)
+            self.powers_fit = ar_spectrum(self._exp, *self.params)
 
         else:
 
@@ -92,31 +99,43 @@ class ARPSD:
 
             for i, p in enumerate(powers):
 
-                self.params[i], _, self._info, self._msg, _ = curve_fit(
+                self.params[i], _ = curve_fit(
                     f, freqs, np.log10(p), p0=self.guess, bounds=self.bounds,
-                    maxfev=1000, full_output=True
+                    maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn
                 )
 
-                self.powers_fit[i] = ar_spectrum(exp, *self.params[i])
+                self.powers_fit[i] = ar_spectrum(self._exp, *self.params[i])
 
     def plot(self):
         """Plot model fit."""
         if self.params is not None:
             plt.loglog(self.freqs, self.powers, label="Target")
-            plt.loglog(self.freqs, self.powers_fit, label="Fit", ls='--')
+            plt.loglog(self.freqs, ar_spectrum(self._exp, *self.params), label="Fit", ls='--')
             plt.title("AR Spectral Model Fit")
             plt.legend()
         else:
             raise ValueError("Must call .fit prior to plotting.")
 
-    def simulate(self, n_seconds, fs, index=None):
+    def simulate(self, n_seconds, fs, init=None, error=None, index=None):
         """Simulate a signal based on learned parameters."""
         if self.params is not None and index is None:
-            return simulate_ar(n_seconds, fs, self.params[:-1][::-1])
+            return simulate_ar(n_seconds, fs, self.params[:-1], init=init, error=error)
         elif self.params is not None and index is None:
-            return simulate_ar(n_seconds, fs, self.params[index][:-1][::-1])
+            return simulate_ar(n_seconds, fs, self.params[index][:-1], init=init, error=error)
         else:
             raise ValueError("Must call .fit prior to simulating.")
+
+    @property
+    def is_stationary(self, index=None):
+        """Determines if the learned coefficients give a stationary process."""
+        if self.params is not None and index is None:
+            roots = np.polynomial.Polynomial(np.insert(-self.params[:-1], 0, 1.)).roots()
+            return np.all(np.abs(roots) > 1.)
+        elif self.params is not None and index is None:
+            roots = np.polynomial.Polynomial(np.insert(-self.params[index][:-1], 0, 1.)).roots()
+            return np.all(np.abs(roots) > 1.)
+        else:
+            raise ValueError("Must call .fit to check stationarity.")
 
 
 def ar_spectrum(exp, *params):
@@ -130,14 +149,19 @@ def ar_spectrum(exp, *params):
     return powers_fit
 
 
-def simulate_ar(n_seconds, fs, phi):
+def simulate_ar(n_seconds, fs, phi, init=None, error=None):
     """Simulate a signal given AR coefficients, phi."""
     p = len(phi)
 
     sig = np.zeros((n_seconds * fs) + p)
-    sig[:p] = np.random.randn(p)
 
-    error = np.random.randn(len(sig))
+    if init is None:
+        init = np.random.randn(p)
+
+    sig[:p] = init
+
+    if error is None:
+        error = np.random.randn(len(sig))
 
     for i in range(p, len(sig)):
         sig[i] = (sig[i-p:i] @ phi) + error[i-p]
