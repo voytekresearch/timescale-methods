@@ -119,9 +119,9 @@ class ARPSD:
     def simulate(self, n_seconds, fs, init=None, error=None, index=None):
         """Simulate a signal based on learned parameters."""
         if self.params is not None and index is None:
-            return simulate_ar(n_seconds, fs, self.params[:-1], init=init, error=error)
+            return simulate_ar(n_seconds, fs, self.params[:-1][::-1], init=init, error=error)
         elif self.params is not None and index is None:
-            return simulate_ar(n_seconds, fs, self.params[index][:-1], init=init, error=error)
+            return simulate_ar(n_seconds, fs, self.params[index][:-1][::-1], init=init, error=error)
         else:
             raise ValueError("Must call .fit prior to simulating.")
 
