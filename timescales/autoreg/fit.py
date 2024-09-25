@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 class ARPSD:
     """Fits AR(p) model to PSD."""
-    def __init__(self, order, fs, bounds=None, ar_bounds=None,
-                 guess=None, maxfev=100, loss_fn='linear', f_scale=None):
+    def __init__(self, order, fs, bounds=None, ar_bounds=None, guess=None,
+                 maxfev=100, loss_fn='linear', f_scale=None, curve_fit_kwargs=None):
         """Intialize object.
 
         Parameters
@@ -30,6 +30,8 @@ class ARPSD:
             Name of loss function supported by curve_fit.
         f_scale : float, optional, default: None
             Robust regression. Determines inliers/outliers. Between [0, 1].
+        curve_fit_kwargs : dict, optional, default: None
+            Additonal kwargs to pass to curve_fit.
         """
         self.order = order
         self.fs = fs
@@ -44,6 +46,7 @@ class ARPSD:
         self.maxfev = maxfev
         self.loss_fn = loss_fn
         self.params = None
+        self.curve_fit_kwargs = {} if curve_fit_kwargs is None else curve_fit_kwargs
 
     def fit(self, freqs, powers):
         """Fit PSD.
@@ -72,8 +75,8 @@ class ARPSD:
                 u = [1-1e-9] * self.order
 
             self.bounds = [
-                [*l, 1e-6],
-                [*u, 1e6],
+                [*l, 1e-16],
+                [*u, 1e16],
             ]
 
         if self.guess is None:
@@ -87,7 +90,8 @@ class ARPSD:
 
             self.params, _ = curve_fit(
                 f, freqs, np.log10(powers), p0=self.guess, bounds=self.bounds,
-                maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn
+                maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn,
+                **self.curve_fit_kwargs
             )
 
             self.powers_fit = ar_spectrum(self._exp, *self.params)
@@ -101,7 +105,8 @@ class ARPSD:
 
                 self.params[i], _ = curve_fit(
                     f, freqs, np.log10(p), p0=self.guess, bounds=self.bounds,
-                    maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn
+                    maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn,
+                    **self.curve_fit_kwargs
                 )
 
                 self.powers_fit[i] = ar_spectrum(self._exp, *self.params[i])
@@ -153,7 +158,7 @@ def simulate_ar(n_seconds, fs, phi, init=None, error=None):
     """Simulate a signal given AR coefficients, phi."""
     p = len(phi)
 
-    sig = np.zeros((n_seconds * fs) + p)
+    sig = np.zeros(int(n_seconds * fs) + p)
 
     if init is None:
         init = np.random.randn(p)
