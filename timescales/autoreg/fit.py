@@ -80,7 +80,7 @@ class ARPSD:
             ]
 
         if self.guess is None:
-            guess = [l[0]] * self.order
+            guess = [0] * self.order
             self.guess = [*guess, 1.]
 
         # Fit
