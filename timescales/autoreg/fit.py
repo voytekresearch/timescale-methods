@@ -161,7 +161,7 @@ def simulate_ar(n_seconds, fs, phi, init=None, error=None):
     sig = np.zeros(int(n_seconds * fs) + p)
 
     if init is None:
-        init = np.random.randn(p)
+        init = np.random.randn(p) * np.sqrt(1/(1-phi[0]**2))
 
     sig[:p] = init
 
