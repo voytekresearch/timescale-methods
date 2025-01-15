@@ -555,7 +555,7 @@ def _fit_acf_cos(corrs, lags, fs, guess=None, bounds=None, maxfev=1000):
 
         _bounds = [
             (0,              0,  0, 0,  0, 0, -.5),
-            (tau_guess * 10, 1, .1, 10, 1, 1, .5)
+            (tau_guess * 10, 1, .1, len(corrs), 1, 1, .5)
         ]
 
     if bounds is None:
