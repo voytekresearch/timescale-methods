@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 from scipy.optimize import curve_fit
-from scipy.fft import ifft
 from statsmodels.tsa.stattools import acf
 
 from neurodsp.spectral import compute_spectrum
