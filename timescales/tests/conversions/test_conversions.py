@@ -27,15 +27,18 @@ def test_psd_to_acf():
     fs = 1000
     knee_freq = 10
     tau = convert_knee(knee_freq)
-
-    lags = np.linspace(0, 250, 500)
+    phi = 0.95
+    tau = -1 / (np.log(phi) * fs)
+    lags = np.arange(0, 251).astype(np.float64)
     corrs = sim_exp_decay(lags, fs, tau, 1)
 
     # PSD to ACF via iFFT
-    freqs = np.linspace(0, 2001, 1002)
-    powers = sim_lorentzian(freqs, knee_freq, constant=1e-4)
+    freqs = np.linspace(0.01, fs//2, 20000)
+    powers = 1 / (1 - 2 * phi * np.cos(2 * np.pi * freqs * 1/fs) + phi**2)
+    _, corrs_ifft = psd_to_acf(freqs, powers, fs)
 
-    _, corrs_ifft = psd_to_acf(freqs, powers, fs, (0, 1))
+    corrs = corrs[::2]
+    corrs_ifft = corrs_ifft[:len(corrs)]
 
     np.testing.assert_almost_equal(corrs, corrs_ifft, 3)
 
@@ -44,14 +47,14 @@ def test_acf_to_psd():
 
     # Reference PSD
     fs = 1000
-    knee_freq = 10
-    tau = convert_knee(knee_freq)
-    freqs = np.arange(1, 500)
-    powers = sim_lorentzian(freqs, knee_freq, constant=1e-4)
+    phi = 0.95
+    freqs = np.arange(0, 500).astype(np.float64)
+    powers = 1 / (1 - 2 * phi * np.cos(2 * np.pi * freqs * 1/fs) + phi**2)
 
     # ACF to PSD via iFFT
-    lags = np.arange(1, 1001)
+    tau = -1 / (np.log(phi) * fs)
+    lags = np.arange(0, 1000)
     corrs = sim_exp_decay(lags, fs, tau, 1)
-    _, powers_ifft = acf_to_psd(lags, corrs, fs, (powers.min(), powers.max()))
+    _, powers_ifft = acf_to_psd(corrs, fs)
 
     np.testing.assert_almost_equal(powers, powers_ifft, 4)
