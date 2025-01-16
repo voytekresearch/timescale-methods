@@ -11,12 +11,11 @@ including PSD and ACF.
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
 .. _ProjectStatus: https://www.repostatus.org/#active
 
-.. |BuildStatus| image:: https://github.com/github/docs/actions/workflows/main.yml/badge.svg
+.. |BuildStatus| image:: https://github.com/voytekresearch/timescale-methods/actions/workflows/build.yml/badge.svg
 .. _BuildStatus: https://github.com/voytekresearch/timescale-methods/actions/workflows/build.yml
 
 .. |Coverage| image:: https://codecov.io/gh/voytekresearch/timescale-methods/branch/main/graph/badge.svg?token=vxK8jrHm9O
 .. _Coverage: https://codecov.io/gh/voytekresearch/timescale-methods
-
 
 Dependencies
 ------------
