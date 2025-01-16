@@ -46,3 +46,30 @@ def sim_ar(n_seconds, fs, phi, init=None, error=None):
     sig = sig[p:]
 
     return sig
+
+
+def sim_ar_spectrum(freqs, fs, phi, offset=1.0):
+    """Simulate theoretical spectral form of an AR(p) model.
+
+    Parameters
+    ----------
+    freqs : 1d array
+        Frequencies.
+    fs : float
+        Sampling rate, Hz.
+    phi : 1d array
+        Autoregressive coefficients.
+        Ordered from most recent in time to farthest in time.
+        Typically, phi_0 will be the largest coeff and corresponds to AR(1).
+    offset : float, optional, default: 1.0
+        Translates the spectrum along the power, y-axis.
+    """
+    order = len(phi)
+    k = np.arange(1, order+1)
+    exp = np.exp(-2j * np.pi * np.outer(freqs, k) / fs).T
+
+    denom = 1 - (phi @ exp)
+    powers_fit = offset / np.abs(denom)**2
+
+    return powers_fit
+

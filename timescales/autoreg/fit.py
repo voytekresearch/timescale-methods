@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+from timescales.sim import sim_ar
 
 class ARPSD:
     """Fits AR(p) model to PSD."""
@@ -46,6 +47,8 @@ class ARPSD:
         self.maxfev = maxfev
         self.loss_fn = loss_fn
         self.params = None
+        self.param_names = [f"phi_{i}" for i in range(order)]
+        self.param_names.append("offset")
         self.curve_fit_kwargs = {} if curve_fit_kwargs is None else curve_fit_kwargs
 
     def fit(self, freqs, powers):
@@ -84,7 +87,7 @@ class ARPSD:
             self.guess = [*guess, 1.]
 
         # Fit
-        f = lambda freqs, *params : np.log10(ar_spectrum(self._exp, *params))
+        f = lambda freqs, *params : np.log10(_ar_spectrum(self._exp, *params))
 
         if powers.ndim == 1:
 
@@ -94,7 +97,7 @@ class ARPSD:
                 **self.curve_fit_kwargs
             )
 
-            self.powers_fit = ar_spectrum(self._exp, *self.params)
+            self.powers_fit = _ar_spectrum(self._exp, *self.params)
 
         else:
 
@@ -109,13 +112,13 @@ class ARPSD:
                     **self.curve_fit_kwargs
                 )
 
-                self.powers_fit[i] = ar_spectrum(self._exp, *self.params[i])
+                self.powers_fit[i] = _ar_spectrum(self._exp, *self.params[i])
 
     def plot(self):
         """Plot model fit."""
         if self.params is not None:
             plt.loglog(self.freqs, self.powers, label="Target")
-            plt.loglog(self.freqs, ar_spectrum(self._exp, *self.params), label="Fit", ls='--')
+            plt.loglog(self.freqs, _ar_spectrum(self._exp, *self.params), label="Fit", ls='--')
             plt.title("AR Spectral Model Fit")
             plt.legend()
         else:
@@ -124,9 +127,9 @@ class ARPSD:
     def simulate(self, n_seconds, fs, init=None, error=None, index=None):
         """Simulate a signal based on learned parameters."""
         if self.params is not None and index is None:
-            return simulate_ar(n_seconds, fs, self.params[:-1][::-1], init=init, error=error)
+            return sim_ar(n_seconds, fs, self.params[:-1][::-1], init=init, error=error)
         elif self.params is not None and index is None:
-            return simulate_ar(n_seconds, fs, self.params[index][:-1][::-1], init=init, error=error)
+            return sim_ar(n_seconds, fs, self.params[index][:-1][::-1], init=init, error=error)
         else:
             raise ValueError("Must call .fit prior to simulating.")
 
@@ -143,8 +146,14 @@ class ARPSD:
             raise ValueError("Must call .fit to check stationarity.")
 
 
-def ar_spectrum(exp, *params):
-    """Spectral form of an AR(p) model."""
+def _ar_spectrum(exp, *params):
+    """Spectral form of an AR(p) model.
+
+    Notes
+    -----
+    This func is for fitting efficiency.
+    Use timescales.sim.autoreg.sim_ar_spectrum otherwise.
+    """
     phi = params[:-1]
     offset = params[-1]
 
@@ -152,25 +161,3 @@ def ar_spectrum(exp, *params):
     powers_fit = offset / np.abs(denom)**2
 
     return powers_fit
-
-
-def simulate_ar(n_seconds, fs, phi, init=None, error=None):
-    """Simulate a signal given AR coefficients, phi."""
-    p = len(phi)
-
-    sig = np.zeros(int(n_seconds * fs) + p)
-
-    if init is None:
-        init = np.random.randn(p) * np.sqrt(1/(1-phi[0]**2))
-
-    sig[:p] = init
-
-    if error is None:
-        error = np.random.randn(len(sig))
-
-    for i in range(p, len(sig)):
-        sig[i] = (sig[i-p:i] @ phi) + error[i-p]
-
-    sig = sig[p:]
-
-    return sig
