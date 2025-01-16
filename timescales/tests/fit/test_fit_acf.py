@@ -19,30 +19,22 @@ def test_ACF_init():
     assert (acf.lags == lags).all()
     assert acf.fs == fs
 
-@pytest.mark.parametrize('from_psd', [True, False])
-def test_ACF_compute_acf(from_psd):
 
-    sig = np.random.rand(1000)
-    fs = 100
+def test_ACF_compute_acf():
 
+    fs = 1000
+    sig = np.random.randn(2, 2, 1000)
     acf = ACF()
-    acf.compute_acf(sig, fs, from_psd=from_psd)
+
+    with pytest.raises(ValueError):
+        # 3d error
+        acf.compute_acf(sig, fs)
+
+    acf.compute_acf(sig[0], fs)
     assert acf.corrs is not None
-    assert abs(np.mean(acf.corrs)) < 1
-
-    acf = ACF()
-    acf.compute_acf(np.vstack((sig, sig)), fs, from_psd=from_psd, n_jobs=2)
-    print(np.vstack((sig, sig)).shape)
-    print(acf.corrs.shape)
-    assert (acf.corrs[0] == acf.corrs[1]).all()
-
-    # Expect error
-    if from_psd is False:
-        sig = np.random.rand(2, 2, 1000)
-        acf = ACF()
-
-        with pytest.raises(ValueError):
-            acf.compute_acf(sig, fs, from_psd=from_psd)
+    assert acf.lags is not None
+    assert acf.lags[0] == 0
+    assert acf.corrs[0, 0] == 1.0
 
 
 @pytest.mark.parametrize('with_cos', [True, False])

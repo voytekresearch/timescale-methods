@@ -151,7 +151,7 @@ def sim_poisson(n_seconds, fs, kernel, isi=None, mu=None, refract=None):
 
     if isi is None:
         mu = fs * .1  if mu is None else mu
-        isi = np.round_(np.random.exponential(scale=mu, size=len(times))).astype(int)
+        isi = np.round(np.random.exponential(scale=mu, size=len(times))).astype(int)
 
     if refract is not None:
         isi = isi[np.where(isi > refract)[0]]
