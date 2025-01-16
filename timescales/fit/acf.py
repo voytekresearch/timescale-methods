@@ -11,11 +11,9 @@ from scipy.fft import ifft
 from statsmodels.tsa.stattools import acf
 
 from neurodsp.spectral import compute_spectrum
-from timescales.autoreg import compute_ar_spectrum
 
 from timescales.sim.acf import sim_acf_cos, sim_exp_decay, sim_damped_cos
-from timescales.utils import normalize as normalize_acf
-from timescales.conversions import convert_knee, psd_to_acf
+from timescales.conversions import convert_knee
 from timescales.fit.utils import progress_bar, check_guess_and_bounds
 
 
@@ -81,8 +79,7 @@ class ACF:
         self.rsq = None
 
 
-    def compute_acf(self, sig, fs, nlags=None, normalize=True, from_psd=False,
-                    psd_kwargs=None, n_jobs=-1, progress=None):
+    def compute_acf(self, sig, fs, nlags=None, n_jobs=-1, progress=None):
         """Compute autocorrelation.
 
         Parameters
@@ -93,12 +90,6 @@ class ACF:
             Sampling rate, in Hz.
         nlags : int, optional, default: None
             Number of lags to compute. None defaults to the sampling rate, fs.
-        normalize : bool, optional, default: True
-            Normalizes from zero to one when True.
-        from_psd : bool, optional, default: False
-            Compute correlations from the inverse FFT of the PSD.
-        psd_kwargs : dict, optional, default: None
-            Compute spectrum kwargs. Only used if from_psd is True.
         n_jobs : int, optional, default: -1
             Number of jobs to run in parralel, when corrs is 2d.
             Default is equal to multiprocessing's cpu_count().
@@ -109,67 +100,22 @@ class ACF:
         self.fs = fs
         nlags = int(self.fs) if nlags is None else nlags
 
-        if not from_psd:
+        # Compute ACF
+        if sig.ndim == 1:
+            self.corrs = acf(sig, nlags=nlags, qstat=False, fft=True)
+            self.lags = np.arange(len(self.corrs))
+        elif sig.ndim == 2:
 
-            # Compute ACF
-            if sig.ndim == 1:
-                self.corrs = acf(sig, nlags=nlags, qstat=False, fft=True)[1:]
-                self.lags = np.arange(1, len(self.corrs)+1)
-            elif sig.ndim == 2:
+            n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-                n_jobs = cpu_count() if n_jobs == -1 else n_jobs
+            with Pool(processes=n_jobs) as pool:
+                mapping = pool.map(partial(acf, nlags=nlags, qstat=False, fft=True), sig)
+                results = list(progress_bar(mapping, progress, len(sig), 'Computing ACF'))
 
-                with Pool(processes=n_jobs) as pool:
-                    mapping = pool.map(partial(acf, nlags=nlags, qstat=False, fft=True), sig)
-                    results = list(progress_bar(mapping, progress, len(sig), 'Computing ACF'))
-
-                self.corrs = np.array(results)[:, 1:]
-                self.lags = np.arange(1, len(self.corrs[0])+1)
-            else:
-                raise ValueError('sig must be either 1d or 2d.')
-
+            self.corrs = np.array(results)
+            self.lags = np.arange(len(self.corrs[0]))
         else:
-
-            # Handle kwargs
-            psd_kwargs = {} if psd_kwargs is None else psd_kwargs
-            _psd_kwargs = psd_kwargs.copy()
-            norm_range = _psd_kwargs.pop('norm_range', None)
-
-            # Compute spectrum
-            if 'ar_order' in psd_kwargs:
-                ar_order = _psd_kwargs.pop('ar_order')
-                freqs, powers = compute_ar_spectrum(sig, self.fs, ar_order, **_psd_kwargs)
-            else:
-                freqs, powers = compute_spectrum(sig, self.fs, **_psd_kwargs)
-
-            # Normalize power if requested
-            if norm_range is not None:
-                powers = normalize_acf(powers, *norm_range)
-
-            # Take inverse fft to get acf
-            if sig.ndim == 2:
-
-                for ind in range(len(powers)):
-
-                    self.lags, _corrs = psd_to_acf(freqs, powers[ind], fs, (0, 1))
-
-                    if ind == 0:
-                        self.corrs = np.zeros((len(powers), len(_corrs)))
-
-                    self.corrs[ind] = _corrs
-
-                self.lags = self.lags[:nlags]
-                self.corrs = self.corrs[:, :nlags]
-
-            else:
-
-                self.lags, self.corrs = psd_to_acf(freqs, powers, fs, (0, 1))
-
-            self.lags = self.lags[:nlags]
-            self.corrs = self.corrs[:nlags]
-
-        if normalize:
-            self.corrs = normalize_acf(self.corrs, 0, 1)
+            raise ValueError('sig must be either 1d or 2d.')
 
 
     def fit(self, lags=None, corrs=None, gen_fits=True, gen_components=False, with_cos=False,
