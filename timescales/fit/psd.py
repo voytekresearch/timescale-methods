@@ -14,10 +14,11 @@ from timescales.autoreg import compute_ar_spectrum
 from fooof import FOOOF, FOOOFGroup
 from fooof.core.funcs import expo_const_function, expo_double_const_function
 
-from timescales.conversions import convert_knee
+from timescales.conversions import convert_knee, phi_to_tau, tau_to_phi
 from timescales.utils import normalize as normalize_psd
 from timescales.utils import resample_logspace
 from timescales.fit.utils import progress_bar
+from timescales.autoreg.fit import ARPSD
 
 
 class PSD:
@@ -48,12 +49,13 @@ class PSD:
         Parameters bounds as [(*lower_bounds), (*upper_bounds)].
     """
 
-    def __init__(self, freqs=None, powers=None):
+    def __init__(self, freqs=None, powers=None, fs=None):
         """Initialize object."""
 
         self.freqs = freqs
         self.powers = powers
         self.powers_fit = None
+        self.fs = None
 
         # Set via other methods
         self.params = None
@@ -92,6 +94,7 @@ class PSD:
         **kwargs
             Additional keyword arguments to pass to compute_spectrum or compute_ar_spectrum.
         """
+        self.fs = fs
         if ar_order is not None:
             self.freqs, self.powers = compute_ar_spectrum(sig, fs, ar_order, n_jobs=n_jobs,
                                                           f_range=f_range, **kwargs)
@@ -103,7 +106,7 @@ class PSD:
 
 
     def fit(self, freqs=None, powers=None, f_range=None, ap_mode='single', method='huber', fooof_init=None, bounds=None,
-            guess=None, n_resample=None, f_scale=.1, r_thresh=None, maxfev=1000, sigma=None, n_jobs=1, progress=None):
+            guess=None, n_resample=None, f_scale=None, r_thresh=None, maxfev=1000, sigma=None, n_jobs=1, progress=None):
         """Fit power spectra.
 
         Parameters
@@ -160,13 +163,18 @@ class PSD:
             self.freqs = self.freqs[inds]
             self.powers = self.powers[:, inds] if self.powers.ndim == 2 else self.powers[inds]
 
+        if f_scale is None and method not in ['ar', "fooof"]:
+            f_scale = 0.1
+        elif f_scale is None and method == 'ar':
+            f_scale = 0.5
+
         # Skip 0 hz if using fooof or resampling
         if (method == 'fooof' or n_resample is not None) and self.freqs[0] == 0:
             self.freqs = self.freqs[1:]
             self.powers = self.powers[1:] if self.powers.ndim == 1 else self.powers[:, 1:]
 
         # Fit
-        if method != 'fooof' and fooof_init is None:
+        if method not in ['ar', 'fooof'] and fooof_init is None:
             # Robust regression (aperiodic only)
             self.params, self.powers_fit = fit_psd_robust(
                 self.freqs, self.powers, ap_mode=ap_mode, loss=method, f_scale=f_scale, r_thresh=r_thresh,
@@ -179,24 +187,46 @@ class PSD:
                 self.freqs, self.powers, fooof_init=fooof_init, return_rsq=True,
                 ap_bounds=bounds, ap_guess=guess, n_jobs=n_jobs, progress=progress
             )
+        elif method == 'ar':
+            if bounds is not None and isinstance(bounds[0], float):
+                ar_bounds = bounds
+                bounds = None
+            elif bounds is not None:
+                ar_bounds = None
+            else:
+                ar_bounds = (0., 1.)
+
+            arpsd = ARPSD(
+                1, self.fs, loss_fn="soft_l1", f_scale=f_scale, maxfev=maxfev,
+                bounds=bounds, ar_bounds=ar_bounds
+            )
+            arpsd.fit(self.freqs, self.powers)
+
+            self.powers_fit = arpsd.powers_fit
+            self.params = arpsd.params
+            self.param_names = arpsd.param_names
         else:
-            raise ValueError('method must be in \{\'huber\', \'cauchy\', \'soft_l1\', \'arctan\', \'fooof\'\}.')
+            raise ValueError('method must be in \{\'ar\', \'huber\', \'cauchy\', \'soft_l1\', \'arctan\', \'fooof\'\}.')
 
         # Get r-squared, knee freqs, and taus
         if self.powers_fit.ndim == 1:
             self.rsq = np.corrcoef(np.log10(self.powers),
                                    np.log10(self.powers_fit))[0][1] ** 2
-
-            self.knee_freq = self.params[1]
-            self.tau = convert_knee(self.knee_freq)
         else:
             self.rsq = np.zeros(len(self.powers_fit))
-
             for ind in range(len(self.powers_fit)):
                 self.rsq[ind] = np.corrcoef(np.log10(self.powers[ind]),
                                             np.log10(self.powers_fit[ind]))[0][1] ** 2
+
+        if self.powers_fit.ndim == 1 and method != "ar":
+            self.knee_freq = self.params[1]
+            self.tau = convert_knee(self.knee_freq)
+        elif self.powers_fit.ndim == 2 and method != "ar":
             self.knee_freq = self.params[:, 1]
             self.tau = convert_knee(self.knee_freq)
+        else:
+            self.phi = self.params[:, 0] if self.powers.ndim == 2 else self.params[0]
+            self.tau = phi_to_tau(self.phi, self.fs)
 
 
     def plot(self, ax=None, title=None):

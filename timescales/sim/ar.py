@@ -11,7 +11,7 @@ def sim_ar(n_seconds, fs, phi, init=None, error=None):
         Number of seconds to simulate.
     fs : float
         Sampling rate, in Hertz.
-    phi : 1d array
+    phi : 1d array or float
         Autoregressive coefficients.
     init : 1d array, default: None
         First p values of the signal to begin convolutional
@@ -26,6 +26,9 @@ def sim_ar(n_seconds, fs, phi, init=None, error=None):
     sig : 1d array
         Simulated signal.
     """
+    if isinstance(phi, float):
+        phi = np.array([phi])
+
     # Order
     p = len(phi)
 
@@ -44,6 +47,7 @@ def sim_ar(n_seconds, fs, phi, init=None, error=None):
         sig[i] = (sig[i-p:i] @ phi) + error[i-p]
 
     sig = sig[p:]
+    sig = (sig - sig.mean()) / sig.std()
 
     return sig
 
@@ -57,13 +61,16 @@ def sim_ar_spectrum(freqs, fs, phi, offset=1.0):
         Frequencies.
     fs : float
         Sampling rate, Hz.
-    phi : 1d array
+    phi : 1d array or float
         Autoregressive coefficients.
         Ordered from most recent in time to farthest in time.
         Typically, phi_0 will be the largest coeff and corresponds to AR(1).
     offset : float, optional, default: 1.0
         Translates the spectrum along the power, y-axis.
     """
+    if isinstance(phi, float):
+        phi = np.array([phi])
+
     order = len(phi)
     k = np.arange(1, order+1)
     exp = np.exp(-2j * np.pi * np.outer(freqs, k) / fs).T

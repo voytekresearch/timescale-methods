@@ -39,6 +39,17 @@ def convert_tau(tau):
 
     return convert_knee(tau)
 
+def knee_to_tau(knee_freq):
+    # Alias
+    return convert_knee(knee_freq)
+def tau_to_knee(tau):
+    # Alias
+    return convert_knee(tau)
+
+def tau_to_phi(tau, fs):
+    return np.exp(-1/(tau * fs))
+def phi_to_tau(phi, fs):
+    return -1/(np.log(phi) * fs)
 
 def psd_to_acf(freqs, powers, fs):
     """Convert a PSD to ACF.

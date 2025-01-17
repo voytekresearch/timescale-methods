@@ -1,5 +1,5 @@
 """Spectral AR fitting."""
-
+import warnings
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
@@ -8,7 +8,8 @@ from timescales.sim import sim_ar
 class ARPSD:
     """Fits AR(p) model to PSD."""
     def __init__(self, order, fs, bounds=None, ar_bounds=None, guess=None,
-                 maxfev=100, loss_fn='linear', f_scale=None, curve_fit_kwargs=None):
+                 maxfev=100, loss_fn='linear', scaling="log", f_scale=None,
+                 curve_fit_kwargs=None):
         """Intialize object.
 
         Parameters
@@ -29,6 +30,8 @@ class ARPSD:
             Max number of optimization iterations.
         loss_fn : str, optional, default: 'linear'
             Name of loss function supported by curve_fit.
+        scaling : str, {"log", "linear"}
+            Scale of power to fit.
         f_scale : float, optional, default: None
             Robust regression. Determines inliers/outliers. Between [0, 1].
         curve_fit_kwargs : dict, optional, default: None
@@ -46,6 +49,7 @@ class ARPSD:
         self.f_scale = f_scale
         self.maxfev = maxfev
         self.loss_fn = loss_fn
+        self.scaling = scaling
         self.params = None
         self.param_names = [f"phi_{i}" for i in range(order)]
         self.param_names.append("offset")
@@ -87,49 +91,63 @@ class ARPSD:
             self.guess = [*guess, 1.]
 
         # Fit
-        f = lambda freqs, *params : np.log10(_ar_spectrum(self._exp, *params))
+        with warnings.catch_warnings(action="ignore"):
+            if self.scaling == "log":
+                t = np.log10
+                f = lambda freqs, *params : t(_ar_spectrum(self._exp, *params))
+            else:
+                t = lambda i : i # identity
+                f = lambda freqs, *params : t(_ar_spectrum(self._exp, *params))
 
-        if powers.ndim == 1:
+            if powers.ndim == 1:
 
-            self.params, _ = curve_fit(
-                f, freqs, np.log10(powers), p0=self.guess, bounds=self.bounds,
-                maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn,
-                **self.curve_fit_kwargs
-            )
-
-            self.powers_fit = _ar_spectrum(self._exp, *self.params)
-
-        else:
-
-            self.params = np.zeros((len(powers), self.order+1))
-            self.powers_fit = np.zeros_like(powers)
-
-            for i, p in enumerate(powers):
-
-                self.params[i], _ = curve_fit(
-                    f, freqs, np.log10(p), p0=self.guess, bounds=self.bounds,
+                self.params, _ = curve_fit(
+                    f, freqs, t(powers), p0=self.guess, bounds=self.bounds,
                     maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn,
                     **self.curve_fit_kwargs
                 )
 
-                self.powers_fit[i] = _ar_spectrum(self._exp, *self.params[i])
+                self.powers_fit = _ar_spectrum(self._exp, *self.params)
 
-    def plot(self):
+            else:
+
+                self.params = np.zeros((len(powers), self.order+1))
+                self.powers_fit = np.zeros_like(powers)
+
+                for i, p in enumerate(powers):
+
+                    self.params[i], _ = curve_fit(
+                        f, freqs, t(p), p0=self.guess, bounds=self.bounds,
+                        maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn,
+                        **self.curve_fit_kwargs
+                    )
+
+                    self.powers_fit[i] = _ar_spectrum(self._exp, *self.params[i])
+
+    def plot(self, ax=None):
         """Plot model fit."""
-        if self.params is not None and self.params.ndim == 1:
-            plt.loglog(self.freqs, self.powers, label="Target")
-            plt.loglog(self.freqs, _ar_spectrum(self._exp, *self.params), label="Fit", ls='--')
-            plt.title("AR Spectral Model Fit")
-            plt.legend()
-        elif self.params.ndim == 2:
-            for i in range(len(self.powers)):
-                label = "Target" if i == 0 else None
-                plt.loglog(self.freqs, self.powers[i], label=label, color="C0")
-                label = "Fit" if i == 0 else None
-                plt.loglog(self.freqs, _ar_spectrum(self._exp, *self.params[i]), label=label, color="C1", ls='--')
-            plt.title("AR Spectral Model Fit")
-        else:
-            raise ValueError("Must call .fit prior to plotting.")
+        if ax is None:
+            _, ax = plt.subplots(figsize=(8, 6))
+
+        # Plot spectra
+        if self.powers.ndim == 1:
+            ax.loglog(self.freqs, self.powers, label='PSD', color='C0')
+        elif self.powers.ndim == 2:
+            ax.loglog(self.freqs, self.powers.mean(axis=0), label='PSD', color='C0')
+            for power in self.powers:
+                ax.loglog(self.freqs, power, color='C0', alpha=.1)
+
+        # Plot fits
+        if self.powers_fit is not None and self.powers_fit.ndim == 1:
+            ax.loglog(self.freqs, self.powers_fit, label='Fit', ls='--', color='C1')
+        elif self.powers_fit is not None and self.powers_fit.ndim == 2:
+            ax.loglog(self.freqs, self.powers_fit.mean(axis=0),
+                      ls='--', color='C1', label='Mean Fit')
+
+        ax.legend()
+        ax.set_ylabel('Powers')
+        ax.set_xlabel('Frequencies')
+        ax.set_title('Aperiodic Model Fit')
 
     def simulate(self, n_seconds, fs, init=None, error=None, index=None):
         """Simulate a signal based on learned parameters."""
