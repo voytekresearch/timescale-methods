@@ -91,7 +91,10 @@ class ARPSD:
             self.guess = [*guess, 1.]
 
         # Fit
-        with warnings.catch_warnings(action="ignore"):
+        with warnings.catch_warnings():
+
+            warnings.simplefilter("ignore") # log of negative may occur
+
             if self.scaling == "log":
                 t = np.log10
                 f = lambda freqs, *params : t(_ar_spectrum(self._exp, *params))
