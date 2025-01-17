@@ -101,7 +101,7 @@ class ARPSD:
 
         else:
 
-            self.params = np.zeros((len(powers), self.order))
+            self.params = np.zeros((len(powers), self.order+1))
             self.powers_fit = np.zeros_like(powers)
 
             for i, p in enumerate(powers):
@@ -116,11 +116,18 @@ class ARPSD:
 
     def plot(self):
         """Plot model fit."""
-        if self.params is not None:
+        if self.params is not None and self.params.ndim == 1:
             plt.loglog(self.freqs, self.powers, label="Target")
             plt.loglog(self.freqs, _ar_spectrum(self._exp, *self.params), label="Fit", ls='--')
             plt.title("AR Spectral Model Fit")
             plt.legend()
+        elif self.params.ndim == 2:
+            for i in range(len(self.powers)):
+                label = "Target" if i == 0 else None
+                plt.loglog(self.freqs, self.powers[i], label=label, color="C0")
+                label = "Fit" if i == 0 else None
+                plt.loglog(self.freqs, _ar_spectrum(self._exp, *self.params[i]), label=label, color="C1", ls='--')
+            plt.title("AR Spectral Model Fit")
         else:
             raise ValueError("Must call .fit prior to plotting.")
 
@@ -128,20 +135,23 @@ class ARPSD:
         """Simulate a signal based on learned parameters."""
         if self.params is not None and index is None:
             return sim_ar(n_seconds, fs, self.params[:-1][::-1], init=init, error=error)
-        elif self.params is not None and index is None:
+        elif self.params is not None and index is not None:
             return sim_ar(n_seconds, fs, self.params[index][:-1][::-1], init=init, error=error)
         else:
             raise ValueError("Must call .fit prior to simulating.")
 
     @property
-    def is_stationary(self, index=None):
+    def is_stationary(self):
         """Determines if the learned coefficients give a stationary process."""
-        if self.params is not None and index is None:
+        if self.params is not None and self.params.ndim == 1:
             roots = np.polynomial.Polynomial(np.insert(-self.params[:-1], 0, 1.)).roots()
             return np.all(np.abs(roots) > 1.)
-        elif self.params is not None and index is None:
-            roots = np.polynomial.Polynomial(np.insert(-self.params[index][:-1], 0, 1.)).roots()
-            return np.all(np.abs(roots) > 1.)
+        elif self.params is not None and self.params.ndim == 2:
+            _is_stationary = np.zeros(len(self.params), dtype=bool)
+            for i in range(len(self.params)):
+                roots = np.polynomial.Polynomial(np.insert(-self.params[i][:-1], 0, 1.)).roots()
+                _is_stationary[i] = np.all(np.abs(roots) > 1.)
+            return _is_stationary
         else:
             raise ValueError("Must call .fit to check stationarity.")
 
