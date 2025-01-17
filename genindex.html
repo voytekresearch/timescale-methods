@@ -1,212 +1,269 @@
 
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" data-content_root="./" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; timescales 0.0.1-dev documentation</title>
-    
-    <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
   
-    
-    <link rel="stylesheet"
-      href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
   
-    
-      
   
-    
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-    
-    <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
-    <script src="_static/design-tabs.js"></script>
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=f00e8930"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=a56c686a"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.1-dev" />
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
     
-    <div class="container-fluid" id="banner"></div>
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="index.html">
-      
-      
-      
-      <h1 class="site-logo" id="site-title">timescales 0.0.1-dev documentation</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">timescales 0.0.1-dev documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="api.html">
-   API Documentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="tutorials/index.html">
-   Tutorials
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="figures/index.html">
-   Figures
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="figures/index.html">Figures</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
-</div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
 
 
-          
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
 <div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
-
-
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
->
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
   
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
-  </span>
-
-</label>
-
-        
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
     </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/voytekresearch/timescale-methods" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-<a href="https://github.com/voytekresearch/timescale-methods"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="bottom"
-title="Source repository"
->
-  
-
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fab fa-github"></i>
   </span>
 
 </a>
 
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
     </div>
 </div>
 
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-</div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1></h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                    </div>
-                </div>
-            </div>
-            <main id="main-content" role="main">
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
 
 <h1 id="index">Index</h1>
 
@@ -217,9 +274,9 @@ title="Source repository"
  | <a href="#C"><strong>C</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
- | <a href="#N"><strong>N</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#P"><strong>P</strong></a>
- | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  
@@ -230,9 +287,9 @@ title="Source repository"
       <li><a href="generated/timescales.fit.ACF.html#timescales.fit.ACF.__init__">__init__() (timescales.fit.ACF method)</a>
 
       <ul>
-        <li><a href="generated/timescales.fit.PSD.html#timescales.fit.PSD.__init__">(timescales.fit.PSD method)</a>
+        <li><a href="generated/timescales.fit.ARPSD.html#timescales.fit.ARPSD.__init__">(timescales.fit.ARPSD method)</a>
 </li>
-        <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.__init__">(timescales.pipe.Pipe method)</a>
+        <li><a href="generated/timescales.fit.PSD.html#timescales.fit.PSD.__init__">(timescales.fit.PSD method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -243,11 +300,13 @@ title="Source repository"
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/timescales.fit.ACF.html#timescales.fit.ACF">ACF (class in timescales.fit)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/timescales.conversions.acf_to_psd.html#timescales.conversions.acf_to_psd">acf_to_psd() (in module timescales.conversions)</a>
 </li>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.add_step">add_step() (timescales.pipe.Pipe method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/timescales.autoreg.ar_to_psd.html#timescales.autoreg.ar_to_psd">ar_to_psd() (in module timescales.autoreg)</a>
+</li>
+      <li><a href="generated/timescales.fit.ARPSD.html#timescales.fit.ARPSD">ARPSD (class in timescales.fit)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -255,7 +314,7 @@ title="Source repository"
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.bin">bin() (timescales.pipe.Pipe method)</a>
+      <li><a href="generated/timescales.autoreg.burg.html#timescales.autoreg.burg">burg() (in module timescales.autoreg)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -265,15 +324,11 @@ title="Source repository"
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/timescales.fit.ACF.html#timescales.fit.ACF.compute_acf">compute_acf() (timescales.fit.ACF method)</a>
 </li>
-      <li><a href="generated/timescales.autoreg.compute_ar_spectrum.html#timescales.autoreg.compute_ar_spectrum">compute_ar_spectrum() (in module timescales.autoreg)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/timescales.autoreg.compute_ar_spectrum.html#timescales.autoreg.compute_ar_spectrum">compute_ar_spectrum() (in module timescales.autoreg)</a>
+</li>
       <li><a href="generated/timescales.fit.PSD.html#timescales.fit.PSD.compute_spectrum">compute_spectrum() (timescales.fit.PSD method)</a>
-</li>
-      <li><a href="generated/timescales.conversions.convert_knee.html#timescales.conversions.convert_knee">convert_knee() (in module timescales.conversions)</a>
-</li>
-      <li><a href="generated/timescales.conversions.convert_tau.html#timescales.conversions.convert_tau">convert_tau() (in module timescales.conversions)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -284,9 +339,9 @@ title="Source repository"
       <li><a href="generated/timescales.fit.ACF.html#timescales.fit.ACF.fit">fit() (timescales.fit.ACF method)</a>
 
       <ul>
-        <li><a href="generated/timescales.fit.PSD.html#timescales.fit.PSD.fit">(timescales.fit.PSD method)</a>
+        <li><a href="generated/timescales.fit.ARPSD.html#timescales.fit.ARPSD.fit">(timescales.fit.ARPSD method)</a>
 </li>
-        <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.fit">(timescales.pipe.Pipe method)</a>
+        <li><a href="generated/timescales.fit.PSD.html#timescales.fit.PSD.fit">(timescales.fit.PSD method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -300,10 +355,18 @@ title="Source repository"
   </ul></td>
 </tr></table>
 
-<h2 id="N">N</h2>
+<h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.normalize">normalize() (timescales.pipe.Pipe static method)</a>
+      <li><a href="generated/timescales.fit.ARPSD.html#timescales.fit.ARPSD.is_stationary">is_stationary (timescales.fit.ARPSD property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/timescales.conversions.knee_to_tau.html#timescales.conversions.knee_to_tau">knee_to_tau() (in module timescales.conversions)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -311,11 +374,13 @@ title="Source repository"
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe">Pipe (class in timescales.pipe)</a>
+      <li><a href="generated/timescales.conversions.phi_to_tau.html#timescales.conversions.phi_to_tau">phi_to_tau() (in module timescales.conversions)</a>
 </li>
       <li><a href="generated/timescales.fit.ACF.html#timescales.fit.ACF.plot">plot() (timescales.fit.ACF method)</a>
 
       <ul>
+        <li><a href="generated/timescales.fit.ARPSD.html#timescales.fit.ARPSD.plot">(timescales.fit.ARPSD method)</a>
+</li>
         <li><a href="generated/timescales.fit.PSD.html#timescales.fit.PSD.plot">(timescales.fit.PSD method)</a>
 </li>
       </ul></li>
@@ -328,36 +393,34 @@ title="Source repository"
   </ul></td>
 </tr></table>
 
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.rescale">rescale() (timescales.pipe.Pipe static method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.run">run() (timescales.pipe.Pipe method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.sample">sample() (timescales.pipe.Pipe method)</a>
+      <li><a href="generated/timescales.sim.sim_acf_cos.html#timescales.sim.sim_acf_cos">sim_acf_cos() (in module timescales.sim)</a>
+</li>
+      <li><a href="generated/timescales.sim.sim_ar.html#timescales.sim.sim_ar">sim_ar() (in module timescales.sim)</a>
+</li>
+      <li><a href="generated/timescales.sim.sim_ar_spectrum.html#timescales.sim.sim_ar_spectrum">sim_ar_spectrum() (in module timescales.sim)</a>
 </li>
       <li><a href="generated/timescales.sim.sim_branching.html#timescales.sim.sim_branching">sim_branching() (in module timescales.sim)</a>
 </li>
-      <li><a href="generated/timescales.sim.sim_ou.html#timescales.sim.sim_ou">sim_ou() (in module timescales.sim)</a>
+      <li><a href="generated/timescales.sim.sim_damped_cos.html#timescales.sim.sim_damped_cos">sim_damped_cos() (in module timescales.sim)</a>
+</li>
+      <li><a href="generated/timescales.sim.sim_exp_decay.html#timescales.sim.sim_exp_decay">sim_exp_decay() (in module timescales.sim)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/timescales.sim.sim_lorentzian.html#timescales.sim.sim_lorentzian">sim_lorentzian() (in module timescales.sim)</a>
+</li>
+      <li><a href="generated/timescales.sim.sim_ou.html#timescales.sim.sim_ou">sim_ou() (in module timescales.sim)</a>
+</li>
       <li><a href="generated/timescales.sim.sim_poisson.html#timescales.sim.sim_poisson">sim_poisson() (in module timescales.sim)</a>
 </li>
       <li><a href="generated/timescales.sim.sim_spikes_prob.html#timescales.sim.sim_spikes_prob">sim_spikes_prob() (in module timescales.sim)</a>
 </li>
       <li><a href="generated/timescales.sim.sim_spikes_synaptic.html#timescales.sim.sim_spikes_synaptic">sim_spikes_synaptic() (in module timescales.sim)</a>
 </li>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.simulate">simulate() (timescales.pipe.Pipe method)</a>
+      <li><a href="generated/timescales.fit.ARPSD.html#timescales.fit.ARPSD.simulate">simulate() (timescales.fit.ARPSD method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -365,42 +428,81 @@ title="Source repository"
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/timescales.pipe.Pipe.html#timescales.pipe.Pipe.transform">transform() (timescales.pipe.Pipe method)</a>
+      <li><a href="generated/timescales.conversions.tau_to_knee.html#timescales.conversions.tau_to_knee">tau_to_knee() (in module timescales.conversions)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/timescales.conversions.tau_to_phi.html#timescales.conversions.tau_to_phi">tau_to_phi() (in module timescales.conversions)</a>
 </li>
   </ul></td>
 </tr></table>
 
 
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
 </div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
   
-    By Ryan Hammonds<br/>
-  
-      &copy; Copyright 2021-2023, VoytekLab.<br/>
-</p>
-        </footer>
-    </div>
+  <div class="footer-item">
     
+<p class="component-author">
+By Ryan Hammonds
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2021-2025, VoytekLab.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
 </div>
+          </footer>
+        
 
-
-      </div>
+      </main>
     </div>
+  </div>
   
-    <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

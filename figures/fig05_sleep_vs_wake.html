@@ -1,377 +1,366 @@
 
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" data-content_root="../" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Figure 4. Sleep vs. Wake &#8212; timescales 0.0.1-dev documentation</title>
-    
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
   
-    
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
   
-    
-      
   
-    
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
-    
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
-    <script src="../_static/design-tabs.js"></script>
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=f00e8930"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'figures/fig05_sleep_vs_wake';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="06. Method Comparison" href="fig06_method_comparison.html" />
     <link rel="prev" title="Figure 4. Bias Solutions" href="fig04_bias_solutions.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.1-dev" />
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
     
-    <div class="container-fluid" id="banner"></div>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
-      
-      
-      
-      <h1 class="site-logo" id="site-title">timescales 0.0.1-dev documentation</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">timescales 0.0.1-dev documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../api.html">
-   API Documentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/index.html">
-   Tutorials
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="index.html">
-   Figures
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Figures</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
-</div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
 
 
-          
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
 <div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
-
-
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
->
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
   
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
-  </span>
-
-</label>
-
-        
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
     </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/voytekresearch/timescale-methods" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-<a href="https://github.com/voytekresearch/timescale-methods"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="bottom"
-title="Source repository"
->
-  
-
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fab fa-github"></i>
   </span>
 
 </a>
 
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../_sources/"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="headerbtn__text-container">.ipynb</span>
+<span class="btn__text-container">.ipynb</span>
 </a>
-
-      </li>
+</li>
+      
+      
+      
       
       <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fas fa-file-pdf"></i>
   </span>
-<span class="headerbtn__text-container">.pdf</span>
+<span class="btn__text-container">.pdf</span>
 </button>
-
-      </li>
+</li>
       
-    </ul>
-  </div>
+  </ul>
 </div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
   </span>
 
-</label>
+</button>
 
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#AR-PSD">
-   AR-PSD
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fit-Spectra:-Spikes">
-   Fit Spectra: Spikes
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Spike-Stats">
-   Spike Stats
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Spikes-vs-LFPs">
-   Spikes vs LFPs
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fit-Spectra:-LFP">
-   Fit Spectra: LFP
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Plot">
-   Plot
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Figure 4. Sleep vs. Wake</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#AR-PSD">
-   AR-PSD
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fit-Spectra:-Spikes">
-   Fit Spectra: Spikes
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Spike-Stats">
-   Spike Stats
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Spikes-vs-LFPs">
-   Spikes vs LFPs
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Fit-Spectra:-LFP">
-   Fit Spectra: LFP
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Plot">
-   Plot
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Figure 4. Sleep vs. Wake</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Fit-Spikes">Fit Spikes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Fit-LFPs">Fit LFPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Stats">Stats</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os.path as op
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">patches</span>
 
-import numpy as np
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 
-from scipy.io import loadmat
-from scipy.stats import ttest_ind, ttest_rel, pearsonr
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-from neurodsp.utils.norm import normalize_sig
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">ttest_ind</span><span class="p">,</span> <span class="n">ttest_rel</span><span class="p">,</span> <span class="n">pearsonr</span>
 
-from timescales.fit import PSD
-from timescales.autoreg import compute_ar_spectrum
-from timescales.plts import set_default_rc
-from timescales.utils import create_windows
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_spectrum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.utils.norm</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_sig</span>
 
-set_default_rc()
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.fit</span><span class="w"> </span><span class="kn">import</span> <span class="n">PSD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.autoreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.conversions</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_knee</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.plts</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_default_rc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_windows</span>
+
+<span class="n">set_default_rc</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<section id="Figure-4.-Sleep-vs. Wake">
-<h1>Figure 4. Sleep vs. Wake<a class="headerlink" href="#Figure-4.-Sleep-vs. Wake" title="Permalink to this headline">¶</a></h1>
+<section id="Figure-4.-Sleep-vs.-Wake">
+<h1>Figure 4. Sleep vs. Wake<a class="headerlink" href="#Figure-4.-Sleep-vs.-Wake" title="Link to this heading">#</a></h1>
 <p>The timescales, as knee frequencies, are compared between 4 types of spike trains and the local field potential:</p>
 <ul class="simple">
 <li><p>Wake : Excitatory Units</p></li>
@@ -385,46 +374,55 @@ set_default_rc()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_spectra_trials(spikes_e, spikes_i, start_end, f_range,
-                           bin_size, ar_order, kwargs_ar=None):
-    &quot;&quot;&quot;Compute Welch&#39;s and AR PSD for exciatatory and inhibitory spikes.&quot;&quot;&quot;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_spectra_trials</span><span class="p">(</span><span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span>
+                           <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">kwargs_ar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute Welch&#39;s and AR PSD for exciatatory and inhibitory spikes.&quot;&quot;&quot;</span>
 
-    # Ensure unpackable
-    if kwargs_ar is None:
-        kwargs_ar = {}
+    <span class="c1"># Ensure unpackable</span>
+    <span class="k">if</span> <span class="n">kwargs_ar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_ar</span> <span class="o">=</span> <span class="p">{}</span>
 
-    # Compute AR-PSD and Welch&#39;s-PSD for each window
-    for ind, (s, e) in enumerate(start_end):
+    <span class="c1"># Compute AR-PSD and Welch&#39;s-PSD for each window</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">start_end</span><span class="p">):</span>
 
-        # Normalize
-        spikes_bin_e = normalize_sig(
-            spikes_e[s:e].reshape(-1, bin_size).sum(axis=1), 0, 1)
+        <span class="c1"># Normalize</span>
+        <span class="n">spikes_bin_e</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span>
+            <span class="n">spikes_e</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-        spikes_bin_i = normalize_sig(
-            spikes_i[s:e].reshape(-1, bin_size).sum(axis=1), 0, 1)
+        <span class="n">spikes_bin_i</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span>
+            <span class="n">spikes_i</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-        # Compute excitatory spectra
-        freqs_ar, powers_ar_e = compute_ar_spectrum(spikes_bin_e, fs/bin_size, ar_order,
-                                                    f_range=f_range, **kwargs_ar)
+        <span class="c1"># Compute excitatory spectra</span>
+        <span class="n">freqs_ar</span><span class="p">,</span> <span class="n">powers_ar_e</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_e</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
+                                                    <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
 
-        # Compute inhibitory spectra
-        _, powers_ar_i = compute_ar_spectrum(spikes_bin_i, fs/bin_size, ar_order,
-                                             f_range=f_range, **kwargs_ar)
+        <span class="n">freqs_welch</span><span class="p">,</span> <span class="n">powers_welch_e</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">spikes_bin_e</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">)</span>
 
-        # Initalize arrays
-        if ind == 0:
+        <span class="c1"># Compute inhibitory spectra</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">powers_ar_i</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">spikes_bin_i</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span>
+                                             <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_ar</span><span class="p">)</span>
 
-            freqs = {&#39;ar&#39;: freqs_ar}
+        <span class="n">_</span><span class="p">,</span> <span class="n">powers_welch_i</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">spikes_bin_i</span><span class="p">,</span> <span class="n">fs</span><span class="o">/</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="n">f_range</span><span class="p">)</span>
 
-            powers = {
-                &#39;ar&#39;: {&#39;excitatory&#39;: np.zeros((len(start_end), len(powers_ar_e))),
-                       &#39;inhibitory&#39;: np.zeros((len(start_end), len(powers_ar_i)))}
-            }
+        <span class="c1"># Initalize arrays</span>
+        <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
 
-        powers[&#39;ar&#39;][&#39;excitatory&#39;][ind] = powers_ar_e
-        powers[&#39;ar&#39;][&#39;inhibitory&#39;][ind] = powers_ar_i
+            <span class="n">freqs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="n">freqs_ar</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">:</span> <span class="n">freqs_welch</span><span class="p">}</span>
 
-    return freqs, powers
+            <span class="n">powers</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;ar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;excitatory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_ar_e</span><span class="p">))),</span>
+                       <span class="s1">&#39;inhibitory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_ar_i</span><span class="p">)))},</span>
+                <span class="s1">&#39;welch&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;excitatory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_welch_e</span><span class="p">))),</span>
+                          <span class="s1">&#39;inhibitory&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">start_end</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_welch_i</span><span class="p">)))},</span>
+            <span class="p">}</span>
+
+        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_ar_e</span>
+        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_ar_i</span>
+
+        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;welch&#39;</span><span class="p">][</span><span class="s1">&#39;excitatory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_welch_e</span>
+        <span class="n">powers</span><span class="p">[</span><span class="s1">&#39;welch&#39;</span><span class="p">][</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">powers_welch_i</span>
+
+    <span class="k">return</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span>
 </pre></div>
 </div>
 </div>
@@ -432,329 +430,147 @@ set_default_rc()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load data
-base_name = &#39;20140526_277um&#39;
-dir_path = f&#39;/home/rph/Projects/timescale-methods/fcx1/{base_name}&#39;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<span class="n">base_name</span> <span class="o">=</span> <span class="s1">&#39;20140526_277um&#39;</span>
+<span class="n">dir_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/rphammonds/projects/timescale-methods/fcx1/data/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">&#39;</span>
 
-subtype_dict = loadmat(f&#39;{dir_path}/{base_name}_SSubtypes.mat&#39;)
-subtype_e = subtype_dict[&#39;Se_CellFormat&#39;][0]
-subtype_i = subtype_dict[&#39;Si_CellFormat&#39;][0]
+<span class="n">subtype_dict</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dir_path</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">_SSubtypes.mat&#39;</span><span class="p">)</span>
+<span class="n">subtype_e</span> <span class="o">=</span> <span class="n">subtype_dict</span><span class="p">[</span><span class="s1">&#39;Se_CellFormat&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">subtype_i</span> <span class="o">=</span> <span class="n">subtype_dict</span><span class="p">[</span><span class="s1">&#39;Si_CellFormat&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-fs = 20000
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">20000</span>
 
-n_seconds = np.ceil(max([*[np.max(i) for i in subtype_i],
-                         *[np.max(i) for i in subtype_e]]))
+<span class="n">n_seconds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_i</span><span class="p">],</span>
+                         <span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subtype_e</span><span class="p">]]))</span>
 
-times = np.arange(0, n_seconds, 1/fs)
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seconds</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
 
-# Extract behavioral data
-beh_file = f&#39;{dir_path}/{base_name}_WSRestrictedIntervals.mat&#39;
-beh = loadmat(beh_file)
+<span class="c1"># Extract behavioral data</span>
+<span class="n">beh_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dir_path</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">_WSRestrictedIntervals.mat&#39;</span>
+<span class="n">beh</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">beh_file</span><span class="p">)</span>
 
-nrem = beh[&#39;SWSPacketTimePairFormat&#39;].astype(int) * fs
-wake = beh[&#39;WakeTimePairFormat&#39;].astype(int) *  fs
+<span class="n">nrem</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;SWSPacketTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span>
+<span class="n">wake</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;WakeTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span>  <span class="n">fs</span>
 
-# Window by trial type
-win_len = int(5*fs)
-win_spacing = int(5*fs)
+<span class="c1"># Window by trial type</span>
+<span class="n">win_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
+<span class="n">win_spacing</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
 
-wake_starts, wake_mids, wake_ends = create_windows(wake, win_len, win_spacing)
-nrem_starts, nrem_mids, nrem_ends = create_windows(nrem, win_len, win_spacing)
+<span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_mids</span><span class="p">,</span> <span class="n">wake_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">wake</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
+<span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_mids</span><span class="p">,</span> <span class="n">nrem_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">nrem</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
 
-start_end_wake = np.vstack((wake_starts, wake_ends)).T
-start_end_nrem = np.vstack((nrem_starts, nrem_ends)).T
+<span class="n">start_end_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">start_end_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 </pre></div>
 </div>
 </div>
-<section id="AR-PSD">
-<h2>AR-PSD<a class="headerlink" href="#AR-PSD" title="Permalink to this headline">¶</a></h2>
-<p>The AR spectra are influences by the bin size and the AR order parameters. These parameters will influence the resulting timescales measurements. These spectra follow a Lorentzian form.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Sum spikes across E/I sub-units
-spikes = np.zeros((2, int(n_seconds * fs)))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load LFP</span>
+<span class="n">data_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/rphammonds/projects/timescale-methods/fcx1/data_mats/</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s1">&#39;</span>
+<span class="n">fs_lfp</span> <span class="o">=</span> <span class="mi">1250</span>
 
-for sind, subtype in enumerate([subtype_e, subtype_i]):
-    for s in subtype:
-        spikes[sind, (s[:, 0] * fs).astype(int)] = 1
+<span class="c1"># Infer shape using one channel</span>
+<span class="n">lfp_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;data01.mat&#39;</span><span class="p">)</span>
+<span class="n">sig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loadmat</span><span class="p">(</span><span class="n">lfp_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
-spikes_e = spikes[0]
-spikes_i = spikes[1]
+<span class="c1"># Get PFC channels</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">49</span><span class="p">))</span>
+<span class="n">sig_lfp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sig_len</span><span class="p">)</span>
 
-# Compute Spectra
-f_range = (0, 100)
-bin_size = 200
-ar_order = 5
+<span class="k">for</span> <span class="n">cind</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+    <span class="n">lfp_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;data</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s1">.mat&#39;</span><span class="p">)</span>
+    <span class="n">sig_lfp</span> <span class="o">+=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">lfp_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-freqs_wake, powers_wake = compute_spectra_trials(
-    spikes_e, spikes_i, start_end_wake, f_range, bin_size, ar_order
-)
+<span class="n">sig_lfp</span> <span class="o">=</span> <span class="n">sig_lfp</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+<span class="n">sig_lfp</span> <span class="o">=</span>  <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sig_lfp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-freqs_nrem, powers_nrem = compute_spectra_trials(
-    spikes_e, spikes_i, start_end_nrem, f_range, bin_size, ar_order
-)
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_lfp</span><span class="p">)</span><span class="o">/</span><span class="n">fs_lfp</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fs_lfp</span><span class="p">)</span>
+
+<span class="c1"># Windows</span>
+<span class="n">nrem</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;SWSPacketTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs_lfp</span>
+<span class="n">wake</span> <span class="o">=</span> <span class="n">beh</span><span class="p">[</span><span class="s1">&#39;WakeTimePairFormat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs_lfp</span>
+
+<span class="c1"># Window by trial type</span>
+<span class="n">win_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs_lfp</span><span class="p">)</span>
+<span class="n">win_spacing</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">fs_lfp</span><span class="p">)</span>
+
+<span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_mids</span><span class="p">,</span> <span class="n">wake_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">wake</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
+<span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_mids</span><span class="p">,</span> <span class="n">nrem_ends</span> <span class="o">=</span> <span class="n">create_windows</span><span class="p">(</span><span class="n">nrem</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_spacing</span><span class="p">)</span>
+
+<span class="n">start_end_wake_lfp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">start_end_nrem_lfp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Create 2d arrays</span>
+<span class="n">sig_lfp_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig_lfp</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>
+                         <span class="nb">zip</span><span class="p">(</span><span class="n">wake_starts</span><span class="p">,</span> <span class="n">wake_ends</span><span class="p">)])</span>
+
+<span class="n">sig_lfp_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig_lfp</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>
+                         <span class="nb">zip</span><span class="p">(</span><span class="n">nrem_starts</span><span class="p">,</span> <span class="n">nrem_ends</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Fit-Spectra:-Spikes">
-<h2>Fit Spectra: Spikes<a class="headerlink" href="#Fit-Spectra:-Spikes" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
+<section id="Fit-Spikes">
+<h2>Fit Spikes<a class="headerlink" href="#Fit-Spikes" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fooof_init = {
-    &#39;aperiodic_mode&#39;: &#39;knee_constant&#39;,
-    &#39;max_n_peaks&#39;: 4,
-    &#39;peak_threshold&#39;: 2.5
-}
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sum spikes across E/I sub-units</span>
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
 
-bounds = [
-    [-10, 1e-3, 1e-3, 1e-20],
-    [ 10, 20,     10,  1e-2]
-]
+<span class="k">for</span> <span class="n">sind</span><span class="p">,</span> <span class="n">subtype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">subtype_e</span><span class="p">,</span> <span class="n">subtype_i</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subtype</span><span class="p">:</span>
+        <span class="n">spikes</span><span class="p">[</span><span class="n">sind</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
 
-guess = [-2, 1, 1, 1e-2]
+<span class="n">spikes_e</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">spikes_i</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-psd_ex_nrem = PSD(freqs_nrem[&#39;ar&#39;], powers_nrem[&#39;ar&#39;][&#39;excitatory&#39;])
-psd_ex_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
-                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
+<span class="c1"># Compute Spectra</span>
+<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">bin_size</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">ar_order</span> <span class="o">=</span> <span class="mi">10</span>
 
-psd_in_nrem = PSD(freqs_nrem[&#39;ar&#39;], powers_nrem[&#39;ar&#39;][&#39;inhibitory&#39;])
-psd_in_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
-                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
+<span class="n">freqs_wake</span><span class="p">,</span> <span class="n">powers_wake</span> <span class="o">=</span> <span class="n">compute_spectra_trials</span><span class="p">(</span>
+    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_wake</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span>
+<span class="p">)</span>
 
-psd_ex_wake = PSD(freqs_wake[&#39;ar&#39;], powers_wake[&#39;ar&#39;][&#39;excitatory&#39;])
-psd_ex_wake.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
-                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
-
-psd_in_wake = PSD(freqs_wake[&#39;ar&#39;], powers_wake[&#39;ar&#39;][&#39;inhibitory&#39;])
-psd_in_wake.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
-                n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
+<span class="n">freqs_nrem</span><span class="p">,</span> <span class="n">powers_nrem</span> <span class="o">=</span> <span class="n">compute_spectra_trials</span><span class="p">(</span>
+    <span class="n">spikes_e</span><span class="p">,</span> <span class="n">spikes_i</span><span class="p">,</span> <span class="n">start_end_nrem</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">ar_order</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "39ea89c1509a466fb1dbb48a5ec5aec4", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cb85d2f86ef74c169413aa006976415b", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8680550e8ad44aa39d347ee607d36a9b", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e62cabf40daf461bb2fc36262f5a27b2", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-</section>
-<section id="Spike-Stats">
-<h2>Spike Stats<a class="headerlink" href="#Spike-Stats" title="Permalink to this headline">¶</a></h2>
-<p>The NREM trials have a significantly higher r-squared values, compared to the wake trails. Comparing the timescales between the two may be confounded by this.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># R-squared stats
-print(&#39;Spike R-Squared Statistics\n&#39;)
-print(&#39;Excitatory Wake: &#39;, &#39;mean =&#39;, psd_ex_wake.rsq_full.mean(),
-      &#39;std =&#39;, psd_ex_wake.rsq_full.std())
-print(&#39;Excitatory NREM: &#39;, &#39;mean =&#39;, psd_ex_nrem.rsq_full.mean(),
-      &#39;std =&#39;, psd_ex_nrem.rsq_full.std())
-print(&#39;Inhibitory Wake: &#39;, &#39;mean =&#39;, psd_in_wake.rsq_full.mean(),
-      &#39;std =&#39;, psd_in_wake.rsq_full.std())
-print(&#39;Inhibitory NREM: &#39;, &#39;mean =&#39;, psd_in_nrem.rsq_full.mean(),
-      &#39;std =&#39;, psd_in_nrem.rsq_full.std())
-print()
-print(&#39;Excitatory: Wake vs NREM&#39;)
-print(ttest_ind(psd_ex_wake.rsq_full, psd_ex_nrem.rsq_full))
-print()
-print(&#39;Inhibitory: Wake vs NREM&#39;)
-print(ttest_ind(psd_in_wake.rsq_full, psd_in_nrem.rsq_full))
-print()
-print(&#39;Wake: Excitatory vs Inhibitory&#39;)
-print(ttest_ind(psd_ex_wake.rsq_full, psd_in_wake.rsq_full))
-print()
-print(&#39;NREM: Excitatory vs Inhibitory&#39;)
-print(ttest_ind(psd_ex_nrem.rsq_full, psd_in_nrem.rsq_full))
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Spike R-Squared Statistics
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
 
-Excitatory Wake:  mean = 0.8237961930445714 std = 0.2165613580105497
-Excitatory NREM:  mean = 0.9551133739885479 std = 0.0603757437890658
-Inhibitory Wake:  mean = 0.7760963792622833 std = 0.23944804910263517
-Inhibitory NREM:  mean = 0.9661529198146298 std = 0.04790972635594994
+<span class="n">psds</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">psds_labels</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">k</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nrem&#39;</span><span class="p">,</span> <span class="s1">&#39;wake&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">]</span> <span class="p">)</span>
 
-Excitatory: Wake vs NREM
-Ttest_indResult(statistic=-13.386164016678734, pvalue=1.35224023375709e-37)
+<span class="k">for</span> <span class="n">spike_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;excitatory&#39;</span><span class="p">,</span> <span class="s1">&#39;inhibitory&#39;</span><span class="p">]:</span>
 
-Inhibitory: Wake vs NREM
-Ttest_indResult(statistic=-17.912471149298536, pvalue=3.90499537291248e-62)
+    <span class="k">for</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">freqs_nrem</span><span class="p">,</span> <span class="n">freqs_wake</span><span class="p">],</span> <span class="p">[</span><span class="n">powers_nrem</span><span class="p">,</span> <span class="n">powers_wake</span><span class="p">]):</span>
 
-Wake: Excitatory vs Inhibitory
-Ttest_indResult(statistic=3.0494139674328213, pvalue=0.0023638115434466036)
+        <span class="k">for</span> <span class="n">spectra_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">]:</span>
 
-NREM: Excitatory vs Inhibitory
-Ttest_indResult(statistic=-3.312942925626916, pvalue=0.0009541012302210045)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Knee freq stats
-print(&#39;Spike Knee Frequency Statistics\n&#39;)
+            <span class="c1"># Load precomputed freqs and powers</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">spectra_type</span><span class="p">],</span> <span class="n">powers</span><span class="p">[</span><span class="n">spectra_type</span><span class="p">][</span><span class="n">spike_type</span><span class="p">])</span>
 
-print(&#39;Excitatory Wake: &#39;, &#39;mean =&#39;, psd_ex_wake.knee_freq.mean(),
-      &#39;std =&#39;, psd_ex_wake.knee_freq.std())
-print(&#39;Excitatory NREM: &#39;, &#39;mean =&#39;, psd_ex_nrem.knee_freq.mean(),
-      &#39;std =&#39;, psd_ex_nrem.knee_freq.std())
-print(&#39;Inhibitory Wake: &#39;, &#39;mean =&#39;, psd_in_wake.knee_freq.mean(),
-      &#39;std =&#39;, psd_in_wake.knee_freq.std())
-print(&#39;Inhibitory NREM: &#39;, &#39;mean =&#39;, psd_in_nrem.knee_freq.mean(),
-      &#39;std =&#39;, psd_in_nrem.knee_freq.std())
-print()
-print(&#39;Excitatory: Wake vs NREM&#39;)
-print(ttest_ind(psd_ex_wake.knee_freq, psd_ex_nrem.knee_freq))
-print()
-print(&#39;Inhibitory: Wake vs NREM&#39;)
-print(ttest_ind(psd_in_wake.knee_freq, psd_in_nrem.knee_freq))
-print()
-print(&#39;Wake: Excitatory vs Inhibitory&#39;)
-print(ttest_ind(psd_ex_wake.knee_freq, psd_in_wake.knee_freq))
-print()
-print(&#39;NREM: Excitatory vs Inhibitory&#39;)
-print(ttest_ind(psd_ex_nrem.knee_freq, psd_in_nrem.knee_freq))
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Spike Knee Frequency Statistics
+            <span class="c1"># Fit spectra</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">n_resample</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+                    <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
 
-Excitatory Wake:  mean = 6.510950551944465 std = 4.246369610003782
-Excitatory NREM:  mean = 4.648572040370361 std = 2.09479811903976
-Inhibitory Wake:  mean = 4.9346724778701345 std = 2.5163170714229937
-Inhibitory NREM:  mean = 4.060590712098375 std = 1.993919717180862
+            <span class="c1"># Scalbe to ms</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">tau</span> <span class="o">*=</span> <span class="mi">1000</span>
 
-Excitatory: Wake vs NREM
-Ttest_indResult(statistic=8.877601649374666, pvalue=3.2896066288641537e-18)
+            <span class="n">psds</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">psds_labels</span><span class="p">)]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span>
 
-Inhibitory: Wake vs NREM
-Ttest_indResult(statistic=6.00776424501637, pvalue=2.6662281322938156e-09)
-
-Wake: Excitatory vs Inhibitory
-Ttest_indResult(statistic=6.591249288074879, pvalue=7.637748207776019e-11)
-
-NREM: Excitatory vs Inhibitory
-Ttest_indResult(statistic=4.702579432003745, pvalue=2.904517412488611e-06)
-</pre></div></div>
-</div>
-</section>
-<section id="Spikes-vs-LFPs">
-<h2>Spikes vs LFPs<a class="headerlink" href="#Spikes-vs-LFPs" title="Permalink to this headline">¶</a></h2>
-<p>Spike versus LFP timescale comparison.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load LFP
-data_id = &#39;20140526_277um&#39;
-data_dir = f&#39;/home/rph/Projects/timescale-methods/fcx1/data_mats/{data_id}&#39;
-fs = 1250
-
-# Infer shape using one channel
-lfp_file = op.join(data_dir, &#39;data01.mat&#39;)
-sig_len = len(loadmat(lfp_file)[&#39;data&#39;][0])
-
-# Get PFC channels
-channels = list(range(17, 49))
-sig_lfp = np.zeros(sig_len)
-
-for cind, ch in enumerate(channels):
-    lfp_file = op.join(data_dir, f&#39;data{ch}.mat&#39;)
-    sig_lfp += loadmat(lfp_file)[&#39;data&#39;][0]
-
-sig_lfp = sig_lfp / len(channels)
-sig_lfp =  normalize_sig(sig_lfp, 0, 1)
-
-times = np.arange(0, len(sig_lfp)/fs, 1/fs)
-
-# Windows
-nrem = beh[&#39;SWSPacketTimePairFormat&#39;].astype(int) * fs
-wake = beh[&#39;WakeTimePairFormat&#39;].astype(int) * fs
-
-# Window by trial type
-win_len = int(5*fs)
-win_spacing = int(5*fs)
-
-wake_starts, wake_mids, wake_ends = create_windows(wake, win_len, win_spacing)
-nrem_starts, nrem_mids, nrem_ends = create_windows(nrem, win_len, win_spacing)
-
-start_end_wake = np.vstack((wake_starts, wake_ends)).T
-start_end_nrem = np.vstack((nrem_starts, nrem_ends)).T
-
-# Create 2d arrays
-sig_lfp_wake = np.array([sig_lfp[s:e] for s, e in
-                         zip(wake_starts, wake_ends)])
-
-sig_lfp_nrem = np.array([sig_lfp[s:e] for s, e in
-                         zip(nrem_starts, nrem_ends)])
-</pre></div>
-</div>
-</div>
-</section>
-<section id="Fit-Spectra:-LFP">
-<h2>Fit Spectra: LFP<a class="headerlink" href="#Fit-Spectra:-LFP" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fooof_init = {
-    &#39;aperiodic_mode&#39;: &#39;knee_constant&#39;,
-    &#39;max_n_peaks&#39;: 4,
-    &#39;peak_threshold&#39;: 2.5
-}
-
-bounds = [
-    [-10, 1e-3, 1e-3, 1e-20],
-    [ 10, 20,     10,  1e-2]
-]
-
-guess = [-2, 1, 1, 1e-2]
-
-psd_lfp_wake = PSD()
-psd_lfp_wake.compute_spectrum(sig_lfp_wake, fs, f_range=(0, 100), ar_order=10)
-psd_lfp_wake.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
-                 n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
-
-psd_lfp_nrem = PSD()
-psd_lfp_nrem.compute_spectrum(sig_lfp_nrem, fs, f_range=(0, 100), ar_order=10)
-psd_lfp_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, guess=guess,
-                 n_jobs=-1, progress=&#39;tqdm.notebook&#39;)
+            <span class="k">del</span> <span class="n">psd</span>
 </pre></div>
 </div>
 </div>
@@ -762,153 +578,357 @@ psd_lfp_nrem.fit(method=&#39;fooof&#39;, fooof_init=fooof_init, bounds=bounds, g
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3b560768ef224062a269e2c172ac3c66", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d81ca469cbe541dc8627884122bd93ad", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b97ffca00bab47e4b93d3da46b620f79", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5bb0fb33418e44d9b79a140705463ad4", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "4fa6faa631084621b100ab54c0a87105", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ec7a97addc6945b0986083968d392e8d", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "daec23886f7d4af0b31b36841f64cbdb", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "34e467e8da6d41f0af94ffde51cd7bff", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a487bff5e4c84d8c991b373e4d94f4f8", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d2fa02ed4b544a5198442e02c1e69476", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
-<section id="Plot">
-<h2>Plot<a class="headerlink" href="#Plot" title="Permalink to this headline">¶</a></h2>
+<section id="Fit-LFPs">
+<h2>Fit LFPs<a class="headerlink" href="#Fit-LFPs" title="Link to this heading">#</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit LFP models</span>
+<span class="n">psds_labels</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;lfp&#39;</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">j</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;wake&#39;</span><span class="p">,</span> <span class="s1">&#39;nrem&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="p">[</span><span class="n">sig_lfp_wake</span><span class="p">,</span> <span class="n">sig_lfp_nrem</span><span class="p">]:</span>
+
+    <span class="k">for</span> <span class="n">spectra_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">]:</span>
+
+        <span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">spectra_type</span> <span class="o">==</span> <span class="s1">&#39;ar&#39;</span><span class="p">:</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs_lfp</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">ar_order</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs_lfp</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">ar_order</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">n_resample</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+                <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s1">&#39;tqdm.notebook&#39;</span><span class="p">)</span>
+
+        <span class="n">psd</span><span class="o">.</span><span class="n">tau</span> <span class="o">*=</span> <span class="mi">1000</span>
+
+        <span class="n">psds</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">psds_labels</span><span class="p">)]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a5a2b4b03b5948be82b455fa4de8b310", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "bf3b9ceba50046978792f577dab9fde4", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "79d0c68be0a347768e22ae279b01865e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "354d1bdcfce944359552434abe797a49", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Stats">
+<h2>Stats<a class="headerlink" href="#Stats" title="Link to this heading">#</a></h2>
 <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;lfp&#39;</span><span class="p">]:</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ttype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nrem&#39;</span><span class="p">,</span> <span class="s1">&#39;wake&#39;</span><span class="p">]:</span>
+        <span class="n">i</span><span class="p">[</span><span class="n">ttype</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">stype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">]:</span>
+            <span class="n">i</span><span class="p">[</span><span class="n">ttype</span><span class="p">][</span><span class="n">stype</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tau&#39;</span><span class="p">:</span> <span class="n">psds</span><span class="p">[</span><span class="n">dtype</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">ttype</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">stype</span><span class="p">]</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span>
+                               <span class="s1">&#39;knee&#39;</span><span class="p">:</span> <span class="n">psds</span><span class="p">[</span><span class="n">dtype</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">ttype</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">stype</span><span class="p">]</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">,</span>
+                               <span class="s1">&#39;rsq&#39;</span><span class="p">:</span> <span class="n">psds</span><span class="p">[</span><span class="n">dtype</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">ttype</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">stype</span><span class="p">]</span><span class="o">.</span><span class="n">rsq</span><span class="p">}</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39; &#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+    <span class="p">[</span><span class="s1">&#39;Welch&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">]),</span>
+    <span class="p">[</span><span class="s1">&#39;AR&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">])</span> <span class="p">,</span>
+<span class="p">))</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Excitatory Spikes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">]</span>
+<span class="p">))</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Inhibitory Spikes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;in&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;in&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">]</span>
+<span class="p">))</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;LFP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;lfp&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;lfp&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="s1">&#39;rsq&#39;</span><span class="p">]</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def plot_overlapping_densities(df, xlim, overlap_hspace=-.5):
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">timescales.plts</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_connected_scatter</span>
 
-    sns.set_theme(style=&quot;white&quot;, rc={&quot;axes.facecolor&quot;: (0, 0, 0, 0)})
 
-    # Initialize the FacetGrid object
-    pal = sns.cubehelix_palette(6, rot=-.25, light=.5)
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    grid = sns.FacetGrid(df, row=&quot;labels&quot;, hue=&quot;labels&quot;, aspect=10,
-                         height=2, palette=pal, xlim=xlim)
 
-    # Draw the densities in a few steps
-    grid.map(sns.kdeplot, &quot;knees&quot;, clip_on=True,
-             fill=True, alpha=1, linewidth=2)
+<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;lfp&#39;</span><span class="p">]):</span>
 
-    grid.map(sns.kdeplot, &quot;knees&quot;, clip_on=True, color=&quot;w&quot;, lw=2.5, bw_adjust=1)
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">measure</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;knee&#39;</span><span class="p">,</span> <span class="s1">&#39;rsq&#39;</span><span class="p">]):</span>
 
-    grid.refline(y=0, linewidth=2, linestyle=&quot;-&quot;, color=None, clip_on=False)
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
-    # Label the plot in axes coordinates
-    def label(x, color, label):
-        ax = plt.gca()
-        ax.text(0, .2, label, fontweight=&quot;bold&quot;, color=color,
-                ha=&quot;left&quot;, va=&quot;center&quot;, transform=ax.transAxes, size=20)
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39; &#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+            <span class="p">[</span><span class="s1">&#39;Welch&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="n">measure</span><span class="p">]),</span>
+            <span class="p">[</span><span class="s1">&#39;AR&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="n">measure</span><span class="p">])</span> <span class="p">,</span>
+        <span class="p">))</span>
 
-    grid.map(label, &quot;knees&quot;)
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;AR-PSD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="n">measure</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;ar&#39;</span><span class="p">][</span><span class="n">measure</span><span class="p">]</span>
+        <span class="p">))</span>
 
-    # Set the subplots to overlap
-    grid.figure.subplots_adjust(hspace=overlap_hspace)
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Welch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="s1">&#39;welch&#39;</span><span class="p">][</span><span class="n">measure</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;welch&#39;</span><span class="p">][</span><span class="n">measure</span><span class="p">]</span>
+        <span class="p">))</span>
 
-    # Remove axes details that don&#39;t play well with overlap
-    grid.set_titles(&quot;&quot;)
-    grid.set(yticks=[], ylabel=&quot;&quot;)
-    grid.set(xticks=np.arange(0, xlim[1]+1))
-    grid.despine(bottom=False, left=True)
+        <span class="n">plot_connected_scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;AR-PSD&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Welch&#39;</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">line_alpha</span><span class="o">=</span><span class="mf">.01</span><span class="p">,</span>
+                               <span class="n">xticklabels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AR-PSD&#39;</span><span class="p">,</span> <span class="s1">&#39;Welch&#39;</span><span class="p">])</span>
 
-    grid.set_xticklabels(np.arange(0, xlim[1]+1), size=24)
-    grid.set_xlabels(&#39;Knee Frequency (Hertz)&#39;, size=28)
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Excitatory&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Inhibitory&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;LFP&#39;</span><span class="p">)</span>
 
-    return grid
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Knee Frequency&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;R-Squared&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/figures_fig05_sleep_vs_wake_14_0.png" src="../_images/figures_fig05_sleep_vs_wake_14_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">limit</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">array_lim</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-# Apply r-squared threshold
-rsq_thresh = .25
+    <span class="n">thresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">array_lim</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">std</span><span class="o">*</span><span class="n">array_lim</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+    <span class="n">array_lim</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">array_lim</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-nrem_inds = np.where(
-    (psd_ex_nrem.rsq &gt; rsq_thresh) &amp;
-    (psd_in_nrem.rsq &gt; rsq_thresh) &amp;
-    (psd_lfp_nrem.rsq &gt; rsq_thresh)
-)[0]
+    <span class="n">thresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">array_lim</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">std</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">array_lim</span><span class="p">))</span>
 
-wake_inds = np.where(
-    (psd_ex_wake.rsq &gt; rsq_thresh) &amp;
-    (psd_in_wake.rsq &gt; rsq_thresh) &amp;
-    (psd_lfp_wake.rsq &gt; rsq_thresh)
-)[0]
+    <span class="n">array_lim</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">array_lim</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-# Merge knees
-knees = np.concatenate([
-    psd_lfp_nrem.knee_freq[nrem_inds],
-    psd_ex_nrem.knee_freq[nrem_inds],
-    psd_in_nrem.knee_freq[nrem_inds],
-    psd_lfp_wake.knee_freq[wake_inds],
-    psd_ex_wake.knee_freq[wake_inds],
-    psd_in_wake.knee_freq[wake_inds]
-])
-
-# Merge labels
-labels = [
-    *[&#39;LFP : NREM&#39;] * len(nrem_inds),
-    *[&#39;Spikes : Excitatory : NREM&#39;] * len(nrem_inds),
-    *[&#39;Spikes : Inhibitory : NREM&#39;] * len(nrem_inds),
-    *[&#39;LFP : Wake&#39;] * len(wake_inds),
-    *[&#39;Spikes : Excitatory : Wake&#39;] * len(wake_inds),
-    *[&#39;Spikes : Inhibitory : Wake&#39;] * len(wake_inds)
-]
-
-# To dataframe
-df = pd.DataFrame(dict(knees=knees, labels=labels))
+    <span class="k">return</span> <span class="n">array_lim</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Plot
-plot_overlapping_densities(df, (-4, 12), overlap_hspace=-0.75)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Merge taus</span>
+<span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;ar&#39;</span>
 
-plt.savefig(&#39;fig05_sleep_vs_wake.png&#39;, dpi=300, facecolor=&#39;w&#39;);
+<span class="n">lfp_nrem_tau</span> <span class="o">=</span> <span class="n">limit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;lfp&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="n">method</span><span class="p">][</span><span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+<span class="n">ex_nrem_tau</span> <span class="o">=</span> <span class="n">limit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="n">method</span><span class="p">][</span><span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+<span class="n">in_nrem_tau</span> <span class="o">=</span> <span class="n">limit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;in&#39;</span><span class="p">][</span><span class="s1">&#39;nrem&#39;</span><span class="p">][</span><span class="n">method</span><span class="p">][</span><span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+
+<span class="n">lfp_wake_tau</span> <span class="o">=</span> <span class="n">limit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;lfp&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="n">method</span><span class="p">][</span><span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+<span class="n">ex_wake_tau</span> <span class="o">=</span> <span class="n">limit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ex&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="n">method</span><span class="p">][</span><span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+<span class="n">in_wake_tau</span> <span class="o">=</span> <span class="n">limit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;in&#39;</span><span class="p">][</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="n">method</span><span class="p">][</span><span class="s1">&#39;tau&#39;</span><span class="p">])</span>
+
+<span class="n">taus_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lfp_nrem_tau</span><span class="p">,</span> <span class="n">ex_nrem_tau</span><span class="p">,</span> <span class="n">in_nrem_tau</span> <span class="p">])</span>
+<span class="n">taus_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lfp_wake_tau</span><span class="p">,</span> <span class="n">ex_wake_tau</span><span class="p">,</span> <span class="n">in_wake_tau</span><span class="p">])</span>
+
+<span class="c1"># Merge labels</span>
+<span class="n">labels_nrem</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lfp_nrem_tau</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes</span><span class="se">\n</span><span class="s1">Excitatory</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex_nrem_tau</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes</span><span class="se">\n</span><span class="s1">Inhibitory</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_nrem_tau</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">labels_wake</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;LFP</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lfp_wake_tau</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes</span><span class="se">\n</span><span class="s1">Excitatory</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex_wake_tau</span><span class="p">),</span>
+    <span class="o">*</span><span class="p">[</span><span class="s1">&#39;Spikes</span><span class="se">\n</span><span class="s1">Inhibitory</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_wake_tau</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># To dataframe</span>
+<span class="n">df_nrem</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">taus</span><span class="o">=</span><span class="n">taus_nrem</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_nrem</span><span class="p">))</span>
+<span class="n">df_wake</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">taus</span><span class="o">=</span><span class="n">taus_wake</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_wake</span><span class="p">))</span>
+
+<span class="c1"># Merge</span>
+<span class="n">taus_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_wake</span><span class="p">))</span>
+<span class="n">taus_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_wake</span><span class="p">))</span>
+
+<span class="n">taus_nrem</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">):]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">taus_wake</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Knee freq to tau (ms)</span>
+<span class="n">taus_nrem</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_nrem</span><span class="p">[</span><span class="s1">&#39;taus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">taus_wake</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">):]</span> <span class="o">=</span> <span class="n">df_wake</span><span class="p">[</span><span class="s1">&#39;taus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="n">labels_nrem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_wake</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+<span class="n">labels_nrem</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_nrem</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">labels_nrem</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">):]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">labels_wake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_wake</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+<span class="n">labels_wake</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">):]</span> <span class="o">=</span> <span class="n">df_wake</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">labels_wake</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_wake</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+<span class="n">labels</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">):]</span> <span class="o">=</span> <span class="n">df_wake</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">labels</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nrem</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_nrem</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;taus_nrem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">taus_nrem</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;taus_wake&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">taus_wake</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels_nrem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_nrem</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels_wake&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_wake</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/figures_fig05_sleep_vs_wake_18_0.png" src="../_images/figures_fig05_sleep_vs_wake_18_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Wake&#39;)
-print(f&#39;LFP               : mean={psd_lfp_wake.knee_freq[wake_inds].mean()}, &#39;\
-      f&#39;std={psd_lfp_wake.knee_freq[wake_inds].std()}&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#222D0E&#39;</span><span class="p">,</span> <span class="s1">&#39;#B52E4E&#39;</span><span class="p">]</span>
 
-print(f&#39;Spikes, Excitatory: mean={psd_ex_wake.knee_freq[wake_inds].mean()}, &#39;\
-      f&#39;std={psd_ex_wake.knee_freq[wake_inds].std()}&#39;)
+<span class="n">overlap_hspace</span> <span class="o">=</span> <span class="o">-</span><span class="mf">.1</span>
+<span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;axes.facecolor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)})</span>
 
-print(f&#39;Spikes, Inhibitory: mean={psd_in_wake.knee_freq[wake_inds].mean()}, &#39;\
-      f&#39;std={psd_in_wake.knee_freq[wake_inds].std()}&#39;)
+<span class="c1"># Initialize the FacetGrid object</span>
+<span class="n">pal</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">cubehelix_palette</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">rot</span><span class="o">=-</span><span class="mf">.25</span><span class="p">,</span> <span class="n">light</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
 
-print()
+<span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">FacetGrid</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">pal</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="n">xlim</span><span class="p">)</span>
 
-print(f&#39;NREM&#39;)
+<span class="c1"># Draw the densities in a few steps</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;taus_wake&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;taus_nrem&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-print(f&#39;LFP               : mean={psd_lfp_nrem.knee_freq[nrem_inds].mean()}, &#39;\
-      f&#39;std={psd_lfp_nrem.knee_freq[nrem_inds].std()}&#39;)
 
-print(f&#39;Spikes, Excitatory: mean={psd_ex_nrem.knee_freq[nrem_inds].mean()}, &#39;\
-      f&#39;std={psd_ex_nrem.knee_freq[nrem_inds].std()}&#39;)
+<span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;taus_wake&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bw_adjust</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="s2">&quot;taus_nrem&quot;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bw_adjust</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-print(f&#39;Spikes, Inhibitory: mean={psd_in_nrem.knee_freq[nrem_inds].mean()}, &#39;\
-      f&#39;std={psd_in_nrem.knee_freq[nrem_inds].std()}&#39;)
+
+<span class="n">grid</span><span class="o">.</span><span class="n">refline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Label the plot in axes coordinates</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">.05</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+            <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+<span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;taus_nrem&quot;</span><span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;taus_wake&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set the subplots to overlap</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="n">overlap_hspace</span><span class="p">)</span>
+
+<span class="c1"># Remove axes details that don&#39;t play well with overlap</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">yticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">13</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">grid</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">13</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">set_xlabels</span><span class="p">(</span><span class="s1">&#39;                 Timescale (milliseconds)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="c1"># There is no labels, need to define the labels</span>
+<span class="n">legend_labels</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NREM&#39;</span><span class="p">,</span> <span class="s1">&#39;Wake&#39;</span><span class="p">]</span>
+
+<span class="c1"># Create the legend patches</span>
+<span class="n">legend_patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span>
+                  <span class="nb">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">legend_labels</span><span class="p">)]</span>
+
+<span class="c1"># Plot the legend</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">legend_patches</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span>
+                       <span class="n">framealpha</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+<span class="c1"># Save</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig05_sleep_vs_wake.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -916,147 +936,113 @@ print(f&#39;Spikes, Inhibitory: mean={psd_in_nrem.knee_freq[nrem_inds].mean()}, 
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-Wake
-LFP               : mean=6.8001364891954, std=2.656403888980302
-Spikes, Excitatory: mean=6.15023882411311, std=3.816180868647709
-Spikes, Inhibitory: mean=4.5061781442512405, std=1.6995762892176098
-
-NREM
-LFP               : mean=3.1374131726642167, std=1.4539461558915583
-Spikes, Excitatory: mean=4.622147400058879, std=2.005520664967615
-Spikes, Inhibitory: mean=4.061209976351796, std=1.9957308268995413
-</pre></div></div>
+<img alt="../_images/figures_fig05_sleep_vs_wake_17_0.png" src="../_images/figures_fig05_sleep_vs_wake_17_0.png" />
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Wake vs NREM&#39;)
-print(&#39;LFP       : &#39;, ttest_ind(psd_lfp_wake.knee_freq[wake_inds],
-                                psd_lfp_nrem.knee_freq[nrem_inds]))
-
-print(&#39;Excitatory: &#39;, ttest_ind(psd_ex_wake.knee_freq[wake_inds],
-                                psd_ex_nrem.knee_freq[nrem_inds]))
-
-print(&#39;Inhibitory: &#39;, ttest_ind(psd_in_wake.knee_freq[wake_inds],
-                                psd_in_nrem.knee_freq[nrem_inds]))
-
-print()
-print(&#39;Wake&#39;)
-print(&#39;LFP vs Excitatory:&#39;, ttest_rel(psd_lfp_wake.knee_freq[wake_inds],
-                                      psd_ex_wake.knee_freq[wake_inds]))
-
-print(&#39;LFP vs Inhibitory:&#39;, ttest_rel(psd_lfp_wake.knee_freq[wake_inds],
-                                      psd_in_wake.knee_freq[wake_inds]))
-print()
-print(f&#39;NREM&#39;)
-print(&#39;LFP vs Excitatory:&#39;, ttest_rel(psd_lfp_nrem.knee_freq[nrem_inds],
-                                      psd_ex_nrem.knee_freq[nrem_inds]))
-
-print(&#39;LFP vs Inhibitory:&#39;, ttest_rel(psd_lfp_nrem.knee_freq[nrem_inds],
-                                      psd_in_nrem.knee_freq[nrem_inds]))
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Wake vs NREM
-LFP       :  Ttest_indResult(statistic=26.21179265308087, pvalue=4.76513474449946e-112)
-Excitatory:  Ttest_indResult(statistic=7.709989328694835, pvalue=3.438514642092187e-14)
-Inhibitory:  Ttest_indResult(statistic=3.38372695420238, pvalue=0.000747082004084111)
-
-Wake
-LFP vs Excitatory: Ttest_relResult(statistic=2.576773510327446, pvalue=0.010400209973630595)
-LFP vs Inhibitory: Ttest_relResult(statistic=13.76100417988951, pvalue=1.837967809311979e-34)
-
-NREM
-LFP vs Excitatory: Ttest_relResult(statistic=-15.57977377129755, pvalue=2.1891548411738475e-45)
-LFP vs Inhibitory: Ttest_relResult(statistic=-12.6061404963828, pvalue=4.4365469496275713e-32)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Correlation&#39;)
-
-print(&#39;Wake: LFP vs Excitatory: r={:.4f}, p={:.4f}&#39;.format(
-    *pearsonr(psd_lfp_wake.knee_freq[wake_inds], psd_ex_wake.knee_freq[wake_inds]))
-)
-
-print(&#39;Wake: LFP vs Inhibitory: r={:.4f}, p={:.4f}&#39;.format(
-    *pearsonr(psd_lfp_wake.knee_freq[wake_inds], psd_in_wake.knee_freq[wake_inds]))
-)
-
-print()
-
-print(&#39;NREM: LFP vs Excitatory: r={:.4f}, p={:.4f}&#39;.format(
-    *pearsonr(psd_lfp_nrem.knee_freq[nrem_inds], psd_ex_nrem.knee_freq[nrem_inds]))
-)
-
-print(&#39;NREM: LFP vs Inhibitory: r={:.4f}, p={:.4f}&#39;.format(
-    *pearsonr(psd_lfp_nrem.knee_freq[nrem_inds], psd_in_nrem.knee_freq[nrem_inds]))
-)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Correlation
-Wake: LFP vs Excitatory: r=0.0153, p=0.7802
-Wake: LFP vs Inhibitory: r=0.0704, p=0.1979
-
-NREM: LFP vs Excitatory: r=0.2206, p=0.0000
-NREM: LFP vs Inhibitory: r=0.5564, p=0.0000
-</pre></div></div>
 </div>
 </section>
 </section>
 
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="fig04_bias_solutions.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Figure 4. Bias Solutions</p>
-        </div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="fig04_bias_solutions.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Figure 4. Bias Solutions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="fig06_method_comparison.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">06. Method Comparison</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Fit-Spikes">Fit Spikes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Fit-LFPs">Fit LFPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Stats">Stats</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
   
-    By Ryan Hammonds<br/>
-  
-      &copy; Copyright 2021-2023, VoytekLab.<br/>
-</p>
-        </footer>
-    </div>
+  <div class="footer-item">
     
+<p class="component-author">
+By Ryan Hammonds
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2021-2025, VoytekLab.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
 </div>
+          </footer>
+        
 
-
-      </div>
+      </main>
     </div>
+  </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

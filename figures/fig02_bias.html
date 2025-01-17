@@ -1,598 +1,601 @@
 
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" data-content_root="../" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Figure 2. Bias &#8212; timescales 0.0.1-dev documentation</title>
-    
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
   
-    
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
   
-    
-      
   
-    
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
-    
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
-    <script src="../_static/design-tabs.js"></script>
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=f00e8930"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'figures/fig02_bias';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Figure 3. Spike Simulations" href="fig03_simulation.html" />
     <link rel="prev" title="Figure 1. PSD &amp; ACF" href="fig01_acf_vs_psd.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.1-dev" />
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
     
-    <div class="container-fluid" id="banner"></div>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
-      
-      
-      
-      <h1 class="site-logo" id="site-title">timescales 0.0.1-dev documentation</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">timescales 0.0.1-dev documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../api.html">
-   API Documentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/index.html">
-   Tutorials
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="index.html">
-   Figures
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Figures</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
-</div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
 
 
-          
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
 <div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
-
-
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
->
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
   
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
-  </span>
-
-</label>
-
-        
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
     </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/voytekresearch/timescale-methods" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-<a href="https://github.com/voytekresearch/timescale-methods"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="bottom"
-title="Source repository"
->
-  
-
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fab fa-github"></i>
   </span>
 
 </a>
 
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../_sources/"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="headerbtn__text-container">.ipynb</span>
+<span class="btn__text-container">.ipynb</span>
 </a>
-
-      </li>
+</li>
+      
+      
+      
       
       <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fas fa-file-pdf"></i>
   </span>
-<span class="headerbtn__text-container">.pdf</span>
+<span class="btn__text-container">.pdf</span>
 </button>
-
-      </li>
+</li>
       
-    </ul>
-  </div>
+  </ul>
 </div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
   </span>
 
-</label>
+</button>
 
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Oscilllatory-Bias">
-   Oscilllatory Bias
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Finite-Bias">
-   Finite Bias
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Dynamic-Bias">
-   Dynamic Bias
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Plot">
-   Plot
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Figure 2. Bias</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Oscilllatory-Bias">
-   Oscilllatory Bias
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Finite-Bias">
-   Finite Bias
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Dynamic-Bias">
-   Dynamic Bias
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Plot">
-   Plot
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Figure 2. Bias</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Oscilllatory-Bias">Oscilllatory Bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Finite-Bias">Finite Bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Dynamic-Bias">Dynamic Bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Plot">Plot</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from scipy.fft import fft, ifft, fftfreq
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.fft</span><span class="w"> </span><span class="kn">import</span> <span class="n">ifft</span>
 
-from fooof.sim.gen import gen_aperiodic, gen_periodic
+<span class="kn">from</span><span class="w"> </span><span class="nn">fooof.sim.gen</span><span class="w"> </span><span class="kn">import</span> <span class="n">gen_aperiodic</span><span class="p">,</span> <span class="n">gen_periodic</span>
 
-from neurodsp.spectral import compute_spectrum
-from neurodsp.utils.norm import normalize_sig
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_spectrum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.utils.norm</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_sig</span>
 
-from timescales.sim import sim_branching
-from timescales.fit import PSD
-from timescales.conversions import convert_knee, psd_to_acf
-from timescales.autoreg import compute_ar_spectrum
-from timescales.plts import set_default_rc
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">sim_branching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.fit</span><span class="w"> </span><span class="kn">import</span> <span class="n">PSD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.conversions</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_knee</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.autoreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_ar_spectrum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.plts</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_default_rc</span>
 
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-set_default_rc()
+<span class="n">set_default_rc</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <section id="Figure-2.-Bias">
-<h1>Figure 2. Bias<a class="headerlink" href="#Figure-2.-Bias" title="Permalink to this headline">¶</a></h1>
+<h1>Figure 2. Bias<a class="headerlink" href="#Figure-2.-Bias" title="Link to this heading">#</a></h1>
 <p>Timescale estimation bias arises from oscillations, short duration signals, and dynamic / non-constant timescales. Each of these cases are demonstrated using PSD. The ACF is demonstrated using the inverse Fourier transfrom of the PSD models and simulations.</p>
 <section id="Oscilllatory-Bias">
-<h2>Oscilllatory Bias<a class="headerlink" href="#Oscilllatory-Bias" title="Permalink to this headline">¶</a></h2>
+<h2>Oscilllatory Bias<a class="headerlink" href="#Oscilllatory-Bias" title="Link to this heading">#</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Oscillations
-tau = convert_knee(10)
-freqs = np.linspace(1, 500, 10000)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Oscillations</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
 
-pe = gen_periodic(freqs, [10, .5, 2])
-ap = gen_aperiodic(freqs, [0, 10, 2])
+<span class="n">pe</span> <span class="o">=</span> <span class="n">gen_periodic</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">ap</span> <span class="o">=</span> <span class="n">gen_aperiodic</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 
-powers = 10**(ap + pe)
-powers /= powers[0]
+<span class="n">powers</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">ap</span> <span class="o">+</span> <span class="n">pe</span><span class="p">)</span>
+<span class="n">powers</span> <span class="o">/=</span> <span class="n">powers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-psd = PSD(freqs, powers)
-psd.fit(f_scale=1e-4)
+<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
+<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">f_scale</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
 
-# ACF via iFFT
-acf_ap_osc = ifft(psd.powers_fit).real
-acf_ap_osc = acf_ap_osc[:len(acf_ap_osc)//2][:200]
+<span class="c1"># ACF via iFFT</span>
+<span class="n">acf_ap_osc</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="n">acf_ap_osc</span> <span class="o">=</span> <span class="n">acf_ap_osc</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">][:</span><span class="mi">200</span><span class="p">]</span>
 
-acf_osc = ifft(psd.powers).real
-acf_osc = acf_osc[:len(acf_osc)//2][:200]
-acf_pe_osc = acf_osc - acf_ap_osc
+<span class="n">acf_osc</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">powers</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="n">acf_osc</span> <span class="o">=</span> <span class="n">acf_osc</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_osc</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">][:</span><span class="mi">200</span><span class="p">]</span>
+<span class="n">acf_pe_osc</span> <span class="o">=</span> <span class="n">acf_osc</span> <span class="o">-</span> <span class="n">acf_ap_osc</span>
 
-rescale = 1/(acf_ap_osc[0] + acf_pe_osc[0])
-acf_pe_osc *= rescale
-acf_ap_osc *= rescale
+<span class="n">rescale</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">acf_pe_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">acf_pe_osc</span> <span class="o">*=</span> <span class="n">rescale</span>
+<span class="n">acf_ap_osc</span> <span class="o">*=</span> <span class="n">rescale</span>
 
-lags_osc = np.arange(1, 2*len(acf_ap_osc)+1, 2)
-inds_osc = np.where(lags_osc &lt;= 300)
-lags_osc = lags_osc[inds_osc]
+<span class="n">lags_osc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">inds_osc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_osc</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">lags_osc</span> <span class="o">=</span> <span class="n">lags_osc</span><span class="p">[</span><span class="n">inds_osc</span><span class="p">]</span>
 
-acf_pe_osc = acf_pe_osc[inds_osc]
-acf_ap_osc = acf_ap_osc[inds_osc]
+<span class="n">acf_pe_osc</span> <span class="o">=</span> <span class="n">acf_pe_osc</span><span class="p">[</span><span class="n">inds_osc</span><span class="p">]</span>
+<span class="n">acf_ap_osc</span> <span class="o">=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">inds_osc</span><span class="p">]</span>
 
-# PSD
-psd = PSD(freqs, powers)
-psd.fit(f_range=(0, 100), f_scale=1e-4)
-ap_fit_osc = psd.powers_fit
-knee_ind = np.argmin(np.abs(freqs-psd.knee_freq))
+<span class="c1"># PSD</span>
+<span class="n">psd</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
+<span class="n">psd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">f_scale</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+<span class="n">ap_fit_osc</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span>
+<span class="n">knee_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freqs</span><span class="o">-</span><span class="n">psd</span><span class="o">.</span><span class="n">knee_freq</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Finite-Bias">
-<h2>Finite Bias<a class="headerlink" href="#Finite-Bias" title="Permalink to this headline">¶</a></h2>
+<h2>Finite Bias<a class="headerlink" href="#Finite-Bias" title="Link to this heading">#</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Finite
-np.random.seed(3)
-fs = 1000
-sig_finite = normalize_sig(sim_branching(1, fs, tau, 20), 0, 1)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Finite</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">sig_finite</span> <span class="o">=</span> <span class="n">normalize_sig</span><span class="p">(</span><span class="n">sim_branching</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-freqs_finite, powers_finite = compute_spectrum(sig_finite, fs)
-corrs_finite = ifft(powers_finite).real
-lags_finite = np.arange(1, 2*len(corrs_finite)+1, 2)
+<span class="n">freqs_finite</span><span class="p">,</span> <span class="n">powers_finite</span> <span class="o">=</span> <span class="n">compute_spectrum</span><span class="p">(</span><span class="n">sig_finite</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">corrs_finite</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">powers_finite</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="n">lags_finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs_finite</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-# Trim and rescale ACF
-inds_finite = np.where(lags_finite &lt;= 300)
-lags_finite = lags_finite[inds_finite]
-corrs_finite = corrs_finite[inds_finite]
+<span class="c1"># Trim and rescale ACF</span>
+<span class="n">inds_finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_finite</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">lags_finite</span> <span class="o">=</span> <span class="n">lags_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
+<span class="n">corrs_finite</span> <span class="o">=</span> <span class="n">corrs_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
 
-corrs_finite /= corrs_finite.max()
-corrs_finite *= acf_ap_osc[0]
+<span class="n">corrs_finite</span> <span class="o">/=</span> <span class="n">corrs_finite</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">corrs_finite</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-# Trim PSD
-inds_finite = np.where((freqs_finite &gt;= 1) &amp; (freqs_finite &lt;= 100))
-powers_finite = powers_finite[inds_finite]
-powers_finite /= powers_finite[:15].mean()
-freqs_finite = freqs_finite[inds_finite]
+<span class="c1"># Trim PSD</span>
+<span class="n">inds_finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freqs_finite</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_finite</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">))</span>
+<span class="n">powers_finite</span> <span class="o">=</span> <span class="n">powers_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
+<span class="n">powers_finite</span> <span class="o">/=</span> <span class="n">powers_finite</span><span class="p">[:</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">freqs_finite</span> <span class="o">=</span> <span class="n">freqs_finite</span><span class="p">[</span><span class="n">inds_finite</span><span class="p">]</span>
 
-# AR-PSD and AR-ACF via iFFT
-freqs_finite_burg, powers_finite_burg = compute_ar_spectrum(sig_finite, fs, 5)
-corrs_finite_burg = ifft(powers_finite_burg).real
-corrs_finite_burg = corrs_finite_burg[:len(corrs_finite_burg)//2]
-lags_finite_burg = np.arange(1, 2*len(corrs_finite_burg)+1, 2)
+<span class="c1"># AR-PSD and AR-ACF via iFFT</span>
+<span class="n">freqs_finite_burg</span><span class="p">,</span> <span class="n">powers_finite_burg</span> <span class="o">=</span> <span class="n">compute_ar_spectrum</span><span class="p">(</span><span class="n">sig_finite</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">corrs_finite_burg</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">powers_finite_burg</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="n">corrs_finite_burg</span> <span class="o">=</span> <span class="n">corrs_finite_burg</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs_finite_burg</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">lags_finite_burg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">corrs_finite_burg</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-# Trim and rescale AR-ACF
-inds_burg = np.where(lags_finite_burg &lt;= 300)
-lags_finite_burg = lags_finite_burg[inds_burg]
-corrs_finite_burg = corrs_finite_burg[inds_burg]
+<span class="c1"># Trim and rescale AR-ACF</span>
+<span class="n">inds_burg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_finite_burg</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">lags_finite_burg</span> <span class="o">=</span> <span class="n">lags_finite_burg</span><span class="p">[</span><span class="n">inds_burg</span><span class="p">]</span>
+<span class="n">corrs_finite_burg</span> <span class="o">=</span> <span class="n">corrs_finite_burg</span><span class="p">[</span><span class="n">inds_burg</span><span class="p">]</span>
 
-corrs_finite_burg /= corrs_finite_burg.max()
-corrs_finite_burg *= acf_ap_osc[0]
+<span class="n">corrs_finite_burg</span> <span class="o">/=</span> <span class="n">corrs_finite_burg</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">corrs_finite_burg</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-# Trim AR-PSD
-inds = np.where((freqs_finite_burg &gt;= .5) &amp; (freqs_finite_burg &lt;= 100))[0]
-freqs_finite_burg = freqs_finite_burg[inds]
-powers_finite_burg = powers_finite_burg[inds]
-powers_finite_burg /= powers_finite_burg[0]
+<span class="c1"># Trim AR-PSD</span>
+<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freqs_finite_burg</span> <span class="o">&gt;=</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_finite_burg</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">freqs_finite_burg</span> <span class="o">=</span> <span class="n">freqs_finite_burg</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+<span class="n">powers_finite_burg</span> <span class="o">=</span> <span class="n">powers_finite_burg</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+<span class="n">powers_finite_burg</span> <span class="o">/=</span> <span class="n">powers_finite_burg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Dynamic-Bias">
-<h2>Dynamic Bias<a class="headerlink" href="#Dynamic-Bias" title="Permalink to this headline">¶</a></h2>
+<h2>Dynamic Bias<a class="headerlink" href="#Dynamic-Bias" title="Link to this heading">#</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Dynamic
-knees = np.linspace(5, 15, 100)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dynamic</span>
+<span class="n">knees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-# Compute PSD across all knees
-freqs_dynamic = np.linspace(1, 1000, 10000)
-powers_dynamic = np.array([(1/(k**2 + freqs_dynamic**2)) for k in knees])
+<span class="c1"># Compute PSD across all knees</span>
+<span class="n">freqs_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+<span class="n">powers_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">freqs_dynamic</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">knees</span><span class="p">])</span>
 
-corrs_dynamic = np.zeros((len(powers_dynamic), len(powers_dynamic[0])//2))
-lags_dynamic = np.arange(1, len(powers_dynamic[0])+1, 2)
+<span class="n">corrs_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">lags_dynamic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-# ACF via iFFT
-for ind, power in enumerate(powers_dynamic):
+<span class="c1"># ACF via iFFT</span>
+<span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">power</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">):</span>
 
-    acf = ifft(power).real[:len(power)//2]
-    acf -= acf.min()
-    acf /= acf.max()
-    acf *= acf_ap_osc[0]
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">power</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">power</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">acf</span> <span class="o">-=</span> <span class="n">acf</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">acf</span> <span class="o">/=</span> <span class="n">acf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">acf</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    corrs_dynamic[ind] = acf
+    <span class="n">corrs_dynamic</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">acf</span>
 
-# Mean PSD
-powers_mid = 1 / (10**2 + freqs_dynamic**2)
-powers_mid /= powers_mid[0]
+<span class="c1"># Mean PSD</span>
+<span class="n">powers_mid</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">freqs_dynamic</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">powers_mid</span> <span class="o">/=</span> <span class="n">powers_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-# Mean ACF
-corrs_mid = ifft(powers_mid).real[:len(powers_mid)//2]
-corrs_mid -= corrs_mid.min()
-corrs_mid /= corrs_mid.max()
-corrs_mid *= acf_ap_osc[0]
+<span class="c1"># Mean ACF</span>
+<span class="n">corrs_mid</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">powers_mid</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">powers_mid</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">corrs_mid</span> <span class="o">-=</span> <span class="n">corrs_mid</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">corrs_mid</span> <span class="o">/=</span> <span class="n">corrs_mid</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">corrs_mid</span> <span class="o">*=</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-lags_mid = np.arange(1, 2*len(acf_ap_osc)+1, 2)
+<span class="n">lags_mid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-# Trim PSD and ACF
-inds_mid = np.where(lags_mid &lt;= 300)
-lags_mid = lags_mid[inds_mid]
-corrs_mid = corrs_mid[inds_mid]
+<span class="c1"># Trim PSD and ACF</span>
+<span class="n">inds_mid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_mid</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">lags_mid</span> <span class="o">=</span> <span class="n">lags_mid</span><span class="p">[</span><span class="n">inds_mid</span><span class="p">]</span>
+<span class="n">corrs_mid</span> <span class="o">=</span> <span class="n">corrs_mid</span><span class="p">[</span><span class="n">inds_mid</span><span class="p">]</span>
 
-inds = np.where(lags_dynamic &lt;= 300)[0]
-lags_dynamic = lags_dynamic[inds]
-corrs_dynamic = corrs_dynamic[:, inds]
+<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lags_dynamic</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">lags_dynamic</span> <span class="o">=</span> <span class="n">lags_dynamic</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+<span class="n">corrs_dynamic</span> <span class="o">=</span> <span class="n">corrs_dynamic</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">]</span>
 
-inds = np.where(freqs_dynamic &lt;= 100)[0]
-freqs_dynamic = freqs_dynamic[inds]
-powers_dynamic = powers_dynamic[:, inds]
-powers_mid = powers_mid[inds]
+<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs_dynamic</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">freqs_dynamic</span> <span class="o">=</span> <span class="n">freqs_dynamic</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+<span class="n">powers_dynamic</span> <span class="o">=</span> <span class="n">powers_dynamic</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">]</span>
+<span class="n">powers_mid</span> <span class="o">=</span> <span class="n">powers_mid</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Plot">
-<h2>Plot<a class="headerlink" href="#Plot" title="Permalink to this headline">¶</a></h2>
+<h2>Plot<a class="headerlink" href="#Plot" title="Link to this heading">#</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(figsize=(16, 9), nrows=2, ncols=3)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-# Oscillations - ACF
-axes[0][0].plot(lags_osc, acf_ap_osc, color=&#39;C0&#39;, label=&#39;Aperiodic Fit&#39;)
-axes[0][0].plot(lags_osc, acf_pe_osc, ls=&#39;--&#39;, color=&#39;C1&#39;, label=&#39;Oscillation&#39;)
+<span class="n">colors_osc</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;C2&#39;</span><span class="p">]</span>
+<span class="n">colors_finite</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">]</span>
 
+<span class="c1"># Oscillations - ACF</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">acf_ap_osc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Aperiodic Fit&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">acf_pe_osc</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_osc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
 
-ind = np.argmin(np.abs(lags_osc-int(convert_knee(10) * fs)))
-axes[0][0].scatter(lags_osc[ind], acf_ap_osc[ind], color=&#39;k&#39;, zorder=4)
-axes[0][0].axhline(acf_ap_osc[ind], .04, .06, ls=&#39;--&#39;, color=&#39;k&#39;)
-axes[0][0].text(lags_osc[ind]+7, acf_ap_osc[ind]-.05, r&#39;$\tau$&#39;, size=18)
+<span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lags_osc</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">convert_knee</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="mf">.04</span><span class="p">,</span> <span class="mf">.06</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="n">acf_ap_osc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.05</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\tau$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 
-# Oscillations - PSD
-axes[1][0].loglog(psd.freqs, psd.powers, color=&#39;C1&#39;, ls=&#39;--&#39;, label=&#39;Oscillation&#39;)
-axes[1][0].loglog(psd.freqs, psd.powers_fit, color=&#39;C0&#39;, label=&#39;Aperiodic&#39;)
-
-axes[1][0].scatter(freqs[knee_ind], ap_fit_osc[knee_ind], color=&#39;k&#39;, zorder=3)
-axes[1][0].axhline(ap_fit_osc[knee_ind]-.009, 0.045, .5, color=&#39;k&#39;, ls=&#39;--&#39;)
-axes[1][0].text(freqs[knee_ind]-1, ap_fit_osc[knee_ind]-.3,
-                r&#39;$\mathregular{f_k}$&#39;, size=18)
-
-# Finite - ACF
-axes[0][1].plot(
-    lags_finite_burg, corrs_finite_burg, color=&#39;C0&#39;, label=&#39;AR(5)&#39;)
-
-axes[0][1].plot(
-    lags_finite, corrs_finite, color=&#39;C1&#39;, ls=&#39;--&#39;, label=&#39;1 Second&#39;)
-
-# Finite - PSD
-axes[1][1].loglog(freqs_finite_burg, powers_finite_burg, color=&#39;C0&#39;, label=&#39;AR(5)&#39;)
-axes[1][1].loglog(freqs_finite_burg, powers_finite_burg)
-axes[1][1].loglog(freqs_finite, powers_finite, color=&#39;C1&#39;, label=&#39;Welch&#39;, ls=&#39;--&#39;)
-
-# Dynamic - ACF
-inds = np.where(freqs_dynamic &lt;= 100)
-
-colors = plt.cm.viridis(np.linspace(0, 1, len(knees)))
-
-for _corrs, c in zip(corrs_dynamic, colors):
-    axes[0][2].plot(lags_dynamic[:200], _corrs[:200], color=c)
-axes[0][2].plot(lags_osc, corrs_mid, color=&#39;k&#39;, ls=&#39;--&#39;, label=&#39;Mean&#39;)
-
-# Dynamic - PSD
-for p, c in zip(powers_dynamic, colors):
-    axes[1][2].loglog(freqs_dynamic, p/p[0], color=c)
-axes[1][2].plot(freqs_dynamic, powers_mid, color=&#39;k&#39;, ls=&#39;--&#39;)
+<span class="c1"># Oscillations - PSD</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">80</span><span class="p">:</span><span class="o">-</span><span class="mi">180</span><span class="p">],</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers</span><span class="p">[</span><span class="mi">80</span><span class="p">:</span><span class="o">-</span><span class="mi">180</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_osc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span><span class="o">.</span><span class="n">powers_fit</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_osc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Aperiodic&#39;</span><span class="p">)</span>
 
 
-# Axes
-ylims = [axes[1][0].get_ylim()[0]-.0075, axes[1][0].get_ylim()[1]+5]
-axes[1][0].set_ylim(ylims)
-axes[1][1].set_ylim(ylims)
-axes[1][2].set_ylim(ylims)
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">],</span> <span class="n">ap_fit_osc</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">ap_fit_osc</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.009</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ap_fit_osc</span><span class="p">[</span><span class="n">knee_ind</span><span class="p">]</span><span class="o">-</span><span class="mf">.3</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s1">&#39;$\mathregular</span><span class="si">{f_k}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 
-axes[0][1].set_ylim(axes[0][0].get_ylim())
-axes[0][2].set_ylim(axes[0][0].get_ylim())
+<span class="c1"># Finite - ACF</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">lags_finite_burg</span><span class="p">,</span> <span class="n">corrs_finite_burg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_finite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AR(5)&#39;</span><span class="p">)</span>
 
-# Titles and labels
-xlabsize = 14
-axes[0][0].set_xlabel(&#39;Lags&#39;, size=xlabsize)
-axes[0][1].set_xlabel(&#39;Lags&#39;, size=xlabsize)
-axes[0][2].set_xlabel(&#39;Lags&#39;, size=xlabsize)
-axes[1][0].set_xlabel(&#39;Frequency&#39;, size=xlabsize)
-axes[1][1].set_xlabel(&#39;Frequency&#39;, size=xlabsize)
-axes[1][2].set_xlabel(&#39;Frequency&#39;, size=xlabsize)
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">lags_finite</span><span class="p">,</span> <span class="n">corrs_finite</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_finite</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;1 Second&#39;</span><span class="p">)</span>
 
-axes[0][0].set_ylabel(&#39;Autocorrelation&#39;)
-axes[1][0].set_ylabel(&#39;Power Spectral Density&#39;)
+<span class="c1"># Finite - PSD</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_finite_burg</span><span class="p">,</span> <span class="n">powers_finite_burg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_finite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AR(5)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_finite</span><span class="p">,</span> <span class="n">powers_finite</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_finite</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Welch&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
 
-axes[0][0].set_title(&#39;Oscillation&#39;)
-axes[0][1].set_title(&#39;Finite Duration&#39;)
-axes[0][2].set_title(&#39;Dynamic&#39;)
+<span class="c1"># Dynamic - ACF</span>
+<span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs_dynamic</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">)</span>
 
-axes[0][0].legend(fontsize=16)
-axes[0][1].legend(fontsize=16)
-axes[0][2].legend(fontsize=16)
+<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">knees</span><span class="p">)))</span>
 
-plt.savefig(&#39;fig02_bias.png&#39;, dpi=300, facecolor=&#39;w&#39;);
+<span class="k">for</span> <span class="n">_corrs</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">corrs_dynamic</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_dynamic</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="n">_corrs</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags_osc</span><span class="p">,</span> <span class="n">corrs_mid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Mean&#39;</span><span class="p">)</span>
+
+<span class="c1"># Dynamic - PSD</span>
+<span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">powers_dynamic</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_dynamic</span><span class="p">,</span> <span class="n">p</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs_dynamic</span><span class="p">,</span> <span class="n">powers_mid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+
+<span class="c1"># Axes</span>
+<span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">.0075</span><span class="p">,</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">())</span>
+
+<span class="c1"># Titles and labels</span>
+<span class="n">xlabsize</span> <span class="o">=</span> <span class="mi">14</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lags&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">xlabsize</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Autocorrelation&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Power Spectral Density&#39;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Oscillation&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Finite Duration&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Dynamic&#39;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig02_bias.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -607,49 +610,107 @@ plt.savefig(&#39;fig02_bias.png&#39;, dpi=300, facecolor=&#39;w&#39;);
 </section>
 
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="fig01_acf_vs_psd.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Figure 1. PSD &amp; ACF</p>
-        </div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="fig01_acf_vs_psd.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Figure 1. PSD &amp; ACF</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="fig03_simulation.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="fig03_simulation.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Figure 3. Spike Simulations</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Oscilllatory-Bias">Oscilllatory Bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Finite-Bias">Finite Bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Dynamic-Bias">Dynamic Bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Plot">Plot</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
   
-    By Ryan Hammonds<br/>
-  
-      &copy; Copyright 2021-2023, VoytekLab.<br/>
-</p>
-        </footer>
-    </div>
+  <div class="footer-item">
     
+<p class="component-author">
+By Ryan Hammonds
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2021-2025, VoytekLab.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
 </div>
+          </footer>
+        
 
-
-      </div>
+      </main>
     </div>
+  </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

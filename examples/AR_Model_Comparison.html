@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Autoregressive Models &#8212; timescales 0.0.1-dev documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=f00e8930"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/AR_Model_Comparison';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.1-dev" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">timescales 0.0.1-dev documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../figures/index.html">Figures</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/voytekresearch/timescale-methods" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Autoregressive Models</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Autoregressive Models</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Singular-Value-Decomposition-(SVD)">Singular Value Decomposition (SVD)</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Periodic:-Oscillations">Periodic: Oscillations</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Aperiodic:-Timescales">Aperiodic: Timescales</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Autoregressive-Power-Spectral-Density">Autoregressive Power Spectral Density</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Periodic-&amp;-Aperiodic-Activity">Periodic &amp; Aperiodic Activity</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Supplmental-Background-on-Traditional-Methods">Supplmental Background on Traditional Methods</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Yule-Walker-Method">Yule-Walker Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Burg's-Method">Burg’s Method</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Autoregressive-Models">
+<h1>Autoregressive Models<a class="headerlink" href="#Autoregressive-Models" title="Link to this heading">#</a></h1>
+<p><span class="math notranslate nohighlight">\(\mathbf{X}\)</span> is a <span class="math notranslate nohighlight">\(n \times p\)</span> Hankel matrix of lagged time series values. The number of lagged, past values is the order of the model, <span class="math notranslate nohighlight">\(p\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> is a vector of <span class="math notranslate nohighlight">\(p+1\)</span> values, e.g. an 20th order model uses twenty values to predict the next value of the signal in a sliding window fashion. Autoregression (AR) models describe this linear system, where a vector of weights, <span class="math notranslate nohighlight">\(\mathbf{b}\)</span>, is learned to best predict <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{X} =
+    \left[ {\begin{array}{ccccc}
+    x_{0} &amp; x_{1} &amp; x_{2} &amp; \cdots &amp; x_{p}\\
+    x_{1} &amp; x_{2} &amp; x_{3} &amp; \cdots &amp; x_{p+1}\\
+    x_{2} &amp; x_{3} &amp; x_{4} &amp; \cdots &amp; x_{p+2}\\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+    x_{n-p-1} &amp; x_{n-p} &amp; x_{n-p+1} &amp; \cdots &amp; x_{n-1}\\
+    \end{array} } \right] \\
+\mathbf{y}^{\top} =
+    \left[ {\begin{array}{c}
+    x_{p+1} \\
+    x_{p+2} \\
+    x_{p+3} \\
+    \cdots \\
+    x_{n} \\
+    \end{array} } \right] \\\end{split}\]</div>
+<p>Like other linear systems, the solution to this problem involves inverting <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>, which may be computationally costly.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\mathbf{X} \mathbf{b} &amp;= \mathbf{y} \\
+\mathbf{b} &amp;= \mathbf{X}^{-1}\mathbf{y} \\
+\end{align}\end{split}\]</div>
+<p>However, inversion of <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> may be computational costly and a single solution may not exist. The standard solution to AR models is Burg’s method (1967), which struggles under large orders and particular conditions [oscillations, sometimes].</p>
+</section>
+<section id="Singular-Value-Decomposition-(SVD)">
+<h1>Singular Value Decomposition (SVD)<a class="headerlink" href="#Singular-Value-Decomposition-(SVD)" title="Link to this heading">#</a></h1>
+<p>SVD decomposes a matrix into left and right singular vectors (<span class="math notranslate nohighlight">\(\mathbf{U}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{V}\)</span>, respectively) and singular values, <span class="math notranslate nohighlight">\(\mathbf{S}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{X} = \mathbf{U} \mathbf{S} \mathbf{V}^{\top}\]</div>
+<p>SVD can be used to approximate <span class="math notranslate nohighlight">\(\mathbf{X}^{-1}\)</span>. The use of SVD to solve a linear system is referred to as the pseudo inverse method. Since <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> is a diagonal matrix, its inversion is computationally less expensive then inverting <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{S}^{-1} = \begin{equation*}
+\begin{bmatrix}
+    \frac{1}{\sigma_1} &amp; 0 &amp; \ldots &amp; 0 \\
+    0 &amp; \frac{1}{\sigma_2} &amp; \ldots &amp; 0 \\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    0 &amp; 0 &amp; \ldots &amp; \frac{1}{\sigma_p} \\
+\end{bmatrix}
+\end{equation*}\end{split}\]</div>
+<p>The inversion of the SVD of X is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+\mathbf{X} &amp;= \mathbf{V}\mathbf{S}^{-1}\mathbf{U}^{\top}
+\end{align}\]</div>
+<p>And the autoregressive linear equation becomes:</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+\mathbf{b} &amp;= \mathbf{V}\mathbf{S}^{-1}\mathbf{U}^{\top}\mathbf{y}
+\end{align}\]</div>
+<p>Standard SVD is solved in <span class="math notranslate nohighlight">\(O(n \times p^2)\)</span> time. Large orders, <span class="math notranslate nohighlight">\(p\)</span>, drastically increases the compute time. Randomized SVD may be solved in <span class="math notranslate nohighlight">\(O(n \times p \times log(p))\)</span>. If <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> is rank deficient, a smaller order is sufficient decreasing computation time. This may be determined once singular value <span class="math notranslate nohighlight">\(\sigma\)</span> becomes succificiently small (e.g. <span class="math notranslate nohighlight">\(\sigma \lt 1.\)</span>).</p>
+<p>Aperiodic or stochastic signals produce a full rank <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>. However, oscillations or periodic signals produce a rank deficient matrix.</p>
+</section>
+<section id="Periodic:-Oscillations">
+<h1>Periodic: Oscillations<a class="headerlink" href="#Periodic:-Oscillations" title="Link to this heading">#</a></h1>
+<p>Oscillations produce identical columns in <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>, indicated by vertical black lines Fig. 1. Fig2.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[785]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">20</span><span class="p">),</span> <span class="mi">2001</span><span class="p">))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">stride_tricks</span><span class="o">.</span><span class="n">as_strided</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span><span class="o">-</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+    <span class="n">strides</span><span class="o">=</span><span class="p">((</span><span class="n">sig</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">itemsize</span><span class="p">))</span>
+<span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">p</span><span class="p">:]</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Figure 1. Hankel matrix, $\mathbf</span><span class="si">{X}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([]);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_AR_Model_Comparison_3_0.png" src="../_images/examples_AR_Model_Comparison_3_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[872]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">20</span><span class="p">),</span> <span class="mi">2001</span><span class="p">))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">))</span> <span class="o">/</span> <span class="mi">100</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">stride_tricks</span><span class="o">.</span><span class="n">as_strided</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span><span class="o">-</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+    <span class="n">strides</span><span class="o">=</span><span class="p">((</span><span class="n">sig</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">itemsize</span><span class="p">))</span>
+<span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">p</span><span class="p">:]</span>
+
+<span class="c1"># Tensors</span>
+<span class="n">X_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="n">y_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+<span class="c1"># SVD</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">svd_lowrank</span><span class="p">(</span><span class="n">X_tensor</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Burg</span>
+<span class="n">ar_coeffs_burg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">burg</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+<span class="c1"># Zero small singular values</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="mf">1.</span>
+<span class="n">S_diag</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">S</span><span class="p">)</span>
+<span class="n">S_diag</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+
+<span class="c1"># AR</span>
+<span class="n">ar_coeffs_svd</span> <span class="o">=</span> <span class="n">V</span> <span class="o">@</span> <span class="n">S_diag</span> <span class="o">@</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_tensor</span>
+<span class="n">ar_coeffs_svd</span>  <span class="o">=</span> <span class="n">ar_coeffs_svd</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[873]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE SVD : &quot;</span><span class="p">,</span> <span class="p">(((</span><span class="n">X</span><span class="nd">@ar_coeffs_svd</span><span class="p">)</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE Burg: &quot;</span><span class="p">,</span> <span class="p">(((</span><span class="n">X</span><span class="nd">@ar_coeffs_burg</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MSE SVD :  1.608347681025353e-05
+MSE Burg:  3.831716020611763e-05
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[874]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ar_coeffs_burg</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ar_coeffs_svd</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Figure 2. AR Coefficients</span><span class="se">\n</span><span class="s2">Burg&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Truncated SVD&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_AR_Model_Comparison_6_0.png" src="../_images/examples_AR_Model_Comparison_6_0.png" />
+</div>
+</div>
+</section>
+<section id="Aperiodic:-Timescales">
+<h1>Aperiodic: Timescales<a class="headerlink" href="#Aperiodic:-Timescales" title="Link to this heading">#</a></h1>
+<p>For aperiodic, non-oscillatory, or stochastic processes, the order of the AR model may be small since many simulation methods are AR(1) processes. In this case, truncated SVD converges to a similar solution as Burg’s method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[908]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">timescales.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">sim_branching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">timescales.conversions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ar_to_psd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="c1"># Simulate</span>
+<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">sim_branching</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">variance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># AR order</span>
+<span class="n">p</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">p</span><span class="p">:]</span>
+
+<span class="c1"># Lag signal</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">stride_tricks</span><span class="o">.</span><span class="n">as_strided</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span><span class="o">-</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+    <span class="n">strides</span><span class="o">=</span><span class="p">((</span><span class="n">sig</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">itemsize</span><span class="p">))</span>
+<span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">p</span><span class="p">:]</span>
+
+<span class="n">X_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="n">y_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[909]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it -n 1 -r 1
+<span class="c1"># Standard SVD, slow</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">Vt</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ar_coeffs</span> <span class="o">=</span> <span class="n">Vt</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">S</span><span class="p">)</span> <span class="o">@</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+11.5 ms ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[910]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it -n 1 -r 1
+<span class="c1"># Truncated SVD, faster</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">svd_lowrank</span><span class="p">(</span><span class="n">X_tensor</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ar_coeffs_svd</span> <span class="o">=</span> <span class="n">V</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">S</span><span class="p">)</span> <span class="o">@</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_tensor</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.89 ms ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[911]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it -n 1 -r 1
+<span class="c1"># Burg, fast</span>
+<span class="n">ar_coeffs_burg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">burg</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.69 ms ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[912]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">svd_lowrank</span><span class="p">(</span><span class="n">X_tensor</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ar_coeffs_svd</span> <span class="o">=</span> <span class="n">V</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">S</span><span class="p">)</span> <span class="o">@</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_tensor</span>
+
+<span class="c1"># Zero low singular values</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="mf">1.</span>
+<span class="n">S_diag</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">S</span><span class="p">)</span>
+<span class="n">S_diag</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+
+<span class="c1"># Solve linear equation</span>
+<span class="n">ar_coeffs_svd</span> <span class="o">=</span> <span class="n">V</span> <span class="o">@</span> <span class="n">S_diag</span> <span class="o">@</span> <span class="n">U</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_tensor</span>
+
+<span class="c1"># To numpy array</span>
+<span class="n">ar_coeffs_svd</span> <span class="o">=</span> <span class="n">ar_coeffs_svd</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="c1"># Burg</span>
+<span class="n">ar_coeffs_burg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">burg</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[913]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE SVD : &quot;</span><span class="p">,</span> <span class="p">(((</span><span class="n">X</span><span class="nd">@ar_coeffs_svd</span><span class="p">)</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE Burg: &quot;</span><span class="p">,</span> <span class="p">(((</span><span class="n">X</span><span class="nd">@ar_coeffs_burg</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MSE SVD :  0.16454230929864458
+MSE Burg:  0.16454387950678476
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[915]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Burg</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ar_coeffs_burg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Burg&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ar_coeffs_svd</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Truncated SVD&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Figure 3. AR Coefficients for an AR(1) Process&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_AR_Model_Comparison_14_0.png" src="../_images/examples_AR_Model_Comparison_14_0.png" />
+</div>
+</div>
+</section>
+<section id="Autoregressive-Power-Spectral-Density">
+<h1>Autoregressive Power Spectral Density<a class="headerlink" href="#Autoregressive-Power-Spectral-Density" title="Link to this heading">#</a></h1>
+<p>[To-do]</p>
+<ul class="simple">
+<li><p>Add math and examples how to convert AR coefficients to PSD.</p></li>
+<li><p>Comparison to non-parameteric approaches (Welch’s)</p></li>
+</ul>
+</section>
+<section id="Periodic-&amp;-Aperiodic-Activity">
+<h1>Periodic &amp; Aperiodic Activity<a class="headerlink" href="#Periodic-&-Aperiodic-Activity" title="Link to this heading">#</a></h1>
+<p>Compare approaches given aperiodic + oscillations. These will typically require high orders, favoring the stability of truncated SVD as seen in the oscillatory case.</p>
+</section>
+<section id="Supplmental-Background-on-Traditional-Methods">
+<h1>Supplmental Background on Traditional Methods<a class="headerlink" href="#Supplmental-Background-on-Traditional-Methods" title="Link to this heading">#</a></h1>
+<section id="Yule-Walker-Method">
+<h2>Yule-Walker Method<a class="headerlink" href="#Yule-Walker-Method" title="Link to this heading">#</a></h2>
+<p>The Yule-Waker solution is unstable as the condition number of the covariance matrix (<span class="math notranslate nohighlight">\(\mathbf{X}^{\top}\mathbf{X}\)</span>) increases or is near singular (e.g. not invertible). This is the case for oscillations when estimated with a large number of lags. Oscillations alone result in identical columns of <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> and biased AR coefficients. Oscillations can also causes issues for SVD.</p>
+</section>
+<section id="Burg's-Method">
+<h2>Burg’s Method<a class="headerlink" href="#Burg's-Method" title="Link to this heading">#</a></h2>
+<p>Burg’s solution is an iterative method that defines a forward, <span class="math notranslate nohighlight">\(\mathbf{f}\)</span>, and backward ,<span class="math notranslate nohighlight">\(\mathbf{b}\)</span>, shifted signal, <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>. The algorithm iterates from zero to the AR order, <span class="math notranslate nohighlight">\(p\)</span>, indexed below as <span class="math notranslate nohighlight">\(j\)</span>. The forward vector shifts the signal ahead <span class="math notranslate nohighlight">\(j\)</span> samples and the backward vector removes samples beyond <span class="math notranslate nohighlight">\(n+j\)</span>, where <span class="math notranslate nohighlight">\(n\)</span> is the total number of samples in the signal. During each iteration, from zero to <span class="math notranslate nohighlight">\(p\)</span>, indexed with <span class="math notranslate nohighlight">\(j\)</span>,
+the forward and backward vectors are defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\mathbf{f} &amp;= \mathbf{y}_{i}, i \in i &gt; j\\
+\mathbf{b} &amp;= \mathbf{y}_{i}, i \in i &lt; n-j
+\end{align}\end{split}\]</div>
+<p>The reflection coefficient is computed as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{k}_j = \frac{-2 \mathbf{b}^{\top}\mathbf{f}}{\mathbf{f}^{\top}\mathbf{f} + \mathbf{b}^{\top}\mathbf{b}}\]</div>
+<p>AR coefficients for the current iteration are equal to</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{a}_j = -\mathbf{k}_j\]</div>
+<p>Past AR coefficients, <span class="math notranslate nohighlight">\(\mathbf{a}_k\)</span> are updated as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{a}_k  = \mathbf{a}_k - J(\mathbf{a}_j) \quad\forall\quad 0 &lt; k &lt; j\]</div>
+<p>where <span class="math notranslate nohighlight">\(J\)</span> is an exchange matrix the reverses the order of past coeffcients <span class="math notranslate nohighlight">\(\mathbf{a}_k\)</span>.</p>
+<p>Lastly, the forward and backward vectors are updated before moving to the next jth iteration:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\mathbf{f} &amp;+ \mathbf{k}_{j}\mathbf{b} \\
+\mathbf{b} &amp;+ \mathbf{k}_{j}\mathbf{f}
+\end{align}\end{split}\]</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Autoregressive Models</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Singular-Value-Decomposition-(SVD)">Singular Value Decomposition (SVD)</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Periodic:-Oscillations">Periodic: Oscillations</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Aperiodic:-Timescales">Aperiodic: Timescales</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Autoregressive-Power-Spectral-Density">Autoregressive Power Spectral Density</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Periodic-&amp;-Aperiodic-Activity">Periodic &amp; Aperiodic Activity</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#Supplmental-Background-on-Traditional-Methods">Supplmental Background on Traditional Methods</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Yule-Walker-Method">Yule-Walker Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Burg's-Method">Burg’s Method</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Ryan Hammonds
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2021-2025, VoytekLab.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
