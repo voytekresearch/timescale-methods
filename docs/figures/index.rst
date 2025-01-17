@@ -9,3 +9,5 @@
     fig03_simulation
     fig04_bias_solutions
     fig05_sleep_vs_wake
+    fig06_method_comparison
+    fig07_human_ieeg

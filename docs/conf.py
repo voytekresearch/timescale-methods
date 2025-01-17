@@ -107,6 +107,7 @@ sphinx_gallery_conf = {
     'doc_module': ('timescales',),
     'reference_url': {'timescales': None},
     'remove_config_comments': True,
+    'ignore_pattern': r'fig06\.py$',
 }
 
 nb_execution_mode = 'off'

@@ -76,6 +76,8 @@ LFPs
 
 Local field potentials as AR, branching, or Ornstein-Uhlenbeck processes.
 
+.. currentmodule:: timescales.sim
+
 .. autosummary::
    :toctree: generated/
 
@@ -83,12 +85,11 @@ Local field potentials as AR, branching, or Ornstein-Uhlenbeck processes.
    sim_ou
    sim_branching
 
+
 Spikes
 ~~~~~~
 
 Spike simulations use exponentially decaying probability kernels, convolved with a Poisson.
-
-.. currentmodule:: timescales.sim
 
 .. autosummary::
    :toctree: generated/
@@ -96,6 +97,26 @@ Spike simulations use exponentially decaying probability kernels, convolved with
    sim_spikes_synaptic
    sim_spikes_prob
    sim_poisson
+
+
+ACF
+~~~
+
+.. autosummary::
+   :toctree: generated/
+
+   sim_acf_cos
+   sim_exp_decay
+   sim_damped_cos
+
+PSD
+~~~
+
+.. autosummary::
+   :toctree: generated/
+
+   sim_ar_spectrum
+   sim_lorentzian
 
 
 Conversions
