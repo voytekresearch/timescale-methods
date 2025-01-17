@@ -35,7 +35,7 @@ def sim_acf_cos(xs, fs, exp_tau, osc_tau, osc_gamma,
         Sum of exponential and damped cosine components.
     """
 
-    xs = np.arange(1, len(xs) + 1)
+    xs = np.arange(len(xs))
 
     exp = sim_exp_decay(xs, fs, exp_tau, amp_ratio)
     osc = sim_damped_cos(xs, fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)

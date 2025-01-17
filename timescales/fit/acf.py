@@ -223,24 +223,43 @@ class ACF:
 
                 for ind in range(n_corrs):
 
-                    exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params[ind]
+                    exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, height, offset = self.params[ind]
 
                     self.params_exp[ind] = np.array([exp_tau, amp_ratio])
                     self.params_cos[ind] = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
 
-                    self.corrs_fit_exp[ind] = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
-                    self.corrs_fit_cos[ind] = sim_damped_cos(self.lags, self.fs, osc_tau,
-                        1-amp_ratio, osc_gamma, osc_freq)
+                    exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
+                    osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
 
+                    _max = np.max(exp + osc)
+                    if _max > 0:
+                        exp /= _max
+                        osc /= _max
+                    exp *= height
+                    osc *= height
+                    exp += offset/2
+                    osc += offset/2
+
+                    self.corrs_fit_exp[ind] = exp
+                    self.corrs_fit_cos[ind] = osc
 
             else:
-                exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, _, _ = self.params
+                exp_tau, osc_tau, osc_gamma, osc_freq, amp_ratio, height, offset = self.params
 
                 self.params_exp = np.array([exp_tau, amp_ratio])
                 self.params_cos = np.array([osc_tau, 1-amp_ratio, osc_gamma, osc_freq])
 
                 exp = sim_exp_decay(self.lags, self.fs, exp_tau, amp_ratio)
                 osc = sim_damped_cos(self.lags, self.fs, osc_tau, 1-amp_ratio, osc_gamma, osc_freq)
+
+                _max = np.max(exp + osc)
+                if _max > 0:
+                    exp /= _max
+                    osc /= _max
+                exp *= height
+                osc *= height
+                exp += offset/2
+                osc += offset/2
 
                 self.corrs_fit_exp = exp
                 self.corrs_fit_cos = osc
@@ -314,12 +333,12 @@ def fit_acf(corrs, fs, lags=None, guess=None, bounds=None, n_jobs=-1, maxfev=100
 
     if corrs.ndim == 1:
 
-        lags = np.arange(1, len(corrs)+1) if lags is None else lags
+        lags = np.arange(len(corrs)) if lags is None else lags
         params, guess, bounds = _fit_acf(corrs, lags, fs, guess, bounds, maxfev)
 
     elif corrs.ndim == 2:
 
-        lags = np.arange(1, len(corrs[0])+1) if lags is None else lags
+        lags = np.arange(len(corrs[0])) if lags is None else lags
 
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
@@ -374,13 +393,13 @@ def fit_acf_cos(corrs, fs, lags=None, guess=None, bounds=None,
 
     if corrs.ndim == 1:
 
-        lags = np.arange(1, len(corrs)+1) if lags is None else lags
+        lags = np.arange(len(corrs)) if lags is None else lags
         params, guess, bounds = _fit_acf_cos(corrs, lags, fs, guess, bounds, maxfev)
         params = np.array(params)
 
     elif corrs.ndim == 2:
 
-        lags = np.arange(1, len(corrs[0])+1) if lags is None else lags
+        lags = np.arange(len(corrs[0])) if lags is None else lags
 
         n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
