@@ -40,8 +40,48 @@ The ACF object fits autocorrelation functions and extracts timescales.
 
    ACF
 
+ARPSD
+~~~~~
+
+The ARPSD object fits power spectra using the AR(p) form.
+
+.. autosummary::
+   :toctree: generated/
+
+   ARPSD
+
+Autoregressive
+--------------
+
+Spectral
+~~~~~~~~
+
+Autoregressive functions.
+
+.. currentmodule:: timescales.autoreg
+
+.. autosummary::
+   :toctree: generated/
+
+   compute_ar_spectrum
+   burg
+   ar_to_psd
+
+
 Simulations
 -----------
+
+LFPs
+~~~~
+
+Local field potentials as AR, branching, or Ornstein-Uhlenbeck processes.
+
+.. autosummary::
+   :toctree: generated/
+
+   sim_ar
+   sim_ou
+   sim_branching
 
 Spikes
 ~~~~~~
@@ -57,48 +97,6 @@ Spike simulations use exponentially decaying probability kernels, convolved with
    sim_spikes_prob
    sim_poisson
 
-LFPs
-~~~~
-
-Local field potentials are simulated branching and Ornstein-Uhlenbeck processes.
-
-.. autosummary::
-   :toctree: generated/
-
-   sim_branching
-   sim_ou
-
-Autoregression
---------------
-
-Spectral
-~~~~~~~~
-
-Autoregressive models are availble to compute PSD from.
-
-.. currentmodule:: timescales.autoreg
-
-.. autosummary::
-   :toctree: generated/
-
-    compute_ar_spectrum
-
-
-Pipelines
----------
-
-Pipes
-~~~~~
-
-Pipe objects are used to reproducible simulate, transform, and/or fit timescales.
-
-.. currentmodule:: timescales.pipe
-
-.. autosummary::
-   :toctree: generated/
-
-    Pipe
-
 
 Conversions
 -----------
@@ -111,7 +109,9 @@ to taus.
 .. autosummary::
    :toctree: generated/
 
-   convert_knee
-   convert_tau
    psd_to_acf
    acf_to_psd
+   tau_to_knee
+   tau_to_phi
+   phi_to_tau
+   knee_to_tau
