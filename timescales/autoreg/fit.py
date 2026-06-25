@@ -88,7 +88,8 @@ class ARPSD:
 
         if self.guess is None:
             guess = [0] * self.order
-            self.guess = [*guess, 1.]
+            offset_init = np.exp(np.mean(np.log(powers)))
+            self.guess = [*guess, offset_init]
 
         # Fit
         with warnings.catch_warnings():
