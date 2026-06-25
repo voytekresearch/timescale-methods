@@ -80,11 +80,11 @@ class ARPSD:
             offset_init = np.exp(np.mean(np.log(powers)))
 
             offset_init = np.exp(np.mean(np.log(powers)))
-            self.guess = [*guess, offset_init]
-            self.guess = np.array(guess)
+            self.guess = [*self.guess, offset_init]
+            self.guess = np.array(self.guess)
 
         if self.bounds is None:
-            self.bounds = np.vstack((guess - 1, guess + 1))
+            self.bounds = np.vstack((self.guess - 1, self.guess + 1))
 
 
         # Fit
