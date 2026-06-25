@@ -2,8 +2,10 @@
 import warnings
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy.linalg import solve_toeplitz
 import matplotlib.pyplot as plt
 from timescales.sim import sim_ar
+
 
 class ARPSD:
     """Fits AR(p) model to PSD."""
@@ -73,23 +75,17 @@ class ARPSD:
         self._exp = np.exp(-2j * np.pi * np.outer(freqs, k) / self.fs).T
 
         # Inital parameters and bounds
-        if self.bounds is None:
-            if self.ar_bounds is not None:
-                l = [self.ar_bounds[0]] * self.order
-                u = [self.ar_bounds[1]] * self.order
-            else:
-                l = [-1+1e-9] * self.order
-                u = [1-1e-9] * self.order
-
-            self.bounds = [
-                [*l, 1e-16],
-                [*u, 1e16],
-            ]
-
         if self.guess is None:
-            guess = [0] * self.order
+            guess = init_ar_from_psd(powers, self.order)
+            offset_init = np.exp(np.mean(np.log(powers)))
+
             offset_init = np.exp(np.mean(np.log(powers)))
             self.guess = [*guess, offset_init]
+            self.guess = np.array(guess)
+
+        if self.bounds is None:
+            self.bounds = np.vstack((guess - 1, guess + 1))
+
 
         # Fit
         with warnings.catch_warnings():
@@ -193,3 +189,27 @@ def _ar_spectrum(exp, *params):
     powers_fit = offset / np.abs(denom)**2
 
     return powers_fit
+
+
+def init_ar_from_psd(powers_emp, order, eps=1e-12):
+    """Initialize AR coefficients from a one-sided empirical PSD.
+
+    Assumes powers_emp is uniformly spaced from 0 to Nyquist,
+    e.g. from scipy.signal.welch or np.fft.rfft.
+    """
+
+    powers_emp = np.asarray(powers_emp, dtype=float)
+    powers_emp = np.maximum(powers_emp, eps)
+
+    # Convert one-sided PSD shape into autocovariance.
+    # Absolute scale does not matter for phi.
+    acov = np.fft.irfft(powers_emp)
+
+    # Need gamma(0), ..., gamma(p)
+    gamma = acov[:order + 1]
+
+    # Yule-Walker:
+    # [gamma(|i-j|)] phi = [gamma(1), ..., gamma(p)]
+    phi = solve_toeplitz(gamma[:-1], gamma[1:])
+
+    return phi
