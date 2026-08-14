@@ -1,5 +1,6 @@
 """Spectral AR fitting."""
 import warnings
+from math import comb
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.linalg import solve_toeplitz
@@ -21,13 +22,12 @@ class ARPSD:
         fs : float
             Sampling rate, in Hertz.
         bounds : 2d tuple or list, optional, default: None
-            Bounds on the AR weights as (lower, uper).
-            Defaults to (-0.9999, 0.9999). In some cases, (0, 0.9999)
-            may be more appropriate.
+            Bounds on the model parameters as (lower, upper). By default, AR
+            coefficient k is bounded by +/- binomial(order, k).
         ar_bounds : tuple of (float, float):
             Sets bounds across all AR weights.
         guess : list, optional, default: None
-            Inital AR weights. Defaults to zeros.
+            Initial model parameters. Defaults to Yule-Walker estimates.
         maxfev : int, optional, default: None
             Max number of optimization iterations.
         loss_fn : str, optional, default: 'linear'
@@ -77,14 +77,28 @@ class ARPSD:
         # Inital parameters and bounds
         if self.guess is None:
             guess = init_ar_from_psd(powers, self.order)
-            offset_init = np.exp(np.mean(np.log(powers)))
-
-            offset_init = np.exp(np.mean(np.log(powers)))
-            self.guess = [*guess, offset_init]
-            self.guess = np.array(self.guess)
+            offset_init = np.exp(np.mean(np.log(powers), axis=-1))
+            self.guess = np.concatenate((guess, np.expand_dims(offset_init, axis=-1)), axis=-1)
 
         if self.bounds is None:
-            self.bounds = np.vstack((self.guess - 1, self.guess + 1))
+            if self.ar_bounds is None:
+                limits = np.array([comb(self.order, ind) for ind in range(1, self.order + 1)])
+                lower = -limits + 1e-9
+                upper = limits - 1e-9
+            else:
+                lower = np.full(self.order, self.ar_bounds[0])
+                upper = np.full(self.order, self.ar_bounds[1])
+
+            self.bounds = np.array([
+                [*lower, 1e-16],
+                [*upper, np.inf],
+            ])
+
+        if powers.ndim == 2:
+            if np.asarray(self.guess).ndim == 1:
+                self.guess = np.repeat(np.asarray(self.guess)[None, :], len(powers), axis=0)
+            if np.asarray(self.bounds).ndim == 2:
+                self.bounds = np.repeat(np.asarray(self.bounds)[None, :, :], len(powers), axis=0)
 
 
         # Fit
@@ -94,10 +108,10 @@ class ARPSD:
 
             if self.scaling == "log":
                 t = np.log10
-                f = lambda freqs, *params : t(_ar_spectrum(self._exp, *params))
             else:
                 t = lambda i : i # identity
-                f = lambda freqs, *params : t(_ar_spectrum(self._exp, *params))
+
+            f = lambda freqs, *params : t(_ar_spectrum(self._exp, *params))
 
             if powers.ndim == 1:
 
@@ -117,7 +131,7 @@ class ARPSD:
                 for i, p in enumerate(powers):
 
                     self.params[i], _ = curve_fit(
-                        f, freqs, t(p), p0=self.guess, bounds=self.bounds,
+                        f, freqs, t(p), p0=self.guess[i], bounds=self.bounds[i],
                         maxfev=self.maxfev, f_scale=self.f_scale, loss=self.loss_fn,
                         **self.curve_fit_kwargs
                     )
@@ -206,10 +220,12 @@ def init_ar_from_psd(powers_emp, order, eps=1e-12):
     acov = np.fft.irfft(powers_emp)
 
     # Need gamma(0), ..., gamma(p)
-    gamma = acov[:order + 1]
+    gamma = acov[..., :order + 1]
 
     # Yule-Walker:
     # [gamma(|i-j|)] phi = [gamma(1), ..., gamma(p)]
-    phi = solve_toeplitz(gamma[:-1], gamma[1:])
+    phi = np.apply_along_axis(
+        lambda values: solve_toeplitz(values[:-1], values[1:]), -1, gamma
+    )
 
     return phi

@@ -32,3 +32,14 @@ def test_ar_psd_model():
     for i in range(2):
         sig = arpsd.simulate(1, 1000, index=i)
         assert len(sig) == 1000
+
+    # A stationary AR(2) may have coefficients outside (-1, 1)
+    phi = np.array([1.5, -0.75])
+    powers = sim_ar_spectrum(freqs, fs, phi=phi)
+    arpsd = ARPSD(2, fs)
+    arpsd.fit(freqs, np.vstack((powers, powers)))
+
+    assert arpsd.guess.shape == (2, 3)
+    assert arpsd.bounds.shape == (2, 2, 3)
+    assert np.allclose(arpsd.params[:, :-1], phi)
+    assert arpsd.is_stationary.all()
