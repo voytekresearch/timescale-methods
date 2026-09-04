@@ -6,6 +6,7 @@ figures/fig_modes.svg    mode gallery, spectrum with the fit, importance,
                          and recovery against reading the coefficients
 results/modes_*.csv      the numbers quoted in the manuscript
 """
+import sys
 
 import json
 from pathlib import Path
@@ -124,6 +125,17 @@ def main():
     checks['estimated_r2_logpsd'] = float(fit.gof['r2_logpsd'])
 
     # ------------------------------------ modes vs raw coefficients: stability
+    # --figures-only replots from the cached tables; the 200-realization
+    # repeatability run is the expensive part and rarely the thing changed.
+    cached = RES / 'modes_vs_coefficients_repeatability.csv'
+    if '--figures-only' in sys.argv and cached.exists():
+        print('Loading cached mode results (omit --figures-only to recompute)',
+              flush=True)
+        sweep = pd.read_csv(RES / 'modes_vs_coefficients_sweep.csv')
+        repeat = pd.read_csv(cached)
+        make_figure(model, fit, signal, sweep, repeat, dom)
+        return
+
     sweep = coefficient_vs_mode_sweep(FS)
     sweep.to_csv(RES / 'modes_vs_coefficients_sweep.csv', index=False)
 
@@ -255,13 +267,13 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
         return power / np.exp(np.mean(np.log(ref)))
 
     ax.loglog(fmask, centred(signal.powers[mask]), color=P.LIGHT, lw=1.0,
-              zorder=0, label='data')
+              zorder=0, label='one realization')
     for mode, c in zip(shown, colours):
         f = mode.psd(freqs)
         ax.loglog(freqs, f / np.exp(np.mean(np.log(f))), lw=0.8, ls=':',
                   color=c, zorder=1)
     ax.loglog(freqs, centred(model.psd(freqs), model.psd(fmask)), color='k',
-              lw=1.6, label='true', zorder=3)
+              lw=1.6, label='generating spectrum', zorder=3)
     fitted = ar_psd(fit.phi, freqs, signal.fs, fit.offset)
     ax.loglog(freqs, centred(fitted, ar_psd(fit.phi, fmask, signal.fs,
                                             fit.offset)),
@@ -279,7 +291,8 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
     acf_comps = model.acf_components(nlags)
     for i, c in enumerate(colours):
         ax.plot(lags, acf_comps[order[i]], lw=0.9, ls=':', color=c)
-    ax.plot(lags, model.acf(nlags), color='k', lw=1.6, label='true')
+    ax.plot(lags, model.acf(nlags), color='k', lw=1.6,
+            label='generating ACF')
     ax.plot(lags, acf_comps.sum(axis=0), color='#FFB000', lw=1.1, ls='--',
             label='sum of modes')
     ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
@@ -360,9 +373,9 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
     ax.set_xlim(0.6, 3000); ax.set_ylim(1, 500)
     ax.set_xlabel('Mode frequency (Hz)')
     ax.set_ylabel(r'Mode $\tau$ (ms)')
-    ax.set_title('What to report', fontsize=9)
-    ax.text(0.02, 0.97, 'relaxations', transform=ax.transAxes, fontsize=5.6,
-            color=P.GREY, va='top')
+    ax.set_title('Timescale and frequency', fontsize=9)
+    ax.text(0.02, 0.97, 'relaxations\n(no frequency)', transform=ax.transAxes,
+            fontsize=5.6, color=P.GREY, va='top')
     ax.text(0.98, 0.97, 'area = importance\noutlined = dominant',
             transform=ax.transAxes, fontsize=5.6, color=P.GREY, ha='right',
             va='top')

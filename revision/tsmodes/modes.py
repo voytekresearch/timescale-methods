@@ -727,11 +727,12 @@ class ARModes:
         # throwaway.
         cand = [m for m in finite if m.n_cycles < 1.0]
         if not cand:
-            # Nothing but genuine rhythms: fall back to the envelope decay of
-            # the most important one rather than reporting nothing, and let
-            # n_cycles say what it is.
-            cand = [m for m in finite if m.kind == 'oscillatory']
-        if not cand:
+            # Every mode is a genuine rhythm, so the model has no aperiodic
+            # timescale and we say so.  Substituting a rhythm's envelope here
+            # was actively misleading: an AR(1) with a strong 40 Hz sinusoid
+            # is fit at order 2 by a pair pressed against the unit circle,
+            # whose envelope decays over 40 s while ringing 1600 times, and
+            # that 40 s was being reported as the aperiodic timescale.
             return np.nan
         # The most important, not the slowest.  A long-memory process is fit
         # with a pole pushed against the unit circle, whose timescale is

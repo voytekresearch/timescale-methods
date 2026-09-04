@@ -93,3 +93,22 @@ poles inside the unit circle.  The one-sided spectral density convention is
 `S(f) = (2 sigma^2 / fs) / |1 - sum_k phi_k e^{-i 2 pi f k / fs}|^2`, which
 integrates to the process variance over `[0, fs/2]` and matches
 `scipy.signal.welch`.
+
+## Reproducing
+
+The analysis is a DVC pipeline (`dvc.yaml`) with fitting and plotting as
+separate stages, so the cost of a change matches its size:
+
+    dvc repro                 # rebuild whatever is stale
+    dvc status                # what would rebuild, and why
+    dvc dag                   # the dependency graph
+
+Editing `tsmodes/plotting.py` or a figure's layout rebuilds only the seven
+plotting stages, which take seconds. Editing an estimator rebuilds the fits
+that use it, and the figures downstream of those. Raw recordings
+(`revision/data`, ~46 MB) and every result table are tracked by DVC rather
+than by git; `dvc checkout` restores them from the cache.
+
+Individual scripts still run standalone. Each takes `--figures-only` to
+replot from cached tables, and the fitting scripts take `--rerun` to force
+recomputation.

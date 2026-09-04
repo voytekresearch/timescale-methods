@@ -44,12 +44,11 @@ def build_true_model():
 
 def fig_population():
     """What AR(p) converges to with infinite data, and how order is chosen."""
-    pop = pd.read_csv(RES / 'population_ar.csv')
     df = pd.read_csv(RES / 'benchmark_main.csv.gz')
     orders = pd.read_csv(RES / 'oscillation_population_orders.csv')
 
-    fig = plt.figure(figsize=(7.2, 2.4))
-    gs = fig.add_gridspec(1, 3, wspace=0.46)
+    fig = plt.figure(figsize=(5.4, 2.4))
+    gs = fig.add_gridspec(1, 2, wspace=0.40)
 
     # (a) what order finite data actually buys ----------------------------
     ax = fig.add_subplot(gs[0, 0])
@@ -73,30 +72,8 @@ def fig_population():
     ax.legend(fontsize=5.8, loc='center left', bbox_to_anchor=(0.02, 0.62))
     P.panel_label(ax, 'a', dx=-0.30)
 
-    # (b) what order would be needed with unlimited data ------------------
-    # Every process is shown.  The three that an AR(p) contains exactly drop
-    # to numerical zero at their own order, which is the informative part:
-    # the curve ends where the model becomes correct.  A floor keeps those
-    # drops on a log axis instead of running off the bottom.
-    ax = fig.add_subplot(gs[0, 1])
-    floor = 1e-9
-    colours = plt.cm.viridis(np.linspace(0, 0.88, len(PROCESS_KEYS)))
-    for key, label, colour in zip(PROCESS_KEYS, SHORT, colours):
-        sub = pop[pop['process'] == key]
-        ax.semilogy(sub['order'], np.maximum(sub['is_div'], floor),
-                    color=colour, lw=1.1, label=label)
-    ax.axhline(floor, color=P.LIGHT, lw=0.8, zorder=0)
-    ax.text(0.98, 0.03, 'exact', transform=ax.transAxes, fontsize=5.8,
-            ha='right', color=P.GREY)
-    ax.set_ylim(floor / 3, None)
-    ax.set_xlabel('AR order $p$')
-    ax.set_ylabel('Itakura\u2013Saito divergence', fontsize=7.5)
-    ax.set_title('Order needed', fontsize=9)
-    ax.legend(fontsize=5.6, loc='upper right')
-    P.panel_label(ax, 'b', dx=-0.30)
-
     # (c) --------------------------------------------------------------
-    ax = fig.add_subplot(gs[0, 2])
+    ax = fig.add_subplot(gs[0, 1])
     firsts = orders.groupby('f_osc')['first_order_with_osc'].first()
     ax.plot(firsts.index, firsts.values, 'o-', color='k', lw=1.1, ms=4)
     ax.axvline(1 / (2 * np.pi * TAU), color=P.GREY, ls=':', lw=0.9)
@@ -104,7 +81,7 @@ def fig_population():
     ax.set_xlabel('Oscillation frequency (Hz)')
     ax.set_ylabel('Smallest order with\nan oscillatory mode')
     ax.set_title('Cost of a rhythm', fontsize=9)
-    P.panel_label(ax, 'c', dx=-0.36)
+    P.panel_label(ax, 'b', dx=-0.34)
 
     P.save(fig, FIG / 'figS_population.svg')
 

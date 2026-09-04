@@ -12,7 +12,7 @@ import pytest
 
 from tsmodes.estimators import (estimate, fit_ar_acf, fit_ar_psd, prepare,
                                 psd_fit_points)
-from tsmodes.modes import ARModes, ar_to_poles
+from tsmodes.modes import ARModes, ar_to_poles, poles_to_ar
 from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped, PowerLaw,
                           sim_ar_process)
 
@@ -124,25 +124,40 @@ def test_the_added_pole_is_where_the_aperiodic_component_is():
     assert abs(max(rhythm, key=lambda m: m.n_cycles).freq - 10.0) < 0.5
 
 
-def test_order_two_is_exempt_so_an_oscillator_stays_representable():
-    """Reserving a pole costs one order, and AR(2) has none to spare.
+def test_order_selection_buys_the_order_the_constraint_costs():
+    """Reserving a pole costs one order, and order selection pays it.
 
-    An AR(2) oscillator is a conjugate pair.  Forcing a real pole at order 2
-    leaves one pole for everything else, so the model could only be two
-    exponentials and the rhythm would be unrepresentable.  From order 3 the
-    requirement is free.
+    At order 2 the constraint leaves a single pole for everything else, so an
+    oscillator is unrepresentable there.  Rather than exempting order 2 --
+    which let a purely rhythmic model through and had its 1600-cycle envelope
+    reported as an aperiodic timescale -- the constraint applies everywhere
+    and BIC simply selects a higher order.
     """
-    signal = _signal(AR2Damped(tau=TAU, f_osc=10.0))
-    phi, _, _, _ = fit_ar_acf(signal.lags, signal.corrs, FS, 2,
-                              require_relaxation=True)
-    modes = ARModes.from_phi(phi, FS).modes
-    assert any(m.kind == 'oscillatory' for m in modes)
-    assert abs(max(modes, key=lambda m: m.importance).freq - 10.0) < 2.0
+    for seed in range(3):
+        fit = estimate(_signal(AR2Damped(tau=TAU, f_osc=10.0), seed), 'arp_acf')
+        assert fit.order >= 3, 'order selection did not pay for the pole'
+        osc = [m for m in fit.modes.modes if m.kind == 'oscillatory']
+        assert osc, f'seed {seed}: the rhythm was lost'
+        best = max(osc, key=lambda m: m.importance)
+        assert abs(best.freq - 10.0) < 1.5
+        assert abs(best.tau - TAU) / TAU < 0.35
+        assert _n_relaxation(fit.phi) >= 1
 
-    phi3, _, _, _ = fit_ar_acf(signal.lags, signal.corrs, FS, 3,
-                               require_relaxation=True)
-    assert _n_relaxation(phi3) >= 1
-    assert any(m.kind == 'oscillatory' for m in ARModes.from_phi(phi3, FS).modes)
+
+def test_a_purely_rhythmic_model_reports_no_aperiodic_timescale():
+    """An undamped sinusoid has no aperiodic part, and we must not invent one.
+
+    A strong 40 Hz sinusoid is fit by a pair pressed against the unit circle:
+    its envelope decays over 40 s while the mode rings 1600 times.  Reporting
+    that envelope as the aperiodic timescale gave errors of 800x.
+    """
+    fs = 500.0
+    r = np.exp(-1.0 / (40.0 * fs))
+    theta = 2 * np.pi * 40.0 / fs
+    phi = poles_to_ar(np.array([r * np.exp(1j * theta), r * np.exp(-1j * theta)]))
+    model = ARModes.from_phi(phi, fs)
+    assert model.modes[0].n_cycles > 100
+    assert not np.isfinite(model.tau_relaxation)
 
 
 def test_a_nyquist_mode_is_not_mistaken_for_a_relaxation():

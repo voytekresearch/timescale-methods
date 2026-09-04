@@ -168,12 +168,20 @@ def test_acf_fit_recovers_ar1_coefficient():
 
 
 def test_acf_fit_recovers_a_damped_oscillator():
-    """Where a bare exponential fails, the AR(2) ACF form does not."""
+    """Where a bare exponential fails, the AR(2) ACF form does not.
+
+    ``require_relaxation`` is switched off here.  At order 2 it reserves one
+    of the two poles for a relaxation, leaving a single pole for everything
+    else, so a pure oscillator is unrepresentable; ordinarily order selection
+    pays that cost by choosing order 3 instead.  Forcing order 2 means asking
+    for the unconstrained fit.
+    """
     rng = np.random.default_rng(11)
     proc = AR2Damped(tau=0.05, f_osc=10.0)
     signal = prepare(proc.simulate(300.0, FS, rng), FS)
     from tsmodes.estimators import fit_ar_acf
-    phi, _, _, ok = fit_ar_acf(signal.lags, signal.corrs, FS, 2)
+    phi, _, _, ok = fit_ar_acf(signal.lags, signal.corrs, FS, 2,
+                               require_relaxation=False)
     assert ok
     mode = ARModes.from_phi(phi, FS).modes[0]
     assert mode.kind == 'oscillatory'

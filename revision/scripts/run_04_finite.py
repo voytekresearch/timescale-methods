@@ -127,7 +127,11 @@ def main():
           f'{duration_for_relative_sd(1.0, 0.1):.0f} / '
           f'{duration_for_relative_sd(1.0, 0.2):.0f}')
 
-    make_figure(df, analytic)
+    # Plot from the written table, not from the in-memory frame.  The two
+    # differ in dtype -- a column that is all-numeric after a CSV round trip
+    # can hold objects in memory -- and the figure crashed on one path while
+    # working on the other.  One path only.
+    make_figure(_cached('finite_sampling.csv.gz'), analytic)
 
 
 def method_curve(df, process, method, column='tau_relaxation'):

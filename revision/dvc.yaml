@@ -1,0 +1,179 @@
+# Fitting and plotting are separate stages on purpose.
+#
+# Changing a figure used to mean rerunning every fit, because the two lived in
+# one script and nothing recorded what depended on what.  Here each analysis
+# has a `fit` stage that writes tables and a `plot` stage that reads them, so
+# editing an axis label reruns a few seconds of plotting while editing an
+# estimator reruns only the fits that use it.  `dvc repro` works out which.
+
+stages:
+
+  # ---- fits -----------------------------------------------------------
+  fit_modes:
+    cmd: python scripts/run_01_modes.py
+    deps:
+      - scripts/run_01_modes.py
+      - tsmodes/__init__.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/benchmark.py
+      - tsmodes/finite.py
+      - tsmodes/datasets.py
+    outs:
+      - results/modes_checks.json
+      - results/modes_ground_truth_table.csv
+      - results/modes_estimated_table.csv
+      - results/modes_vs_coefficients_sweep.csv
+      - results/modes_vs_coefficients_repeatability.csv
+
+  fit_benchmark:
+    cmd: python scripts/run_02_benchmark.py --rerun
+    deps:
+      - scripts/run_02_benchmark.py
+      - tsmodes/__init__.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/benchmark.py
+      - tsmodes/finite.py
+      - tsmodes/datasets.py
+    outs:
+      - results/benchmark_main.csv.gz
+      - results/benchmark_main_summary.csv
+      - results/benchmark_main_summary_integrated.csv
+      - results/population_ar.csv
+
+  fit_oscillations:
+    cmd: python scripts/run_03_oscillations.py --rerun
+    deps:
+      - scripts/run_03_oscillations.py
+      - tsmodes/__init__.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/benchmark.py
+      - tsmodes/finite.py
+      - tsmodes/datasets.py
+    outs:
+      - results/oscillation_sweep.csv.gz
+      - results/damped_grid.csv.gz
+      - results/oscillation_population_orders.csv
+
+  fit_finite:
+    cmd: python scripts/run_04_finite.py
+    deps:
+      - scripts/run_04_finite.py
+      - tsmodes/__init__.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/benchmark.py
+      - tsmodes/finite.py
+      - tsmodes/datasets.py
+    outs:
+      - results/finite_sampling.csv.gz
+      - results/finite_summary.csv
+      - results/finite_analytic.csv
+
+  fit_realdata:
+    cmd: python scripts/run_05_real_data.py
+    deps:
+      - scripts/run_05_real_data.py
+      - tsmodes/__init__.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/benchmark.py
+      - tsmodes/finite.py
+      - tsmodes/datasets.py
+      - data
+    outs:
+      - results/real_data_fits.csv
+      - results/real_data_modes.csv
+      - results/real_data_summary.csv
+
+  fit_truncation:
+    cmd: python scripts/run_06_empirical_truncation.py --rerun
+    deps:
+      - scripts/run_06_empirical_truncation.py
+      - tsmodes/__init__.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/benchmark.py
+      - tsmodes/finite.py
+      - tsmodes/datasets.py
+      - data
+    outs:
+      - results/empirical_truncation.csv.gz
+      - results/empirical_truncation_summary.csv
+      - results/empirical_stability_requirements.csv
+
+  # ---- figures --------------------------------------------------------
+  plot_modes:
+    cmd: python scripts/run_01_modes.py --figures-only
+    deps:
+      - scripts/run_01_modes.py
+      - tsmodes/plotting.py
+      - results/modes_vs_coefficients_repeatability.csv
+      - results/modes_vs_coefficients_sweep.csv
+    outs: [figures/fig_modes.svg]
+
+  plot_benchmark:
+    cmd: python scripts/run_02_benchmark.py
+    deps:
+      - scripts/run_02_benchmark.py
+      - tsmodes/plotting.py
+      - results/benchmark_main.csv.gz
+    outs: [figures/fig_benchmark.svg]
+
+  plot_oscillations:
+    cmd: python scripts/run_03_oscillations.py
+    deps:
+      - scripts/run_03_oscillations.py
+      - tsmodes/plotting.py
+      - results/oscillation_sweep.csv.gz
+      - results/damped_grid.csv.gz
+    outs: [figures/fig_oscillations.svg]
+
+  plot_finite:
+    cmd: python scripts/run_04_finite.py --figures-only
+    deps:
+      - scripts/run_04_finite.py
+      - tsmodes/plotting.py
+      - results/finite_sampling.csv.gz
+      - results/finite_analytic.csv
+      - results/empirical_truncation_summary.csv
+    outs: [figures/figS_finite.svg]
+
+  plot_realdata:
+    cmd: python scripts/run_05_real_data.py --figures-only
+    deps:
+      - scripts/run_05_real_data.py
+      - tsmodes/plotting.py
+      - results/real_data_fits.csv
+      - results/real_data_modes.csv
+    outs: [figures/fig_realdata.svg]
+
+  plot_windows:
+    cmd: python scripts/run_07_windows.py
+    deps:
+      - scripts/run_07_windows.py
+      - tsmodes/plotting.py
+      - results/finite_sampling.csv.gz
+      - results/finite_analytic.csv
+      - results/empirical_truncation_summary.csv
+    outs: [figures/fig_windows.svg]
+
+  plot_supplement:
+    cmd: python scripts/make_supplement.py
+    deps:
+      - scripts/make_supplement.py
+      - tsmodes/plotting.py
+      - results/benchmark_main.csv.gz
+      - results/oscillation_sweep.csv.gz
+      - results/oscillation_population_orders.csv
+    outs:
+      - figures/figS_population.svg
+      - figures/figS_oscillation_grid.svg

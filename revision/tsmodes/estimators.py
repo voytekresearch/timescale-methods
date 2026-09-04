@@ -518,12 +518,6 @@ def fit_ar_psd(freqs, powers, fs, order, guess=None, k_bound=K_BOUND,
     ``freqs``/``powers`` are the points actually fit; ``powers_full`` (uniform,
     DC to Nyquist) is used only for initialization.
     """
-    # Reserving a pole for relaxation costs one order.  At order 2 that leaves
-    # a single pole, which can only be a second real one, so the requirement
-    # would forbid the model from being an oscillator at all -- and an AR(2)
-    # oscillator is a process we specifically need to be able to fit.  From
-    # order 3 the requirement is free: one real pole plus a conjugate pair.
-    require_relaxation = require_relaxation and order != 2
     freqs = np.asarray(freqs, dtype=float)
     powers = np.asarray(powers, dtype=float)
     if guess is None:
@@ -684,12 +678,6 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
     -------
     phi, height, offset, success
     """
-    # Reserving a pole for relaxation costs one order.  At order 2 that leaves
-    # a single pole, which can only be a second real one, so the requirement
-    # would forbid the model from being an oscillator at all -- and an AR(2)
-    # oscillator is a process we specifically need to be able to fit.  From
-    # order 3 the requirement is free: one real pole plus a conjugate pair.
-    require_relaxation = require_relaxation and order != 2
     lags = np.asarray(lags, dtype=float)
     corrs = np.asarray(corrs, dtype=float)
     full_lags, full_corrs = lags, corrs
@@ -823,9 +811,14 @@ MAX_PSD_POINTS = 1200
 def psd_fit_points(signal, max_points=MAX_PSD_POINTS):
     """Frequencies and powers used by the spectral fits.
 
-    A very long Welch segment produces far more bins than a model of order 20
-    can use, and the cost of a fit is linear in them.  Bins are thinned
-    uniformly above ``max_points``, which leaves the analysis band unchanged.
+    Bins are thinned to be uniform in *log* frequency, which is the spacing
+    that gives each octave equal weight.  On a linear grid 80% of the bins of
+    a 1-100 Hz analysis band lie above 50 Hz, so a least-squares fit in log
+    power is overwhelmingly a fit to the high-frequency tail: on an AR(2)
+    oscillator that pushed the best AR(1) to tau = 250 ms, chasing a steep
+    tail it cannot match, where log spacing gives 76 ms and a visible fit to
+    the low-frequency plateau.  Where AR(1) is the right model the two agree
+    to three figures, so the change costs nothing and buys interpretability.
 
     Multitaper bins are additionally thinned to the estimator's own resolution
     bandwidth, because within it they are not independent.  Order selection
@@ -838,7 +831,13 @@ def psd_fit_points(signal, max_points=MAX_PSD_POINTS):
     decim = int(getattr(signal, 'fit_decimate', 1) or 1)
     if decim > 1:
         freqs, powers = freqs[::decim], powers[::decim]
-    if len(freqs) > max_points:
+    if len(freqs) > 2 and freqs[0] > 0:
+        n_keep = min(max_points, len(freqs))
+        edges = np.logspace(np.log10(freqs[0]), np.log10(freqs[-1]), n_keep)
+        idx = np.unique(np.clip(np.searchsorted(freqs, edges), 0,
+                                len(freqs) - 1))
+        freqs, powers = freqs[idx], powers[idx]
+    elif len(freqs) > max_points:
         step = int(np.ceil(len(freqs) / max_points))
         freqs, powers = freqs[::step], powers[::step]
     return freqs, powers
