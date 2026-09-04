@@ -210,13 +210,15 @@ def make_figure(df, pop):
         ax = fig.add_subplot(gs[1, j])
         mask = signal.fit_mask
         f, p_emp = signal.freqs[mask], signal.powers[mask]
-        ax.loglog(f, p_emp, color=P.LIGHT, lw=0.7)
+        # Data solid, every model dashed, so the data stays visible
+        # underneath the curves that claim to describe it.
+        ax.loglog(f, p_emp, color=P.LIGHT, lw=0.9)
         ax.loglog(f, ar_psd(fit1.phi, f, FS, fit1.offset),
                   color=P.METHOD_COLORS['ar1_psd'], lw=1.4, ls='--',
                   label='AR(1) fit')
         ax.loglog(f, ar_psd(fitp.phi, f, FS, fitp.offset),
-                  color=P.METHOD_COLORS['arp_psd'], lw=1.4,
-                  label=f'AR($p$) fit')
+                  color=P.METHOD_COLORS['arp_psd'], lw=1.4, ls='-.',
+                  label='AR($p$) fit')
         ax.set_xticks([1, 100])
         ax.tick_params(labelsize=7)
         ax.set_yticks([])

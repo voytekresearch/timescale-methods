@@ -102,9 +102,17 @@ def integrated_timescale_from_acf(rho, fs):
 # Processes
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(kw_only=True)
 class Process:
-    """Base class; subclasses fill in the analytic forms."""
+    """Base class; subclasses fill in the analytic forms.
+
+    Fields are keyword-only on purpose.  ``Process`` carries its own fields
+    (``name``, ``label``, ``tau_true``, ...) ahead of every subclass's, so
+    positional construction bound ``AR1PlusSine(0.05, 4.0, 4.0)`` to
+    ``name``/``label``/``tau_true`` and silently used the default tau,
+    frequency and amplitude -- and ``__post_init__`` then overwrote those
+    fields, erasing the evidence.  Keyword-only makes the mistake a TypeError.
+    """
 
     name: str = 'process'
     label: str = 'process'
@@ -139,7 +147,7 @@ class Process:
         return out
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AR1(Process):
     """Positive control: a single relaxation timescale."""
 
@@ -168,7 +176,7 @@ class AR1(Process):
         return float((1.0 / fs) * (1.0 / (1.0 - phi) - 0.5))
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AR1PlusSine(Process):
     """Oscillatory contamination: AR(1) plus an additive sinusoid."""
 
@@ -227,7 +235,7 @@ class AR1PlusSine(Process):
         return AR1(tau=self.tau).tau_integrated(fs)
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AR2Damped(Process):
     """A damped stochastic oscillator: one complex-conjugate pole pair."""
 
@@ -271,7 +279,7 @@ class AR2Damped(Process):
         return float(s0 / (4.0 * var))
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SumAR1(Process):
     """Two *independent* AR(1) processes added together.
 
@@ -337,7 +345,7 @@ class SumAR1(Process):
         return {'ar_poles': np.array([phi0, phi1]), 'ma_zero': float(np.real(theta))}
 
 
-@dataclass
+@dataclass(kw_only=True)
 class PowerLaw(Process):
     """Long-memory ARFIMA(0, d, 0): a scale-free negative control.
 
@@ -382,7 +390,7 @@ class PowerLaw(Process):
         return np.inf if self.d > 0 else 0.0
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AR1Mixture(Process):
     """A log-uniform mixture of independent AR(1) relaxations.
 

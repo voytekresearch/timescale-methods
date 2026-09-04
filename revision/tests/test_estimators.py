@@ -110,7 +110,7 @@ def test_spectral_fit_recovers_known_ar_spectrum():
 
 def test_prepare_shares_one_psd_and_acf():
     rng = np.random.default_rng(4)
-    sig = AR1(0.05).simulate(20.0, FS, rng)
+    sig = AR1(tau=0.05).simulate(20.0, FS, rng)
     signal = prepare(sig, FS)
     assert signal.corrs[0] == pytest.approx(1.0)
     assert signal.powers.shape == signal.freqs.shape
@@ -120,7 +120,7 @@ def test_prepare_shares_one_psd_and_acf():
 
 def test_estimate_all_survives_a_failing_estimator():
     rng = np.random.default_rng(5)
-    signal = prepare(AR1(0.05).simulate(5.0, FS, rng), FS)
+    signal = prepare(AR1(tau=0.05).simulate(5.0, FS, rng), FS)
     fits = estimate_all(signal, methods=['ar1_psd'],
                         options={'ar1_psd': {'orders': 'nonsense'}})
     assert 'ar1_psd' in fits
@@ -185,7 +185,7 @@ def test_acf_fit_returns_a_stationary_model():
     """Reflection-coefficient parameterization cannot leave the stable region."""
     rng = np.random.default_rng(12)
     from tsmodes.estimators import fit_ar_acf
-    for proc in (AR1(0.05), AR2Damped(0.05, 10.0), SumAR1(0.01, 0.2, 0.5)):
+    for proc in (AR1(tau=0.05), AR2Damped(tau=0.05, f_osc=10.0), SumAR1(tau0=0.01, tau1=0.2, weight=0.5)):
         signal = prepare(proc.simulate(120.0, FS, rng), FS)
         for order in (1, 3, 6):
             phi, _, _, _ = fit_ar_acf(signal.lags, signal.corrs, FS, order)
@@ -194,7 +194,7 @@ def test_acf_fit_returns_a_stationary_model():
 
 def test_psd_fit_returns_a_stationary_model():
     rng = np.random.default_rng(13)
-    for proc in (AR1(0.05), AR2Damped(0.05, 10.0), SumAR1(0.01, 0.2, 0.5)):
+    for proc in (AR1(tau=0.05), AR2Damped(tau=0.05, f_osc=10.0), SumAR1(tau0=0.01, tau1=0.2, weight=0.5)):
         signal = prepare(proc.simulate(120.0, FS, rng), FS)
         mask = signal.fit_mask & signal.exclude_mask
         for order in (1, 3, 8):
@@ -215,7 +215,7 @@ def test_acf_and_psd_estimators_agree_when_the_model_is_right():
 
 def test_acf_order_selection_finds_two_for_a_damped_oscillator():
     rng = np.random.default_rng(15)
-    signal = prepare(AR2Damped(0.05, 10.0).simulate(300.0, FS, rng), FS)
+    signal = prepare(AR2Damped(tau=0.05, f_osc=10.0).simulate(300.0, FS, rng), FS)
     fit = estimate(signal, 'arp_acf')
     assert fit.order <= 4
     mode = fit.modes.dominant_mode()
@@ -226,7 +226,7 @@ def test_acf_order_selection_finds_two_for_a_damped_oscillator():
 def test_reflection_parameterization_makes_stabilization_unnecessary():
     """No spectral fit should need the minimum-phase repair any more."""
     rng = np.random.default_rng(16)
-    for proc in (AR1(0.05), AR2Damped(0.05, 10.0), SumAR1(0.01, 0.2, 0.5)):
+    for proc in (AR1(tau=0.05), AR2Damped(tau=0.05, f_osc=10.0), SumAR1(tau0=0.01, tau1=0.2, weight=0.5)):
         signal = prepare(proc.simulate(120.0, FS, rng), FS)
         for method in ('ar1_psd', 'arp_psd', 'arp_acf'):
             fit = estimate(signal, method)
@@ -311,7 +311,7 @@ def test_the_lag_domain_fit_does_not_lose_the_aperiodic_component():
     spent on the rhythm.
     """
     rng = np.random.default_rng(0)
-    signal = prepare(AR1PlusSine(0.05, 10.0, 1.0).simulate(200.0, FS, rng), FS,
+    signal = prepare(AR1PlusSine(tau=0.05, f_osc=10.0, snr=1.0).simulate(200.0, FS, rng), FS,
                      welch_win_s=4.0)
     fit = estimate(signal, 'arp_acf')
     slow = [m for m in fit.modes.modes if m.n_cycles < 1.0]
@@ -326,7 +326,7 @@ def test_the_lag_domain_fit_does_not_lose_the_aperiodic_component():
 def test_higher_order_lag_fits_do_not_get_worse():
     """Nested models cannot fit worse; if they do, the search is failing."""
     rng = np.random.default_rng(0)
-    signal = prepare(AR1PlusSine(0.05, 10.0, 1.0).simulate(200.0, FS, rng), FS,
+    signal = prepare(AR1PlusSine(tau=0.05, f_osc=10.0, snr=1.0).simulate(200.0, FS, rng), FS,
                      welch_win_s=4.0)
     best = -np.inf
     for order in (2, 5, 8):
@@ -339,7 +339,7 @@ def test_higher_order_lag_fits_do_not_get_worse():
 
 def test_robust_fitting_protects_the_aperiodic_estimate_from_a_rhythm():
     rng = np.random.default_rng(7)
-    signal = prepare(AR1PlusSine(0.05, 10.0, 2.0).simulate(300.0, FS, rng), FS,
+    signal = prepare(AR1PlusSine(tau=0.05, f_osc=10.0, snr=2.0).simulate(300.0, FS, rng), FS,
                      welch_win_s=4.0)
     plain = estimate(signal, 'ar1_psd', robust=False).tau
     robust = estimate(signal, 'ar1_psd', robust=True).tau
@@ -348,7 +348,7 @@ def test_robust_fitting_protects_the_aperiodic_estimate_from_a_rhythm():
 
 def test_estimate_all_can_switch_robustness_on_in_one_place():
     rng = np.random.default_rng(8)
-    signal = prepare(AR1PlusSine(0.05, 10.0, 2.0).simulate(200.0, FS, rng), FS,
+    signal = prepare(AR1PlusSine(tau=0.05, f_osc=10.0, snr=2.0).simulate(200.0, FS, rng), FS,
                      welch_win_s=4.0)
     fits = estimate_all(signal, methods=['ar1_psd'], robust=True)
     assert abs(fits['ar1_psd'].tau - 0.05) / 0.05 < 0.25

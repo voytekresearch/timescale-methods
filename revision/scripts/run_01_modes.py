@@ -258,7 +258,8 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
         ref = power if ref is None else ref
         return power / np.exp(np.mean(np.log(ref)))
 
-    ax.loglog(fmask, centred(signal.powers[mask]), color=P.LIGHT, lw=0.7,
+    # Data and truth solid; only the fit is dashed.
+    ax.loglog(fmask, centred(signal.powers[mask]), color=P.LIGHT, lw=0.9,
               zorder=0, label='simulated data')
     ax.loglog(freqs, centred(model.psd(freqs), model.psd(fmask)), color='k',
               lw=1.6, label='true spectrum')

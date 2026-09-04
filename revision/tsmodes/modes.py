@@ -186,6 +186,59 @@ def stabilize(phi, offset=1.0, eps=1e-6):
     return poles_to_ar(new_poles), offset / scale, True
 
 
+def real_pole_reflection_to_ar(a, k):
+    """AR coefficients of ``(1 - a z^-1) * A_rest(z^-1)``.
+
+    Factoring one real pole out of the characteristic polynomial and
+    parameterizing the remainder by reflection coefficients guarantees, by
+    construction, that the model has a relaxation mode -- exactly as the
+    reflection parameterization alone guarantees stationarity.  ``a`` in
+    ``(0, 1)`` is that pole, so the model always has a decay time
+    ``-1 / (fs log a)`` to report, whatever the optimizer does with the rest.
+
+    Without this a fitted model can put every pole into a conjugate pair, and
+    a timescale model with no relaxation mode has no timescale to report.
+    """
+    a = float(a)
+    k = np.atleast_1d(np.asarray(k, dtype=float))
+    if k.size == 0:
+        return np.array([a])
+    rest = reflection_to_ar(k)
+    poly = np.convolve([1.0, -a], np.concatenate(([1.0], -np.atleast_1d(rest))))
+    return -poly[1:]
+
+
+def ar_to_real_pole_reflection(phi, default_a=0.9, k_bound=0.9999):
+    """Split an AR(p) into a real pole and reflection coefficients.
+
+    The inverse of :func:`real_pole_reflection_to_ar`, used to convert a
+    starting guess.  When the guess already has a positive real pole the
+    slowest one is factored out and the remainder converted exactly.  When it
+    has none -- which is the case this parameterization exists for -- the
+    remainder is the order-(p-1) prefix of the guess's own reflection
+    sequence, which is always a valid stationary model.
+    """
+    phi = np.atleast_1d(np.asarray(phi, dtype=float))
+    p = len(phi)
+    if p == 1:
+        return float(np.clip(phi[0], 1e-3, k_bound)), np.zeros(0)
+
+    poles = ar_to_poles(phi)
+    real = [i for i, lam in enumerate(poles)
+            if abs(lam.imag) < 1e-8 and lam.real > 0]
+    if real:
+        j = max(real, key=lambda i: poles[i].real)
+        try:
+            k = ar_to_reflection(poles_to_ar(np.delete(poles, j)))
+            if np.all(np.abs(k) < 1.0):
+                return (float(np.clip(poles[j].real, 1e-3, k_bound)),
+                        np.clip(k, -k_bound, k_bound))
+        except ValueError:
+            pass
+    k = np.clip(ar_to_reflection(phi)[:p - 1], -k_bound, k_bound)
+    return float(np.clip(default_a, 1e-3, k_bound)), k
+
+
 def pair_to_ar2(pair):
     """Real AR(2) coefficients of one complex-conjugate pole pair."""
     lam = complex(pair[0])
@@ -461,7 +514,11 @@ class Mode:
         factor leaves no peak if the remaining factors fall steeply through
         the same frequencies.
         """
-        return self.freq * self.tau if self.kind == 'oscillatory' else 0.0
+        # Only a pure relaxation has no frequency.  A Nyquist mode -- a
+        # negative real pole -- alternates every sample, which is the fastest
+        # oscillation the sampling rate allows, so it must not be counted as
+        # non-rhythmic just because its poles are real.
+        return 0.0 if self.kind == 'relaxation' else self.freq * self.tau
 
     def as_tuple(self):
         """The interpretable summary: ``(tau, frequency, importance)``."""
@@ -472,8 +529,8 @@ class Mode:
         return psd_from_poles(self.poles, freqs, self.fs, offset=offset)
 
     def __repr__(self):
-        cyc = (f', {self.n_cycles:.2f} cyc' if self.kind == 'oscillatory'
-               else '')
+        cyc = ('' if self.kind == 'relaxation'
+               else f', {self.n_cycles:.2f} cyc')
         return (f'Mode({self.kind}, tau={self.tau:.4g}s, f={self.freq:.4g}Hz'
                 f'{cyc}, |lam|={self.radius:.4f}, '
                 f'importance={self.importance:.4g})')
@@ -642,9 +699,38 @@ class ARModes:
 
     @property
     def tau_relaxation(self):
-        """Timescale of the most important non-oscillatory mode."""
-        m = self.dominant_mode(kinds=('relaxation',))
-        return np.nan if m is None else m.tau
+        """The model's aperiodic timescale: its slowest non-rhythmic mode.
+
+        A real pole is non-rhythmic by definition.  So, in every practical
+        sense, is a conjugate pair that rings for less than one cycle before
+        its envelope decays: it is a damped relaxation that the optimizer
+        happened to give a small angle rather than exactly zero.  Requiring a
+        *real* pole here is a statement about the algebra rather than about
+        the process, and it left a third of real recordings with no timescale
+        to report even though the fits were good.
+
+        Fitted models are constrained to contain a real pole (see
+        ``tsmodes.estimators.REQUIRE_RELAXATION``), so this normally returns
+        one.  The closed-form estimators, Burg and lagged regression, cannot
+        be constrained that way, and this is what covers them.
+        """
+        cand = [m for m in self.modes
+                if m.n_cycles < 1.0 and np.isfinite(m.tau) and m.tau > 0]
+        if not cand:
+            # Nothing but genuine rhythms: fall back to the envelope decay of
+            # the most important one rather than reporting nothing, and let
+            # n_cycles say what it is.
+            cand = [m for m in self.modes if m.kind == 'oscillatory'
+                    and np.isfinite(m.tau) and m.tau > 0]
+        if not cand:
+            return np.nan
+        # The most important, not the slowest.  A long-memory process is fit
+        # with a pole pushed against the unit circle, whose timescale is
+        # thousands of seconds and whose contribution to the spectrum is
+        # negligible; taking the slowest mode would report that number.
+        best = max(cand, key=lambda m: (m.importance if np.isfinite(m.importance)
+                                        else -np.inf))
+        return best.tau
 
     @property
     def tau_slowest(self):

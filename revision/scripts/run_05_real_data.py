@@ -201,7 +201,8 @@ def make_figure(keys, cache, fits, modes, summary):
                   label='AR(1)')
         ax.loglog(signal.freqs[mask],
                   ar_psd(fitp.phi, signal.freqs[mask], signal.fs, fitp.offset),
-                  color=P.METHOD_COLORS['arp_psd'], lw=1.3, label='AR($p$)')
+                  color=P.METHOD_COLORS['arp_psd'], lw=1.3, ls='-.',
+                  label='AR($p$)')
         import matplotlib.ticker as mticker
         ax.set_ylabel(data['short'], fontsize=7, labelpad=3)
         ax.set_yticks([])
@@ -220,8 +221,10 @@ def make_figure(keys, cache, fits, modes, summary):
         nlags = len(signal.corrs) - 1
         lags = np.arange(nlags + 1) / signal.fs
         ax.plot(lags, signal.corrs, color=P.GREY, lw=0.9, label='data')
+        # Data solid, both models dashed, so the empirical curve stays
+        # visible underneath the fits.
         for fit, method, ls in ((facf1, 'ar1_acf', '--'),
-                                (facfp, 'arp_acf', '-')):
+                                (facfp, 'arp_acf', '-.')):
             # The fitted curve itself, not a band-limited redrawing of it: an
             # AR(1) fit must appear on the figure as the decaying exponential
             # that it is.

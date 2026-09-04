@@ -28,8 +28,10 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.signal import get_window, welch
 
-from .modes import (poles_to_ar, ARModes, ar_acf_fft, ar_psd, ar_to_reflection,
-                    reflection_to_ar, stabilize, LN10)
+from .modes import (poles_to_ar, ARModes, ar_acf_fft, ar_psd,
+                    ar_to_real_pole_reflection, ar_to_reflection,
+                    real_pole_reflection_to_ar, reflection_to_ar,
+                    stabilize, LN10)
 
 # ---------------------------------------------------------------------------
 # tau <-> phi
@@ -452,7 +454,12 @@ def loss_settings(robust, domain):
     return PSD_LOSS, PSD_F_SCALE
 ACF_MAXFEV = 600
 ACF_TOL = 1e-6      # the lag-domain objective is smooth; 1e-8 buys nothing
-K_BOUND = 0.9999       # reflection coefficients; |k| < 1 <=> stationary.
+K_BOUND = 0.9999
+#: Require every fitted AR(p) model to contain at least one relaxation mode.
+#: A model whose poles are all complex has no decay time to report, which is a
+#: failure of the fit as a measurement of a timescale even when it describes
+#: the data well.  See tsmodes.modes.real_pole_reflection_to_ar.
+REQUIRE_RELAXATION = True       # reflection coefficients; |k| < 1 <=> stationary.
                        # Bounds the longest representable timescale at
                        # -1/(fs log K_BOUND), i.e. 20 s at 500 Hz.
 MAXFEV = 4000
@@ -460,7 +467,8 @@ MAXFEV = 4000
 
 def fit_ar_psd(freqs, powers, fs, order, guess=None, k_bound=K_BOUND,
                loss='linear', f_scale=None, maxfev=MAXFEV,
-               freqs_full=None, powers_full=None):
+               freqs_full=None, powers_full=None,
+               require_relaxation=REQUIRE_RELAXATION):
     """Fit the AR(p) spectral form to a PSD, in log10 power.
 
     The model is optimized over reflection coefficients rather than AR
@@ -473,22 +481,38 @@ def fit_ar_psd(freqs, powers, fs, order, guess=None, k_bound=K_BOUND,
     ``freqs``/``powers`` are the points actually fit; ``powers_full`` (uniform,
     DC to Nyquist) is used only for initialization.
     """
+    # Reserving a pole for relaxation costs one order.  At order 2 that leaves
+    # a single pole, which can only be a second real one, so the requirement
+    # would forbid the model from being an oscillator at all -- and an AR(2)
+    # oscillator is a process we specifically need to be able to fit.  From
+    # order 3 the requirement is free: one real pole plus a conjugate pair.
+    require_relaxation = require_relaxation and order != 2
     freqs = np.asarray(freqs, dtype=float)
     powers = np.asarray(powers, dtype=float)
     if guess is None:
         init_p = powers if powers_full is None else powers_full
         guess = _ar_psd_guess(freqs, init_p, fs, order)
     guess = np.asarray(guess, dtype=float)
-    k0 = np.clip(ar_to_reflection(guess[:-1]), -k_bound, k_bound)
-    p0 = np.concatenate([k0, [max(guess[-1], 1e-12)]])
-    bounds = (np.concatenate([np.full(order, -k_bound), [1e-16]]),
+    # See fit_ar_acf: the leading parameter is a real pole when a relaxation
+    # mode is required, and a reflection coefficient otherwise.
+    if require_relaxation:
+        a0, k0 = ar_to_real_pole_reflection(guess[:-1], k_bound=k_bound)
+        to_ar = real_pole_reflection_to_ar
+    else:
+        refl = np.clip(ar_to_reflection(guess[:-1]), -k_bound, k_bound)
+        a0, k0 = refl[0], refl[1:]
+        def to_ar(a, k):
+            return reflection_to_ar(np.concatenate([[a], k]))
+    p0 = np.concatenate([[a0], k0, [max(guess[-1], 1e-12)]])
+    lo0 = 1e-3 if require_relaxation else -k_bound
+    bounds = (np.concatenate([[lo0], np.full(order - 1, -k_bound), [1e-16]]),
               np.concatenate([np.full(order, k_bound), [np.inf]]))
 
     k_idx = np.arange(1, order + 1)
     z_inv = np.exp(-2j * np.pi * np.outer(freqs, k_idx) / fs)
 
     def model(_, *params):
-        phi = reflection_to_ar(np.asarray(params[:-1]))
+        phi = to_ar(params[0], np.asarray(params[1:-1]))
         return np.log10(params[-1] / np.abs(1.0 - z_inv @ phi) ** 2)
 
     with warnings.catch_warnings():
@@ -500,7 +524,8 @@ def fit_ar_psd(freqs, powers, fs, order, guess=None, k_bound=K_BOUND,
             success = True
         except Exception:
             params, success = p0, False
-    return reflection_to_ar(np.asarray(params[:-1])), float(params[-1]), success
+    return (to_ar(params[0], np.asarray(params[1:-1])), float(params[-1]),
+            success)
 
 
 def select_order_psd(freqs, powers, fs, orders, criterion='bic', **kwargs):
@@ -604,7 +629,8 @@ def _acf_guesses(lags, corrs, fs, order):
 
 def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
                loss='linear', f_scale=None, maxfev=ACF_MAXFEV,
-               drop_zero_lag=True, with_offset=True):
+               drop_zero_lag=True, with_offset=True,
+               require_relaxation=REQUIRE_RELAXATION):
     """Fit the AR(p) autocorrelation form to an empirical ACF.
 
     The direct counterpart of :func:`fit_ar_psd`: the same AR(p) model, the same
@@ -621,6 +647,12 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
     -------
     phi, height, offset, success
     """
+    # Reserving a pole for relaxation costs one order.  At order 2 that leaves
+    # a single pole, which can only be a second real one, so the requirement
+    # would forbid the model from being an oscillator at all -- and an AR(2)
+    # oscillator is a process we specifically need to be able to fit.  From
+    # order 3 the requirement is free: one real pole plus a conjugate pair.
+    require_relaxation = require_relaxation and order != 2
     lags = np.asarray(lags, dtype=float)
     corrs = np.asarray(corrs, dtype=float)
     full_lags, full_corrs = lags, corrs
@@ -638,8 +670,14 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
     # cannot have.  Leaving these loose lets a slow exponential trade against a
     # negative offset and return a timescale set by the offset, not the decay.
     off_lo, off_hi = (-0.5, 0.5) if with_offset else (-1e-12, 1e-12)
-    bounds = (np.concatenate([np.full(order, -k_bound), [0.05, off_lo]]),
+    # With require_relaxation the first parameter is a real pole in (0, 1)
+    # rather than a reflection coefficient, so the model is guaranteed to have
+    # a relaxation mode to report.
+    lo0 = 1e-3 if require_relaxation else -k_bound
+    bounds = (np.concatenate([[lo0], np.full(order - 1, -k_bound), [0.05, off_lo]]),
               np.concatenate([np.full(order, k_bound), [1.5, off_hi]]))
+    to_ar = (real_pole_reflection_to_ar if require_relaxation
+             else lambda a, k: reflection_to_ar(np.concatenate([[a], k])))
 
     if order == 1:
         # rho(k) = phi^k exactly, so the transform is unnecessary.  This keeps
@@ -648,7 +686,7 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
             return params[-2] * params[0] ** lags + params[-1]
     else:
         def model(_, *params):
-            phi = reflection_to_ar(np.asarray(params[:-2]))
+            phi = to_ar(params[0], np.asarray(params[1:-2]))
             return params[-2] * ar_acf_fft(phi, nlags, nfft=nfft)[idx] + params[-1]
 
     if guess is not None:
@@ -659,8 +697,14 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
         # non-convex, and the start that finds the relaxation pole is exactly
         # the one that was being discarded.
         starts = _acf_guesses(full_lags, full_corrs, fs, order)
-    starts = [np.concatenate([np.clip(ar_to_reflection(g[:-2]), -k_bound, k_bound),
-                              g[-2:]]) for g in starts]
+    def _encode(g):
+        if require_relaxation:
+            a, k = ar_to_real_pole_reflection(g[:-2], k_bound=k_bound)
+            return np.concatenate([[a], k, g[-2:]])
+        return np.concatenate([np.clip(ar_to_reflection(g[:-2]),
+                                       -k_bound, k_bound), g[-2:]])
+
+    starts = [_encode(np.asarray(g, dtype=float)) for g in starts]
 
     best, success = None, False
     for start in starts:
@@ -682,7 +726,7 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
         if best is None or cost < best[0]:
             best, success = (cost, params), True
     params = starts[0] if best is None else best[1]
-    return (reflection_to_ar(np.asarray(params[:-2])),
+    return (to_ar(params[0], np.asarray(params[1:-2])),
             float(params[-2]), float(params[-1]), success)
 
 

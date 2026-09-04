@@ -188,12 +188,14 @@ def make_figure(sweep, damped, pop):
         ax = fig.add_subplot(gs[r, 1])
         mask = signal.fit_mask
         f = signal.freqs[mask]
-        ax.loglog(f, signal.powers[mask], color=P.LIGHT, lw=0.7)
+        # Data solid, every model dashed, so the data stays visible
+        # underneath the curves that claim to describe it.
+        ax.loglog(f, signal.powers[mask], color=P.LIGHT, lw=0.9)
         ax.loglog(f, ar_psd(fit1.phi, f, FS, fit1.offset),
                   color=P.METHOD_COLORS['ar1_psd'], lw=1.4, ls='--',
                   label='AR(1)')
         ax.loglog(f, ar_psd(fitp.phi, f, FS, fitp.offset),
-                  color=P.METHOD_COLORS['arp_psd'], lw=1.4,
+                  color=P.METHOD_COLORS['arp_psd'], lw=1.4, ls='-.',
                   label=(f'AR($p$), $p$={fitp.order}' if fitp.order == 1
                          else f'AR({fitp.order})'))
         ax.set_xlabel('Frequency (Hz)', fontsize=8)

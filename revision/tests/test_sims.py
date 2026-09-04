@@ -10,8 +10,8 @@ from tsmodes.sims import (AR1, AR1Mixture, AR1PlusSine, AR2Damped, PowerLaw,
                           tau_to_phi)
 
 FS = 500.0
-PROCESSES = [AR1(0.05), AR1PlusSine(0.05, 10.0, 1.0), AR2Damped(0.05, 10.0),
-             SumAR1(0.01, 0.2, 0.5), PowerLaw(0.45), AR1Mixture()]
+PROCESSES = [AR1(tau=0.05), AR1PlusSine(tau=0.05, f_osc=10.0, snr=1.0), AR2Damped(tau=0.05, f_osc=10.0),
+             SumAR1(tau0=0.01, tau1=0.2, weight=0.5), PowerLaw(d=0.45), AR1Mixture()]
 
 
 def _welch(sig, fs, win_s=2.0):
@@ -46,7 +46,7 @@ def test_empirical_acf_matches_theory(proc):
 
 
 def test_ar1_variance_and_integrated_timescale():
-    proc = AR1(0.05)
+    proc = AR1(tau=0.05)
     phi = tau_to_phi(0.05, FS)
     assert proc.tau_integrated(FS) == pytest.approx(
         (1 / FS) * (1 / (1 - phi) - 0.5), rel=1e-12)
@@ -62,11 +62,11 @@ def test_integrated_timescale_of_mixture_is_variance_weighted():
 
 
 def test_power_law_integrated_timescale_diverges():
-    assert not np.isfinite(PowerLaw(0.45).tau_integrated(FS))
+    assert not np.isfinite(PowerLaw(d=0.45).tau_integrated(FS))
 
 
 def test_power_law_acf_decays_as_a_power_law():
-    proc = PowerLaw(0.4)
+    proc = PowerLaw(d=0.4)
     lags = np.array([10.0, 100.0, 1000.0])
     rho = proc.acf(lags)
     # rho(k) ~ k^(2d - 1)
@@ -107,6 +107,22 @@ def test_ar_psd_density_integrates_to_the_variance():
 
 
 def test_ar1_plus_sine_line_power_matches_amplitude():
-    proc = AR1PlusSine(0.05, 10.0, snr=2.0)
+    proc = AR1PlusSine(tau=0.05, f_osc=10.0, snr=2.0)
     var_ar = 1 / (1 - tau_to_phi(0.05, FS) ** 2)
     assert proc.line_power(FS) == pytest.approx(2.0 * var_ar, rel=1e-12)
+
+
+def test_processes_cannot_be_built_positionally():
+    """Positional construction silently used the defaults; it must now fail.
+
+    ``Process`` declares its own fields first, so ``AR1PlusSine(0.05, 4, 4)``
+    bound tau, frequency and amplitude to ``name``, ``label`` and
+    ``tau_true``, then ``__post_init__`` overwrote all three.  The call
+    returned a default process and nothing complained.
+    """
+    with pytest.raises(TypeError):
+        AR1PlusSine(0.05, 4.0, 4.0)
+    with pytest.raises(TypeError):
+        AR1(0.05)
+    strong = AR1PlusSine(tau=0.05, f_osc=4.0, snr=4.0)
+    assert strong.params == {'tau': 0.05, 'f_osc': 4.0, 'snr': 4.0}
