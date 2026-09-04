@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy.special import gammaln
 
-from .modes import ar_acf, ar_to_poles
+from .modes import ARModes, ar_acf, ar_psd, ar_to_poles, poles_to_ar
 
 _trapz = getattr(np, 'trapezoid', None) or np.trapz
 
@@ -388,6 +388,71 @@ class PowerLaw(Process):
 
     def tau_integrated(self, fs, max_lag_s=None):
         return np.inf if self.d > 0 else 0.0
+
+
+@dataclass(kw_only=True)
+class ARpModes(Process):
+    """A genuine high-order AR(p) built from a list of modes.
+
+    The other processes fail the AR(1) assumption by not being autoregressive
+    at all -- an added sinusoid, a sum of independent relaxations, a
+    long-memory process.  This one *is* an AR(p), exactly, so it separates two
+    things that are otherwise confounded: whether an estimator can cope with a
+    process outside the model family, and whether it can cope with a process
+    inside the family but of higher order than AR(1).
+
+    ``modes`` is a list of ``(tau_seconds, freq_hz)``; a zero frequency gives a
+    real pole, a non-zero one a conjugate pair.  The default is the AR(8) used
+    in the modes figure, so the benchmark and that figure describe the same
+    process.
+    """
+
+    modes: tuple = ((0.100, 0.0), (0.050, 10.0), (0.010, 40.0),
+                    (0.002, 0.0), (0.003, 180.0))
+
+    def __post_init__(self):
+        self.name = 'arp_modes'
+        order = sum(1 if f == 0 else 2 for _, f in self.modes)
+        self.label = f'AR({order}), {len(self.modes)} modes'
+        # The target is the true model's own aperiodic timescale, under the
+        # same definition an estimator would apply to a fitted model, rather
+        # than the slowest relaxation by construction.  Those differ here: the
+        # 10 Hz mode rings only half a cycle, so it is non-rhythmic by that
+        # definition and more important than the 100 ms relaxation.  Defining
+        # the target any other way would score estimators against a quantity
+        # they were not asked for.
+        self.tau_true = np.nan   # set below, once the poles are known
+        self.params = {'modes': tuple(self.modes)}
+        # No additive lines: the rhythms here are poles of the process, not
+        # delta functions added to its spectrum.  `lines` is for the latter.
+        self.lines = ()
+        self._fs_for_truth = 500.0
+        self.tau_true = float(ARModes.from_phi(
+            self.phi(self._fs_for_truth), self._fs_for_truth).tau_relaxation)
+
+    def poles(self, fs):
+        out = []
+        for tau, freq in self.modes:
+            r = np.exp(-1.0 / (tau * fs))
+            if freq == 0:
+                out.append(complex(r, 0.0))
+            else:
+                th = 2 * np.pi * freq / fs
+                out += [r * np.exp(1j * th), r * np.exp(-1j * th)]
+        return np.array(out)
+
+    def phi(self, fs):
+        return poles_to_ar(self.poles(fs))
+
+    def simulate(self, n_seconds, fs, rng):
+        return sim_ar_process(self.phi(fs), int(round(n_seconds * fs)), rng)
+
+    def psd(self, freqs, fs):
+        return ar_psd(self.phi(fs), freqs, fs, 1.0)
+
+    def acf(self, lags, fs):
+        lags = np.atleast_1d(np.asarray(lags))
+        return ar_acf(self.phi(fs), int(np.max(lags)))[lags.astype(int)]
 
 
 @dataclass(kw_only=True)

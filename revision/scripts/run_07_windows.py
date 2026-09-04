@@ -24,8 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FIG, RES = ROOT / 'figures', ROOT / 'results'
 TAU = 0.05
 SIM_METHODS = ['ar1_direct', 'ar1_acf', 'ar1_psd', 'arp_psd']
-SCALE_FREE = {'power_law': 'power law', 'ar1_mixture': 'many AR(1) summed',
-              'sum_ar1': 'two AR(1) summed'}
+SCALE_FREE = {'power_law': 'power law', 'arp_modes': 'AR(8), 5 modes'}
 
 
 def sim_curve(df, process, method, column='tau'):

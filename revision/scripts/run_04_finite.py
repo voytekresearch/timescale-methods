@@ -14,6 +14,7 @@ figures/figS_finite.svg
 """
 
 import os
+import sys
 from pathlib import Path
 
 for _var in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS',
@@ -30,8 +31,7 @@ from tsmodes.estimators import ESTIMATOR_LABELS
 from tsmodes.finite import (ar1_tau_ci, ar1_tau_moments, phi_of_tau,
                             relative_bias_asymptotic, relative_sd_asymptotic,
                             sample_tau_finite, duration_for_relative_sd)
-from tsmodes.sims import (AR1, AR1Mixture, AR1PlusSine, AR2Damped, PowerLaw,
-                          SumAR1)
+from tsmodes.sims import AR1, AR1PlusSine, AR2Damped, ARpModes, PowerLaw
 
 ROOT = Path(__file__).resolve().parents[1]
 FIG, RES = ROOT / 'figures', ROOT / 'results'
@@ -48,12 +48,11 @@ METHODS = ['ar1_direct', 'arp_direct', 'ar1_acf', 'arp_acf', 'ar1_psd', 'arp_psd
 OTHER = [
     AR1PlusSine(tau=TAU, f_osc=10.0, snr=1.0),
     AR2Damped(tau=TAU, f_osc=10.0),
-    SumAR1(tau0=0.01, tau1=0.20, weight=0.5),
-    AR1Mixture(tau_min=0.002, tau_max=2.0, n_components=12),
+    ARpModes(),
     PowerLaw(d=0.45),
 ]
-OTHER_LABELS = ['AR(1) + sine', 'AR(2) damped', 'Sum of 2 AR(1)',
-                'AR(1) mixture', 'Power law']
+OTHER_LABELS = ['AR(1) + sine', 'AR(2) damped', 'AR(8), 5 modes',
+                'Power law']
 
 
 def prep_for(duration):
@@ -68,10 +67,26 @@ def prep_for(duration):
     return {'welch_win_s': duration / 4, 'nlags_s': duration / 4}
 
 
+def _cached(name):
+    """Load a cached result table, or None when it has not been computed."""
+    path = RES / name
+    return pd.read_csv(path) if path.exists() else None
+
+
 def main():
     P.use_style()
     FIG.mkdir(exist_ok=True)
     RES.mkdir(exist_ok=True)
+
+    # --figures-only replots from the cached table; see run_05_real_data.
+    cached = _cached('finite_sampling.csv.gz') if '--figures-only' in sys.argv else None
+    if cached is not None:
+        print('Loading cached finite-sampling results '
+              '(omit --figures-only to recompute)', flush=True)
+        df = cached
+        analytic = pd.read_csv(RES / 'finite_analytic.csv')
+        make_figure(df, analytic)
+        return
 
     rows = []
     print('AR(1) duration sweep ...', flush=True)
@@ -249,7 +264,7 @@ def make_figure(df, analytic):
 
     # (f) order and dominant-mode stability --------------------------------
     ax = fig.add_subplot(gs[1, 2])
-    for proc, label, color in zip([AR1(TAU)] + OTHER, ['AR(1)'] + OTHER_LABELS,
+    for proc, label, color in zip([AR1(tau=TAU)] + OTHER, ['AR(1)'] + OTHER_LABELS,
                                   ['k'] + list(plt.cm.viridis(
                                       np.linspace(0, 0.9, len(OTHER))))):
         orders = []

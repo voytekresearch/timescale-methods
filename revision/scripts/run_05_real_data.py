@@ -138,6 +138,12 @@ def summarize_dataset(df, modes):
     return pd.DataFrame(out)
 
 
+def _cached(name):
+    """Load a cached result table, or None when it has not been computed."""
+    path = RES / name
+    return pd.read_csv(path) if path.exists() else None
+
+
 def main():
     P.use_style()
     FIG.mkdir(exist_ok=True)
@@ -146,17 +152,25 @@ def main():
     keys = D.available()
     print(f'Datasets: {keys}', flush=True)
 
-    frames, mode_frames, cache = [], [], {}
-    for key in keys:
-        print(f'  {key} ...', flush=True)
-        data, df, modes = analyse_dataset(key)
-        frames.append(df)
-        mode_frames.append(modes)
-        cache[key] = data
-    fits = pd.concat(frames, ignore_index=True)
-    modes = pd.concat(mode_frames, ignore_index=True)
-    fits.to_csv(RES / 'real_data_fits.csv', index=False)
-    modes.to_csv(RES / 'real_data_modes.csv', index=False)
+    # --figures-only replots from the cached tables.  Fitting and plotting are
+    # separate costs and only one of them is usually the thing being changed.
+    fits = _cached('real_data_fits.csv') if '--figures-only' in sys.argv else None
+    if fits is not None:
+        print('Loading cached fits (omit --figures-only to refit)', flush=True)
+        modes = _cached('real_data_modes.csv')
+        cache = {k: D.load(k) for k in keys}
+    else:
+        frames, mode_frames, cache = [], [], {}
+        for key in keys:
+            print(f'  {key} ...', flush=True)
+            data, df, mode_rows = analyse_dataset(key)
+            frames.append(df)
+            mode_frames.append(mode_rows)
+            cache[key] = data
+        fits = pd.concat(frames, ignore_index=True)
+        modes = pd.concat(mode_frames, ignore_index=True)
+        fits.to_csv(RES / 'real_data_fits.csv', index=False)
+        modes.to_csv(RES / 'real_data_modes.csv', index=False)
 
     summary = summarize_dataset(fits, modes)
     summary.to_csv(RES / 'real_data_summary.csv', index=False)

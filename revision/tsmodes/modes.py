@@ -714,14 +714,23 @@ class ARModes:
         one.  The closed-form estimators, Burg and lagged regression, cannot
         be constrained that way, and this is what covers them.
         """
-        cand = [m for m in self.modes
-                if m.n_cycles < 1.0 and np.isfinite(m.tau) and m.tau > 0]
+        finite = [m for m in self.modes if np.isfinite(m.tau) and m.tau > 0]
+        # Every non-rhythmic mode is a candidate: a real pole, and equally a
+        # conjugate pair that rings for less than a cycle, which is a damped
+        # relaxation in all but the algebraic classification.
+        #
+        # Importance decides between them, and it must.  Requiring a real pole
+        # guarantees one exists but not that it means anything: on mouse LFP
+        # the constrained spectral fit parks its required pole at 0.58 ms with
+        # negligible importance while the aperiodic structure sits in an 88 ms
+        # pair ringing 0.57 of a cycle.  Preferring the real pole reported the
+        # throwaway.
+        cand = [m for m in finite if m.n_cycles < 1.0]
         if not cand:
             # Nothing but genuine rhythms: fall back to the envelope decay of
             # the most important one rather than reporting nothing, and let
             # n_cycles say what it is.
-            cand = [m for m in self.modes if m.kind == 'oscillatory'
-                    and np.isfinite(m.tau) and m.tau > 0]
+            cand = [m for m in finite if m.kind == 'oscillatory']
         if not cand:
             return np.nan
         # The most important, not the slowest.  A long-memory process is fit

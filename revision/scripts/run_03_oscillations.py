@@ -241,8 +241,10 @@ def make_figure(sweep, damped, pop):
             ax.plot(lims, lims, color='k', ls=':', lw=1.0)
             ax.set_xscale('log')
             ax.set_yscale('log')
-            ax.set_xlabel('True decay time (s)', fontsize=8)
-            ax.set_ylabel('Estimated decay (s)', fontsize=8)
+            # Not the relaxation time of panel c: an oscillator has none.
+            # This is the decay of the envelope multiplying its cosine.
+            ax.set_xlabel('True envelope decay $\\tau_{env}$ (s)', fontsize=8)
+            ax.set_ylabel('Estimated $\\tau_{env}$ (s)', fontsize=8)
             ax.set_title('An AR(2) model recovers\nan intrinsic rhythm',
                          fontsize=8.5)
             ax.set_ylim(8e-3, 1.1)
