@@ -294,7 +294,7 @@ def make_figure(keys, cache, fits, modes, summary):
 
         # -- c: estimates, linear time -------------------------------------
         ax = fig.add_subplot(gs[i, 2])
-        medians = {}
+        medians, boxes = {}, {}
         for k, method in enumerate(METHODS):
             col = 'tau' if method.startswith('ar1_') else 'tau_relaxation'
             vals = sub.loc[sub['method'] == method, col].to_numpy(dtype=float)
@@ -312,28 +312,30 @@ def make_figure(keys, cache, fits, modes, summary):
                         ha='center', va='bottom', color=P.GREY,
                         transform=ax.get_xaxis_transform())
                 continue
+            boxes[method] = (x, vals)
+        finite = [v * scale for v in medians.values() if np.isfinite(v)]
+        # A linear axis is far easier to read than a log one, but a single
+        # badly mismatched estimator would otherwise flatten it.  The axis is
+        # scaled to the typical estimate; an estimator whose median falls
+        # outside it is marked instead of drawn.
+        top = 3.0 * float(np.median(finite)) if finite else 1.0
+        ax.set_ylim(0, top)
+        for method, (x, vals) in boxes.items():
             colour = P.METHOD_COLORS[method]
+            if np.median(vals) > top:
+                # The box would be entirely off the axis, so drawing it would
+                # show nothing at all -- which is how a whole estimator came
+                # to be missing from the MEG row.
+                ax.plot([x], [top * 0.965], marker='^', ms=4.5, clip_on=False,
+                        color=colour, mec='none')
+                continue
             bp = ax.boxplot([vals], positions=[x], widths=0.62,
                             patch_artist=True, showfliers=False,
                             medianprops=dict(color='k', lw=1.2),
                             whiskerprops=dict(color=colour, lw=0.8),
                             capprops=dict(color=colour, lw=0.8))
             for box in bp['boxes']:
-                box.set(facecolor=colour, alpha=0.55, lw=0.7, edgecolor=colour)
-        finite = [v * scale for v in medians.values() if np.isfinite(v)]
-        # A linear axis is far easier to read than a log one, but a single
-        # badly mismatched estimator would otherwise flatten it.  The axis is
-        # scaled to the typical estimate and off-scale points are marked.
-        top = 3.0 * float(np.median(finite)) if finite else 1.0
-        ax.set_ylim(0, top)
-        for k, method in enumerate(METHODS):
-            col = 'tau' if method.startswith('ar1_') else 'tau_relaxation'
-            vals = sub.loc[sub['method'] == method, col].to_numpy(dtype=float)
-            vals = vals[np.isfinite(vals) & (vals > 0)] * scale
-            n_over = int(np.sum(vals > top))
-            if n_over:
-                ax.plot(k + 0.9 * (k // 2), top * 0.97, marker='^', ms=3.5,
-                        color=P.METHOD_COLORS[method], clip_on=False)
+                box.set(facecolor=colour, alpha=0.6, lw=0.7, edgecolor=colour)
         ax.locator_params(axis='y', nbins=3)
         ax.set_xlim(-0.8, 7.6)
         ax.set_xticks([0, 1, 2.9, 3.9, 5.8, 6.8])

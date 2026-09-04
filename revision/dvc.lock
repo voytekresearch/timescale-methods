@@ -93,8 +93,8 @@ stages:
     deps:
     - path: scripts/run_03_oscillations.py
       hash: md5
-      md5: be2879e47c2b2e1daf53ad41aea0d856
-      size: 10789
+      md5: 048122a32e14062c9616f174d9b3e7c6
+      size: 11126
     - path: tsmodes/__init__.py
       hash: md5
       md5: d41d8cd98f00b204e9800998ecf8427e
@@ -133,8 +133,8 @@ stages:
     deps:
     - path: scripts/run_04_finite.py
       hash: md5
-      md5: ea29e22c5c230c133acc9a2c5eb14cbe
-      size: 10498
+      md5: f9a87786287b4e3ea0aa3779787b42c2
+      size: 5548
     - path: tsmodes/__init__.py
       hash: md5
       md5: d41d8cd98f00b204e9800998ecf8427e
@@ -182,8 +182,8 @@ stages:
       nfiles: 9
     - path: scripts/run_05_real_data.py
       hash: md5
-      md5: 428da84bcbd14074d1599954abffc862
-      size: 19819
+      md5: 53509efa9a5fbc8902520025cbda2c5f
+      size: 19884
     - path: tsmodes/__init__.py
       hash: md5
       md5: d41d8cd98f00b204e9800998ecf8427e
@@ -283,12 +283,12 @@ stages:
       size: 17374
     - path: tsmodes/plotting.py
       hash: md5
-      md5: d64dc7dcb4dab2881e991a860cacc083
-      size: 6962
+      md5: 82a475523e19e6c23bacc92738a6b77c
+      size: 7376
     outs:
     - path: figures/fig_modes.svg
       hash: md5
-      md5: dfa0449bb6a80b47943d6a4cc6811fff
+      md5: 33fe6a40e294809de76b17a4ef63f6ad
       size: 175196
   plot_benchmark:
     cmd: python scripts/run_02_benchmark.py
@@ -303,12 +303,12 @@ stages:
       size: 13276
     - path: tsmodes/plotting.py
       hash: md5
-      md5: d64dc7dcb4dab2881e991a860cacc083
-      size: 6962
+      md5: 82a475523e19e6c23bacc92738a6b77c
+      size: 7376
     outs:
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: b52df27dda0591ca96a689d2b49ed323
+      md5: 12410d40541adbf30345bfb4036542f3
       size: 910523
   plot_oscillations:
     cmd: python scripts/run_03_oscillations.py
@@ -323,17 +323,17 @@ stages:
       size: 480061
     - path: scripts/run_03_oscillations.py
       hash: md5
-      md5: be2879e47c2b2e1daf53ad41aea0d856
-      size: 10789
+      md5: 048122a32e14062c9616f174d9b3e7c6
+      size: 11126
     - path: tsmodes/plotting.py
       hash: md5
-      md5: d64dc7dcb4dab2881e991a860cacc083
-      size: 6962
+      md5: 82a475523e19e6c23bacc92738a6b77c
+      size: 7376
     outs:
     - path: figures/fig_oscillations.svg
       hash: md5
-      md5: 29434e2f5992d5908f3ebde660413c85
-      size: 160603
+      md5: 6b1982b5c9ec18dcafec91013769a022
+      size: 170531
   plot_finite:
     cmd: python scripts/run_04_finite.py --figures-only
     deps:
@@ -375,17 +375,17 @@ stages:
       size: 118693
     - path: scripts/run_05_real_data.py
       hash: md5
-      md5: 428da84bcbd14074d1599954abffc862
-      size: 19819
+      md5: 53509efa9a5fbc8902520025cbda2c5f
+      size: 19884
     - path: tsmodes/plotting.py
       hash: md5
-      md5: d64dc7dcb4dab2881e991a860cacc083
-      size: 6962
+      md5: 82a475523e19e6c23bacc92738a6b77c
+      size: 7376
     outs:
     - path: figures/fig_realdata.svg
       hash: md5
-      md5: 66174087434a4c4d702e624d4f582466
-      size: 482473
+      md5: 8256059344a6dbb60333feb5a34bdbd6
+      size: 475195
   plot_windows:
     cmd: python scripts/run_07_windows.py
     deps:
@@ -403,17 +403,17 @@ stages:
       size: 2346482
     - path: scripts/run_07_windows.py
       hash: md5
-      md5: b20899697a53d71264fc590216d0ea82
-      size: 6114
+      md5: 4bd0756ddd6b922f8a25f521c0608cea
+      size: 7870
     - path: tsmodes/plotting.py
       hash: md5
-      md5: d64dc7dcb4dab2881e991a860cacc083
-      size: 6962
+      md5: 82a475523e19e6c23bacc92738a6b77c
+      size: 7376
     outs:
     - path: figures/fig_windows.svg
       hash: md5
-      md5: da9bf93501727669f6940a7462c91912
-      size: 147251
+      md5: 8c213f24c1c5391dc1c3c78381b8dbba
+      size: 185804
   plot_supplement:
     cmd: python scripts/make_supplement.py
     deps:
@@ -435,14 +435,14 @@ stages:
       size: 5930
     - path: tsmodes/plotting.py
       hash: md5
-      md5: d64dc7dcb4dab2881e991a860cacc083
-      size: 6962
+      md5: 82a475523e19e6c23bacc92738a6b77c
+      size: 7376
     outs:
     - path: figures/figS_oscillation_grid.svg
       hash: md5
-      md5: 52ed3231d25b934244757c8f07bdc9a1
+      md5: 36c05a741e1bb4d54518e84854329cf6
       size: 127343
     - path: figures/figS_population.svg
       hash: md5
-      md5: 629f760b374e6ff4fd1cd3925846d5db
+      md5: 6c60ea43aec5ecd2767c20f66645a660
       size: 58625

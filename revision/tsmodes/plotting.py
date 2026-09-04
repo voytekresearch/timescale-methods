@@ -9,14 +9,20 @@ from matplotlib.patches import Circle
 # spectrum) and shaded by model order (light = AR(1), dark = AR(p)).  Six
 # methods with an arbitrary palette are unreadable; six methods on a 3 x 2 grid
 # of domain and order are not.
-DOMAIN_COLORS = {'time': '#3E7CB1', 'acf': '#D1701A', 'psd': '#2E7D4F'}
+# Hue carries the domain, lightness the model order.  Lightness survives
+# every common form of colour blindness, and the hues are taken from the
+# Okabe-Ito set, which is designed to stay separable under all of them.  The
+# light and dark ends are pushed further apart than is pretty, because these
+# pairs are read as two overlaid curves in the spectrum and autocorrelation
+# panels, not just as adjacent boxes.
+DOMAIN_COLORS = {'time': '#0072B2', 'acf': '#D55E00', 'psd': '#009E73'}
 METHOD_COLORS = {
-    'ar1_direct': '#93BBDE',
-    'arp_direct': '#2C5F8D',
-    'ar1_acf': '#F2B279',
-    'arp_acf': '#B25A12',
-    'ar1_psd': '#8FC8A2',
-    'arp_psd': '#1F5C39',
+    'ar1_direct': '#9ECAE9',
+    'arp_direct': '#08519C',
+    'ar1_acf': '#FDBF6F',
+    'arp_acf': '#A63603',
+    'ar1_psd': '#7FD0B0',
+    'arp_psd': '#00441B',
 }
 METHOD_DOMAIN = {'ar1_direct': 'time', 'arp_direct': 'time',
                  'ar1_acf': 'acf', 'arp_acf': 'acf',

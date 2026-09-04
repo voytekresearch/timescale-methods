@@ -130,16 +130,6 @@ stages:
       - results/damped_grid.csv.gz
     outs: [figures/fig_oscillations.svg]
 
-  plot_finite:
-    cmd: python scripts/run_04_finite.py --figures-only
-    deps:
-      - scripts/run_04_finite.py
-      - tsmodes/plotting.py
-      - results/finite_sampling.csv.gz
-      - results/finite_analytic.csv
-      - results/empirical_truncation_summary.csv
-    outs: [figures/figS_finite.svg]
-
   plot_realdata:
     cmd: python scripts/run_05_real_data.py --figures-only
     deps:

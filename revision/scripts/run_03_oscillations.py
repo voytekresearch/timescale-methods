@@ -169,7 +169,12 @@ def make_figure(sweep, damped, pop):
     for r, (proc, title, _) in enumerate(rows):
         signal = prepare(proc.simulate(200.0, FS, rng), FS, welch_win_s=4.0)
         fit1 = estimate(signal, 'ar1_psd', robust=True)
-        fitp = estimate(signal, 'arp_psd', order=2 if r else None, robust=True)
+        # Let BIC choose, as the benchmark does.  Forcing order 2 here used
+        # to give the AR(2) oscillator exactly the model it was built from,
+        # but the relaxation requirement now spends one of those two poles,
+        # leaving a single pole for the rhythm -- so a forced AR(2) came back
+        # as two real poles and no oscillation at all.
+        fitp = estimate(signal, 'arp_psd', robust=True)
 
         # -- the signal ----------------------------------------------------
         ax = fig.add_subplot(gs[r, 0])
