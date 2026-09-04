@@ -145,140 +145,98 @@ def method_curve(df, process, method, column='tau_relaxation'):
 
 
 def make_figure(df, analytic):
-    fig = plt.figure(figsize=(7.6, 5.6))
-    gs = fig.add_gridspec(2, 3, hspace=0.62, wspace=0.45)
+    """Four panels: the analytic finite-sample theory checked against Monte
+    Carlo, and the same question asked of real recordings by windowing them.
 
-    # (a) tau_hat / tau vs T/tau, AR(1) -----------------------------------
+    The main-text figure reports the headline numbers; this one shows the
+    per-estimator and per-dataset detail behind them.
+    """
+    from tsmodes import datasets as D
+    emp_path = RES / 'empirical_truncation_summary.csv'
+    emp = pd.read_csv(emp_path) if emp_path.exists() else None
+
+    fig = plt.figure(figsize=(7.2, 4.6))
+    gs = fig.add_gridspec(2, 2, hspace=0.60, wspace=0.36)
+    durations = np.sort(df['duration'].unique())
+
+    # (a) analytic vs simulated -------------------------------------------
     ax = fig.add_subplot(gs[0, 0])
-    for method in METHODS:
-        med, lo, hi, _ = method_curve(df, 'ar1', method)
-        ax.plot(RATIOS, med / TAU, 'o-', color=P.METHOD_COLORS[method], lw=1.1,
-                ms=2.5,
-                label=ESTIMATOR_LABELS[method].replace('AR(p)', 'AR($p$)'))
-        if method == 'ar1_direct':
-            ax.fill_between(RATIOS, lo / TAU, hi / TAU,
-                            color=P.METHOD_COLORS[method], alpha=0.15, lw=0)
-    ax.plot(RATIOS, 1 + analytic['rel_bias'], 'k--', lw=1.0,
-            label='analytic mean')
-    ax.plot(RATIOS, analytic['ci_lo'] / TAU, color='k', ls=':', lw=0.8)
-    ax.plot(RATIOS, analytic['ci_hi'] / TAU, color='k', ls=':', lw=0.8,
-            label='analytic 95% CI')
-    ax.axhline(1.0, color=P.LIGHT, lw=0.8, zorder=0)
+    sub = df[(df['process'] == 'ar1') & (df['method'] == 'ar1_direct')]
+    med = sub.groupby('duration')['tau'].median().reindex(durations)
+    ax.plot(durations / TAU, med / TAU, 'o-', ms=3.5, lw=1.2, color='k',
+            label='simulated')
+    ax.plot(analytic['duration_over_tau'],
+            1 + analytic['rel_bias'], '--', lw=1.2,
+            color=P.MODE_COLORS['oscillatory'], label='analytic')
+    ax.fill_between(analytic['duration_over_tau'],
+                    analytic['ci_lo'] / TAU, analytic['ci_hi'] / TAU,
+                    color=P.LIGHT, alpha=0.5, lw=0, label='95% interval')
+    ax.axhline(1.0, color=P.GREY, lw=0.8, zorder=0)
     ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlabel('$T/\\tau$')
-    ax.set_ylabel('$\\hat\\tau/\\tau$')
-    ax.set_title('AR(1): finite-sample bias', fontsize=8)
-    ax.legend(fontsize=5.2, loc='lower right')
-    P.panel_label(ax, 'a', dx=-0.28)
+    ax.set_ylim(0.4, 1.6)
+    ax.set_xlabel(r'Recording length / $\tau$')
+    ax.set_ylabel(r'$\hat\tau\,/\,\tau$')
+    ax.set_title('Theory vs simulation', fontsize=9)
+    ax.legend(fontsize=6.2, loc='lower right', handlelength=1.5)
+    P.panel_label(ax, 'a', dx=-0.24)
 
-    # (b) relative sd -------------------------------------------------------
+    # (b) the sampling distribution ---------------------------------------
     ax = fig.add_subplot(gs[0, 1])
-    for method in METHODS:
-        _, _, _, sd = method_curve(df, 'ar1', method)
-        ax.plot(RATIOS, sd, 'o-', color=P.METHOD_COLORS[method], lw=1.1, ms=2.5)
-    ax.plot(RATIOS, analytic['rel_sd_asymptotic'], 'k--', lw=1.1,
-            label='$\\sqrt{2\\tau/T}$')
-    ax.axhline(0.1, color=P.LIGHT, lw=0.8)
-    ax.text(RATIOS[0], 0.105, '10% s.e.', fontsize=5.6, color=P.GREY)
-    ax.axvline(200, color=P.LIGHT, lw=0.8)
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlabel('$T/\\tau$')
-    ax.set_ylabel('Relative s.d. of $\\hat\\tau$')
-    ax.set_title('Precision scales as $\\sqrt{\\tau/T}$', fontsize=8)
-    ax.legend(fontsize=6, loc='lower left')
-    P.panel_label(ax, 'b', dx=-0.30)
-
-    # (c) analytic sampling distribution vs Monte Carlo --------------------
-    ax = fig.add_subplot(gs[0, 2])
-    rng = np.random.default_rng(0)
-    for ratio, color in zip((20.0, 100.0, 1000.0),
-                            ('#C44E52', '#DD8452', '#4C72B0')):
-        duration = ratio * TAU
-        sub = df[(df['process'] == 'ar1') & (df['method'] == 'ar1_direct')
-                 & np.isclose(df['duration'], duration)]
-        emp = sub['tau'].to_numpy(dtype=float)
-        emp = emp[np.isfinite(emp)] / TAU
-        draws = sample_tau_finite(TAU, duration, FS, 200000, rng) / TAU
-        draws = draws[np.isfinite(draws)]
-        bins = np.linspace(0, 3, 61)
-        ax.hist(emp, bins=bins, density=True, histtype='stepfilled',
-                color=color, alpha=0.3, lw=0)
-        counts, edges = np.histogram(draws, bins=bins, density=True)
-        ax.plot(0.5 * (edges[1:] + edges[:-1]), counts, color=color, lw=1.2,
-                label=f'$T/\\tau$={ratio:g}')
-    ax.axvline(1.0, color='k', ls='--', lw=0.9)
-    ax.set_xlabel('$\\hat\\tau/\\tau$')
+    for tot, colour in zip([20, 100, 1000],
+                           ['#B3402F', '#E08A2E', '#3B6FA0']):
+        dur = TAU * tot
+        near = durations[np.argmin(np.abs(durations - dur))]
+        vals = df[(df['process'] == 'ar1') & (df['method'] == 'ar1_direct')
+                  & (df['duration'] == near)]['tau'].to_numpy(float) / TAU
+        vals = vals[np.isfinite(vals)]
+        if len(vals) > 5:
+            ax.hist(vals, bins=40, range=(0, 3), density=True, histtype='step',
+                    color=colour, lw=1.2, label=rf'$T={tot}\tau$')
+    ax.axvline(1.0, color='k', ls='--', lw=1.0)
+    ax.set_xlabel(r'$\hat\tau\,/\,\tau$')
     ax.set_ylabel('Density')
-    ax.set_title('Analytic vs simulated\nsampling distribution', fontsize=8)
-    ax.legend(fontsize=5.6)
-    P.panel_label(ax, 'c', dx=-0.28)
+    ax.set_title('Sampling distribution', fontsize=9)
+    ax.legend(fontsize=6.2, loc='upper right')
+    P.panel_label(ax, 'b', dx=-0.24)
 
-    # (d) window dependence of the ACF estimator ---------------------------
+    if emp is None:
+        P.save(fig, FIG / 'figS_finite.svg')
+        return
+
+    keys = [k for k in D.DATASET_KEYS if k in set(emp['dataset'])]
+    colours = dict(zip(keys, plt.cm.viridis(np.linspace(0, 0.9, len(keys)))))
+
+    # (c) the same question, asked of real recordings ----------------------
     ax = fig.add_subplot(gs[1, 0])
-    colors = plt.cm.viridis(np.linspace(0, 0.9, len(OTHER)))
-    med, _, _, _ = method_curve(df, 'ar1', 'ar1_acf')
-    ax.plot(DURATIONS, med, 'o--', color='k', lw=1.1, ms=2.5, label='AR(1)')
-    for proc, label, color in zip(OTHER, OTHER_LABELS, colors):
-        med, _, _, _ = method_curve(df, proc.name, 'ar1_acf')
-        ax.plot(DURATIONS, med, 'o-', color=color, lw=1.1, ms=2.5, label=label)
-    ax.plot(DURATIONS, DURATIONS * 0.035, color=P.GREY, ls=':', lw=1.0)
-    ax.text(DURATIONS[-3], DURATIONS[-3] * 0.05, '$\\hat\\tau \\propto T$',
-            fontsize=5.6, color=P.GREY)
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlabel('Recording duration $T$ (s)')
-    ax.set_ylabel('ACF-fit $\\hat\\tau$ (s)')
-    ax.set_title('Window dependence (ACF fit)', fontsize=8)
-    ax.legend(fontsize=5.0, loc='upper left', ncol=2, columnspacing=0.7)
-    P.panel_label(ax, 'd', dx=-0.28)
+    for key in keys:
+        sub = emp[(emp['dataset'] == key) & (emp['method'] == 'ar1_psd')]
+        ax.plot(sub['duration'], sub['rel_to_longest'], 'o-', ms=2.5, lw=1.0,
+                color=colours[key], label=D.SHORT_NAMES.get(key, key))
+    ax.axhline(1.0, color='k', ls=':', lw=0.9)
+    ax.axhspan(0.9, 1.1, color=P.LIGHT, alpha=0.4, lw=0)
+    ax.set_xscale('log'); ax.set_yscale('log')
+    ax.set_ylim(0.2, 3.2)
+    ax.set_yticks([0.25, 0.5, 1, 2]); ax.set_yticklabels(['0.25', '0.5', '1', '2'])
+    ax.set_xlabel('Window duration (s)')
+    ax.set_ylabel(r'$\hat\tau(T)\,/\,\hat\tau$(longest)')
+    ax.set_title('Windowing, spectral fit', fontsize=9)
+    ax.legend(fontsize=4.8, ncol=3, loc='upper center',
+              bbox_to_anchor=(0.5, -0.30), columnspacing=0.5,
+              handlelength=1.2, frameon=False)
+    P.panel_label(ax, 'c', dx=-0.26)
 
-    # (e) is tau a property of the signal or the window? -------------------
+    # (d) model order needs data too ---------------------------------------
     ax = fig.add_subplot(gs[1, 1])
-    names = ['ar1'] + [p.name for p in OTHER]
-    labels = ['AR(1)'] + OTHER_LABELS
-    shown = ['ar1_acf', 'ar1_direct', 'ar1_psd']
-    height = 0.24
-    upper = DURATIONS >= 5.0
-    for i, method in enumerate(shown):
-        slopes = []
-        for name in names:
-            med, _, _, _ = method_curve(df, name, method)
-            good = np.isfinite(med) & (med > 0) & upper
-            slopes.append(np.polyfit(np.log2(DURATIONS[good]),
-                                     np.log2(med[good]), 1)[0]
-                          if good.sum() > 2 else np.nan)
-        ax.barh(np.arange(len(names)) + (i - 1) * height, slopes, height=height,
-                color=P.METHOD_COLORS[method],
-                label=ESTIMATOR_LABELS[method])
-    ax.axvline(0, color=P.LIGHT, lw=0.8)
-    ax.axvline(1, color=P.GREY, ls=':', lw=0.8)
-    ax.set_yticks(np.arange(len(names)))
-    ax.set_yticklabels(labels, fontsize=5.6)
-    ax.set_xlabel('$d\\log_2\\hat\\tau / d\\log_2 T$  ($T\\geq 5$ s)')
-    ax.set_title('Is $\\hat\\tau$ a property of the\nsignal or of the window?',
-                 fontsize=8)
-    ax.legend(fontsize=5.0, loc='lower right')
-    P.panel_label(ax, 'e', dx=-0.50)
-
-    # (f) order and dominant-mode stability --------------------------------
-    ax = fig.add_subplot(gs[1, 2])
-    for proc, label, color in zip([AR1(tau=TAU)] + OTHER, ['AR(1)'] + OTHER_LABELS,
-                                  ['k'] + list(plt.cm.viridis(
-                                      np.linspace(0, 0.9, len(OTHER))))):
-        orders = []
-        for duration in DURATIONS:
-            sub = df[(df['process'] == proc.name) & (df['method'] == 'arp_psd')
-                     & np.isclose(df['duration'], duration)]
-            orders.append(sub['order'].median())
-        ax.plot(RATIOS, orders, 'o-', color=color, lw=1.0, ms=2.5, label=label)
+    for key in keys:
+        sub = emp[(emp['dataset'] == key) & (emp['method'] == 'arp_psd')]
+        if 'median_order' in sub:
+            ax.plot(sub['duration'], sub['median_order'], 'o-', ms=2.5, lw=1.0,
+                    color=colours[key])
     ax.set_xscale('log')
-    ax.set_xlabel('$T/\\tau$')
-    ax.set_ylabel('Selected AR order')
-    ax.set_title('Model order needs data', fontsize=8)
-    ax.legend(fontsize=5.2, ncol=2, loc='upper left', columnspacing=0.7)
-    P.panel_label(ax, 'f', dx=-0.28)
+    ax.set_xlabel('Window duration (s)')
+    ax.set_ylabel('AR order selected')
+    ax.set_title('Order needs data', fontsize=9)
+    P.panel_label(ax, 'd', dx=-0.26)
 
     P.save(fig, FIG / 'figS_finite.svg')
 

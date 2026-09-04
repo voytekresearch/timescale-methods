@@ -94,8 +94,35 @@ ORDER_GRID = (1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20)
 ORDER_PATIENCE = 3
 
 
+def multitaper_psd(sig, fs, nw=4.0, n_tapers=None):
+    """Multitaper spectrum of a whole record, and its implied lag window.
+
+    Welch trades resolution for variance by cutting the record up, which a
+    short record cannot afford: 296 fMRI samples leave either too few
+    frequency bins to fit or too few segments to average.  Multitapering
+    averages orthogonal tapers of the *whole* record instead, so it buys the
+    same variance reduction without spending record length.
+    """
+    from scipy.signal.windows import dpss
+    sig = np.asarray(sig, dtype=float)
+    n = len(sig)
+    n_tapers = int(2 * nw - 1) if n_tapers is None else int(n_tapers)
+    tapers = dpss(n, nw, n_tapers)
+    power = np.zeros(n // 2 + 1)
+    for taper in tapers:
+        power += np.abs(np.fft.rfft(sig * taper)) ** 2
+    power *= 2.0 / (n_tapers * fs)
+    freqs = np.fft.rfftfreq(n, d=1.0 / fs)
+    # The estimate is the average of tapered periodograms, so the lag window
+    # it implies is the average of the tapers' autocorrelations.
+    lagwin = np.mean([np.correlate(t, t, 'full')[n - 1:] for t in tapers],
+                     axis=0)
+    return freqs, power, lagwin / lagwin[0], n_tapers
+
+
 def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
-            name='', detrend='constant', exclude_bands=(), welch_overlap=0.5):
+            name='', detrend='constant', exclude_bands=(), welch_overlap=0.5,
+            method='welch', nw=4.0):
     """Compute the PSD and ACF used by every estimator.
 
     Parameters
@@ -120,12 +147,17 @@ def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
     sig = sig - sig.mean()
     n = len(sig)
 
-    nperseg = int(min(n, round(welch_win_s * fs)))
-    nperseg = max(nperseg, 8)
-    noverlap = int(round(welch_overlap * nperseg))
-    freqs, powers = welch(sig, fs=fs, nperseg=nperseg, noverlap=noverlap,
-                          window='hann', detrend=detrend, scaling='density')
-    n_segments = max(1, 1 + (n - nperseg) // (nperseg - noverlap))
+    if method == 'multitaper':
+        freqs, powers, lagwin, n_segments = multitaper_psd(sig, fs, nw=nw)
+        nperseg = n
+    else:
+        nperseg = int(min(n, round(welch_win_s * fs)))
+        nperseg = max(nperseg, 8)
+        noverlap = int(round(welch_overlap * nperseg))
+        freqs, powers = welch(sig, fs=fs, nperseg=nperseg, noverlap=noverlap,
+                              window='hann', detrend=detrend, scaling='density')
+        n_segments = max(1, 1 + (n - nperseg) // (nperseg - noverlap))
+        lagwin = None
 
     if f_range is None:
         f_range = (fs / nperseg, fs / 2)
@@ -152,7 +184,7 @@ def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
     f_lo = f_range[0] if f_range[0] > 1.5 * fs / nperseg else 0.0
     band = (freqs >= f_lo) & (freqs <= f_range[1])
     corrs = band_limited_acf(freqs, powers, nlags, band & keep, band,
-                             nperseg=nperseg, window='hann')
+                             nperseg=nperseg, window='hann', lagwin=lagwin)
     lags = np.arange(len(corrs))          # the taper correction may shorten it
 
     out = Signal(sig=sig, fs=fs, freqs=freqs, powers=powers, lags=lags,
@@ -160,11 +192,14 @@ def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
                  n_segments=n_segments, name=name)
     out.exclude_mask = keep
     out.raw_corrs = _acf(sig, len(corrs) - 1)
+    # Adjacent multitaper bins inside the resolution bandwidth 2*NW/T are
+    # correlated; the spectral fits thin to that spacing.
+    out.fit_decimate = int(round(2 * nw)) if method == 'multitaper' else 1
     return out
 
 
 def band_limited_acf(freqs, powers, nlags, keep, band, nperseg=None,
-                     window='hann'):
+                     window='hann', lagwin=None):
     """Autocorrelation of a spectrum restricted to the analysis band.
 
     Bins inside ``band`` but excluded by ``keep`` (line noise and its
@@ -185,9 +220,11 @@ def band_limited_acf(freqs, powers, nlags, keep, band, nperseg=None,
                                                                 1e-300))))
     powers[~band] = 0.0
     acov = np.fft.irfft(powers)[: nlags + 1]
-    if nperseg:
-        taper = get_window(window, int(nperseg))
-        lagwin = np.correlate(taper, taper, 'full')[int(nperseg) - 1:]
+    if lagwin is not None or nperseg:
+        if lagwin is None:
+            taper = get_window(window, int(nperseg))
+            lagwin = np.correlate(taper, taper, 'full')[int(nperseg) - 1:]
+        lagwin = np.asarray(lagwin, dtype=float)
         lagwin = lagwin[: nlags + 1] / lagwin[0]
         # Below about a fifth of the taper's energy the correction amplifies
         # noise faster than it removes bias, so those lags are dropped.
@@ -789,9 +826,18 @@ def psd_fit_points(signal, max_points=MAX_PSD_POINTS):
     A very long Welch segment produces far more bins than a model of order 20
     can use, and the cost of a fit is linear in them.  Bins are thinned
     uniformly above ``max_points``, which leaves the analysis band unchanged.
+
+    Multitaper bins are additionally thinned to the estimator's own resolution
+    bandwidth, because within it they are not independent.  Order selection
+    counts fitted points as independent observations, so leaving them in makes
+    the data look eight times larger than it is and BIC buys orders the record
+    cannot support: on 296 fMRI samples it selected p = 20.
     """
     mask = signal.fit_mask & signal.exclude_mask
     freqs, powers = signal.freqs[mask], signal.powers[mask]
+    decim = int(getattr(signal, 'fit_decimate', 1) or 1)
+    if decim > 1:
+        freqs, powers = freqs[::decim], powers[::decim]
     if len(freqs) > max_points:
         step = int(np.ceil(len(freqs) / max_points))
         freqs, powers = freqs[::step], powers[::step]

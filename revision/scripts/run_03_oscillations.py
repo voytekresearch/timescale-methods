@@ -161,9 +161,9 @@ def make_figure(sweep, damped, pop):
     show = ['ar1_acf', 'arp_acf', 'ar1_psd', 'arp_psd']
 
     rows = [
-        (AR1PlusSine(tau=TAU, f_osc=10.0, snr=1.0), 'Sine wave added to AR(1)',
+        (AR1PlusSine(tau=TAU, f_osc=10.0, snr=1.0), 'AR(1) + Oscillation',
          'ab c'),
-        (AR2Damped(tau=TAU, f_osc=10.0), 'AR(2) stochastic oscillator', 'def'),
+        (AR2Damped(tau=TAU, f_osc=10.0), 'AR(2) oscillator', 'def'),
     ]
 
     for r, (proc, title, _) in enumerate(rows):
@@ -219,7 +219,7 @@ def make_figure(sweep, damped, pop):
             ax.set_yscale('log')
             ax.set_xlabel('Oscillation / aperiodic power', fontsize=8)
             ax.set_ylabel('Aperiodic $\\hat\\tau$ (s)', fontsize=8)
-            ax.set_title('Only the spectrum resists\nan added rhythm',
+            ax.set_title('Aperiodic $\\tau$ vs rhythm power',
                          fontsize=8.5)
             ax.set_ylim(8e-3, 2e-1)
             ax.legend(fontsize=5.6, loc='lower left', ncol=2,
@@ -245,7 +245,7 @@ def make_figure(sweep, damped, pop):
             # This is the decay of the envelope multiplying its cosine.
             ax.set_xlabel('True envelope decay $\\tau_{env}$ (s)', fontsize=8)
             ax.set_ylabel('Estimated $\\tau_{env}$ (s)', fontsize=8)
-            ax.set_title('An AR(2) model recovers\nan intrinsic rhythm',
+            ax.set_title('Envelope decay recovery',
                          fontsize=8.5)
             ax.set_ylim(8e-3, 1.1)
             ax.legend(fontsize=5.6, loc='upper left', ncol=2,

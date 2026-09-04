@@ -8,7 +8,7 @@ the AR order and of the dominant modes can be read off directly.
 Outputs
 -------
 results/empirical_truncation.csv.gz, results/empirical_truncation_summary.csv
-figures/figS_truncation.svg
+(no figure; results feed fig_windows and figS_finite)
 """
 
 import os
@@ -183,111 +183,9 @@ def main():
     with pd.option_context('display.width', 220):
         print(table.round(4).to_string(index=False))
 
-    make_figure(df, summary)
-
-
-def make_figure(df, summary):
-    keys = list(dict.fromkeys(summary['dataset']))
-    labels = {k: summary.loc[summary['dataset'] == k, 'label'].iloc[0]
-              for k in keys}
-    colors = dict(zip(keys, plt.cm.viridis(np.linspace(0, 0.92, len(keys)))))
-
-    fig = plt.figure(figsize=(7.6, 5.4))
-    gs = fig.add_gridspec(2, 3, hspace=0.66, wspace=0.5)
-
-    # (a,b) convergence for the ACF and the spectral estimator ------------
-    for col, (method, title) in enumerate((
-            ('ar1_acf', ESTIMATOR_LABELS['ar1_acf']),
-            ('ar1_psd', ESTIMATOR_LABELS['ar1_psd']))):
-        ax = fig.add_subplot(gs[0, col])
-        for key in keys:
-            sub = summary[(summary['dataset'] == key)
-                          & (summary['method'] == method)]
-            ax.plot(sub['duration'], sub['rel_to_longest'], 'o-', ms=2.5,
-                    lw=1.0, color=colors[key], label=_short(key))
-        ax.axhline(1.0, color='k', ls='--', lw=0.9)
-        ax.axhspan(0.9, 1.1, color=P.LIGHT, alpha=0.35, lw=0)
-        ax.set_xscale('log')
-        ax.set_yscale('log')
-        ax.set_ylim(0.2, 3.2)
-        ax.set_yticks([0.25, 0.5, 1, 2])
-        ax.set_yticklabels(['0.25', '0.5', '1', '2'])
-        ax.set_xlabel('Window duration $T$ (s)')
-        if col == 0:
-            ax.set_ylabel('$\\hat\\tau(T)\\,/\\,\\hat\\tau$(longest window)')
-        else:
-            ax.legend(fontsize=4.6, ncol=2, loc='lower left', columnspacing=0.6)
-        ax.set_title(title, fontsize=8)
-        P.panel_label(ax, 'ab'[col], dx=-0.30, dy=1.12)
-
-    # (c) between-window spread vs the AR(1) bound ------------------------
-    ax = fig.add_subplot(gs[0, 2])
-    for key in keys:
-        sub = summary[(summary['dataset'] == key)
-                      & (summary['method'] == 'ar1_psd')]
-        ax.plot(sub['duration'] / sub['median_tau'], sub['log_cv'], 'o-',
-                ms=2.5, lw=1.0, color=colors[key])
-    ratios = np.logspace(0.6, 4.4, 50)
-    ax.plot(ratios, relative_sd_asymptotic(ratios), 'k--', lw=1.2,
-            label='AR(1) bound $\\sqrt{2\\tau/T}$')
-    ax.axhline(STABILITY_CV, color=P.LIGHT, lw=0.9)
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlabel('$T/\\hat\\tau$')
-    ax.set_ylabel('Between-window s.d. of $\\log\\hat\\tau$')
-    ax.set_title('Variability exceeds the\nsampling bound', fontsize=8)
-    ax.legend(fontsize=5.2, loc='lower left')
-    P.panel_label(ax, 'c', dx=-0.34, dy=1.20)
-
-    # (d) excess variability at the longest window -------------------------
-    ax = fig.add_subplot(gs[1, 0])
-    shown = ['ar1_direct', 'ar1_acf', 'ar1_psd']
-    height = 0.24
-    for i, method in enumerate(shown):
-        vals = []
-        for key in keys:
-            sub = summary[(summary['dataset'] == key)
-                          & (summary['method'] == method)]
-            vals.append(sub['excess_sd'].iloc[-1] if len(sub) else np.nan)
-        ax.barh(np.arange(len(keys)) + (i - 1) * height, vals, height=height,
-                color=P.METHOD_COLORS[method], label=ESTIMATOR_LABELS[method])
-    ax.axvline(1.0, color='k', ls='--', lw=0.9)
-    ax.set_xscale('log')
-    ax.set_yticks(np.arange(len(keys)))
-    ax.set_yticklabels([_short(k) for k in keys], fontsize=5.2)
-    ax.set_xlabel('Observed / AR(1)-predicted\nbetween-window s.d.')
-    ax.set_title('Non-stationarity dominates', fontsize=8)
-    ax.legend(fontsize=5.0, loc='lower right')
-    P.panel_label(ax, 'd', dx=-0.85)
-
-    # (e) AR order vs duration ---------------------------------------------
-    ax = fig.add_subplot(gs[1, 1])
-    for key in keys:
-        sub = summary[(summary['dataset'] == key)
-                      & (summary['method'] == 'arp_psd')]
-        ax.plot(sub['duration'], sub['median_order'], 'o-', ms=2.5, lw=1.0,
-                color=colors[key])
-    ax.set_xscale('log')
-    ax.set_xlabel('Window duration $T$ (s)')
-    ax.set_ylabel('Selected AR order')
-    ax.set_title('Model order needs data', fontsize=8)
-    P.panel_label(ax, 'e', dx=-0.30)
-
-    # (f) detection of the band oscillatory mode ---------------------------
-    ax = fig.add_subplot(gs[1, 2])
-    for key in keys:
-        sub = summary[(summary['dataset'] == key)
-                      & (summary['method'] == 'arp_psd')]
-        ax.plot(sub['duration'], sub['frac_band_mode'], 'o-', ms=2.5, lw=1.0,
-                color=colors[key])
-    ax.set_xscale('log')
-    ax.set_ylim(-0.05, 1.05)
-    ax.set_xlabel('Window duration $T$ (s)')
-    ax.set_ylabel('Windows with a mode\nin the reference band')
-    ax.set_title('Dominant-mode stability', fontsize=8)
-    P.panel_label(ax, 'f', dx=-0.32)
-
-    P.save(fig, FIG / 'figS_truncation.svg')
+    # No figure of its own: the windowing panels live in the main
+    # windows figure and in figS_finite, which is where finite-sample
+    # bias and truncation bias belong together.
 
 
 def _short(key_or_label):

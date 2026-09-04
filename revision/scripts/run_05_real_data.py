@@ -206,9 +206,13 @@ def make_figure(keys, cache, fits, modes, summary):
 
         # -- a: spectrum ---------------------------------------------------
         ax = fig.add_subplot(gs[i, 0])
-        ax.axvspan(band[0], band[1], color='#FFB000', alpha=0.16, lw=0)
+        # The recording's expected rhythm band, taken from the dataset's own
+        # documentation, not from the fit.  It marks where a rhythm is
+        # expected; nothing in the estimation uses it.
+        ax.axvspan(band[0], band[1], color='#FFB000', alpha=0.16, lw=0,
+                   label='reference band' if first else None)
         ax.loglog(signal.freqs[mask], signal.powers[mask], color=P.GREY,
-                  lw=0.7, label='data')
+                  lw=1.2, label='data', zorder=1)
         ax.loglog(signal.freqs[mask],
                   ar_psd(fit1.phi, signal.freqs[mask], signal.fs, fit1.offset),
                   color=P.METHOD_COLORS['ar1_psd'], lw=1.3, ls='--',
@@ -224,8 +228,9 @@ def make_figure(keys, cache, fits, modes, summary):
         ax.tick_params(labelsize=6.5)
         if first:
             ax.set_title('Power spectrum', fontsize=9)
-            ax.legend(fontsize=6, loc='lower left', handlelength=1.4,
-                      framealpha=0.85, borderpad=0.25)
+            ax.legend(fontsize=5.8, loc='lower left', handlelength=1.3,
+                      framealpha=0.9, borderpad=0.2, labelspacing=0.2,
+                      bbox_to_anchor=(-0.02, -0.04))
             P.panel_label(ax, 'a', dx=-0.30, dy=1.42)
         if last:
             ax.set_xlabel('Frequency (Hz)', fontsize=7.5)
@@ -234,7 +239,8 @@ def make_figure(keys, cache, fits, modes, summary):
         ax = fig.add_subplot(gs[i, 1])
         nlags = len(signal.corrs) - 1
         lags = np.arange(nlags + 1) / signal.fs
-        ax.plot(lags, signal.corrs, color=P.GREY, lw=0.9, label='data')
+        ax.plot(lags, signal.corrs, color=P.GREY, lw=1.5,
+                label='data', zorder=1)
         # Data solid, both models dashed, so the empirical curve stays
         # visible underneath the fits.
         for fit, method, ls in ((facf1, 'ar1_acf', '--'),
@@ -287,11 +293,14 @@ def make_figure(keys, cache, fits, modes, summary):
                         ha='center', va='bottom', color=P.GREY,
                         transform=ax.get_xaxis_transform())
                 continue
-            jitter = np.random.default_rng(k).uniform(-0.16, 0.16, len(vals))
-            ax.scatter(x + jitter, vals, s=6,
-                       color=P.METHOD_COLORS[method], alpha=0.75, lw=0)
-            ax.plot([x - 0.32, x + 0.32], [np.median(vals)] * 2, color='k',
-                    lw=1.3, solid_capstyle='butt')
+            colour = P.METHOD_COLORS[method]
+            bp = ax.boxplot([vals], positions=[x], widths=0.62,
+                            patch_artist=True, showfliers=False,
+                            medianprops=dict(color='k', lw=1.2),
+                            whiskerprops=dict(color=colour, lw=0.8),
+                            capprops=dict(color=colour, lw=0.8))
+            for box in bp['boxes']:
+                box.set(facecolor=colour, alpha=0.55, lw=0.7, edgecolor=colour)
         finite = [v * scale for v in medians.values() if np.isfinite(v)]
         # A linear axis is far easier to read than a log one, but a single
         # badly mismatched estimator would otherwise flatten it.  The axis is
@@ -314,7 +323,7 @@ def make_figure(keys, cache, fits, modes, summary):
         ax.set_ylabel(unit, fontsize=7, labelpad=1)
         ax.tick_params(labelsize=6.5)
         if first:
-            ax.set_title('Estimated $\\tau$', fontsize=9)
+            ax.set_title('Aperiodic $\\tau$', fontsize=9)
             P.panel_label(ax, 'c', dx=-0.28, dy=1.42)
         if last:
             for x, (dom, name) in zip([0.5, 3.4, 6.3],
@@ -323,6 +332,9 @@ def make_figure(keys, cache, fits, modes, summary):
                 ax.text(x, -1.05, name, ha='center', va='top', fontsize=6.5,
                         color=P.DOMAIN_COLORS[dom],
                         transform=ax.get_xaxis_transform())
+            ax.text(3.4, -1.42, '\u25b2 median above the axis', ha='center',
+                    va='top', fontsize=5.8, color=P.GREY,
+                    transform=ax.get_xaxis_transform())
 
         # -- d: oscillatory modes -------------------------------------------
         ax = fig.add_subplot(gs[i, 3])

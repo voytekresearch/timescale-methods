@@ -42,181 +42,6 @@ def build_true_model():
     return ARModes.from_phi(poles_to_ar(np.array(poles)), FS)
 
 
-def fig_modes_technical():
-    """Pole geometry, the additive ACF decomposition, and raw coefficients."""
-    model = build_true_model()
-    sweep = pd.read_csv(RES / 'modes_vs_coefficients_sweep.csv')
-    dom = model.dominant_subset(tol=0.1)
-
-    fig = plt.figure(figsize=(7.2, 4.6))
-    gs = fig.add_gridspec(2, 2, hspace=0.58, wspace=0.36)
-
-    ax = fig.add_subplot(gs[0, 0])
-    P.plot_pole_diagram(ax, model, annotate=False)
-    for mode in model.modes[:3]:
-        lam = mode.poles[0]
-        txt = (f'{mode.tau*1e3:.0f} ms' if mode.kind == 'relaxation'
-               else f'{mode.tau*1e3:.0f} ms, {mode.freq:.0f} Hz')
-        ax.annotate(txt, (lam.real, lam.imag), fontsize=6,
-                    color=P.MODE_COLORS[mode.kind], ha='right',
-                    textcoords='offset points', xytext=(-8, 6))
-    ax.set_title('Poles in the complex plane', fontsize=8.5)
-    P.panel_label(ax, 'a', dx=-0.24)
-
-    ax = fig.add_subplot(gs[0, 1])
-    nlags = 300
-    lags = np.arange(nlags + 1) / FS
-    comps = model.acf_components(nlags)
-    for mode, comp in zip(model.modes, comps):
-        ax.plot(lags, comp, lw=0.9, ls='--', color=P.MODE_COLORS[mode.kind])
-    ax.plot(lags, model.acf(nlags), color='k', lw=1.6, label='AR($p$) ACF')
-    ax.plot(lags, comps.sum(axis=0), color='#FFB000', lw=1.0, ls=':',
-            label='sum of modes')
-    ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-    ax.set_xlabel('Lag (s)')
-    ax.set_ylabel('Autocorrelation')
-    ax.set_title('Modes add in the autocorrelation', fontsize=8.5)
-    ax.legend(fontsize=6.5)
-    P.panel_label(ax, 'b', dx=-0.22)
-
-    ax = fig.add_subplot(gs[1, 0])
-    names = [(f'{m.tau*1e3:.0f} ms\n{m.freq:.0f} Hz' if m.kind != 'relaxation'
-              else f'{m.tau*1e3:.0f} ms\nno rhythm') for m in model.modes]
-    ax.bar(np.arange(len(names)), [m.importance for m in model.modes],
-           color=[P.MODE_COLORS[m.kind] for m in model.modes], width=0.62)
-    ax.set_xticks(np.arange(len(names)))
-    ax.set_xticklabels(names, fontsize=6)
-    ax.set_ylabel('RMS $\\Delta\\log_{10}$ power\non deletion')
-    ax.set_title('Mode importance', fontsize=8.5)
-    P.panel_label(ax, 'c', dx=-0.24)
-
-    ax = fig.add_subplot(gs[1, 1])
-    n_phi = sum(1 for c in sweep.columns if c.startswith('phi'))
-    for i in range(1, n_phi + 1):
-        ax.plot(sweep['f_osc'], sweep[f'phi{i}'], lw=0.9,
-                label=(f'$\\varphi_{i}$' if i <= 3 else None))
-    ax.axhline(1.0, color='k', ls=':', lw=0.8)
-    ax.set_xlabel('Constructed oscillation frequency (Hz)')
-    ax.set_ylabel('AR coefficient $\\varphi_k$')
-    ax.set_title('Coefficients carry no direct meaning', fontsize=8.5)
-    ax.legend(ncol=3, fontsize=6.5, loc='lower center')
-    P.panel_label(ax, 'd', dx=-0.22)
-
-    P.save(fig, FIG / 'figS_modes_technical.svg')
-
-
-def fig_modes_two_domains():
-    """How the modes of an AR(p) combine, and how differently in each domain.
-
-    The same five modes multiply in the spectrum and add in the
-    autocorrelation.  Both statements are exact and they are not the same
-    decomposition, which is the thing that makes higher-order models
-    confusing to read.
-    """
-    model = build_true_model()
-    freqs = np.logspace(np.log10(0.5), np.log10(FS / 2), 600)
-    nlags = 250
-    lags = np.arange(nlags + 1) / FS
-    colours = [P.MODE_COLORS[m.kind] for m in model.modes]
-
-    fig = plt.figure(figsize=(7.2, 4.8))
-    gs = fig.add_gridspec(2, 2, hspace=0.55, wspace=0.34)
-
-    # (a) the spectrum: a product of one factor per mode -------------------
-    ax = fig.add_subplot(gs[0, 0])
-    ref = np.exp(np.mean(np.log(model.psd(freqs))))
-    for mode, c in zip(model.modes, colours):
-        f = mode.psd(freqs)
-        ax.loglog(freqs, f / np.exp(np.mean(np.log(f))), lw=0.9, ls='--',
-                  color=c)
-    ax.loglog(freqs, model.psd(freqs) / ref, color='k', lw=1.8,
-              label='AR($p$) spectrum')
-    ax.set_xlabel('Frequency (Hz)')
-    ax.set_ylabel('Relative power')
-    ax.set_title('Spectrum: the modes multiply', fontsize=8.5)
-    ax.text(0.03, 0.06, r'$S(f)=\sigma^2\prod_k|1-\lambda_k e^{-i\omega}|^{-2}$',
-            transform=ax.transAxes, fontsize=7)
-    ax.legend(fontsize=6.5, loc='upper right')
-    P.panel_label(ax, 'a', dx=-0.24)
-
-    # (b) the autocorrelation: a sum of one term per mode ------------------
-    ax = fig.add_subplot(gs[0, 1])
-    comps = model.acf_components(nlags)
-    for comp, c in zip(comps, colours):
-        ax.plot(lags, comp, lw=0.9, ls='--', color=c)
-    ax.plot(lags, model.acf(nlags), color='k', lw=1.8, label='AR($p$) ACF')
-    ax.plot(lags, comps.sum(axis=0), color='#FFB000', lw=1.0, ls=':',
-            label='sum of modes')
-    ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-    ax.set_xlim(0, 0.3)
-    ax.set_xlabel('Lag (s)')
-    ax.set_ylabel('Autocorrelation')
-    ax.set_title('Autocorrelation: the modes add', fontsize=8.5)
-    ax.text(0.03, 0.06, r'$\gamma(k)=\sum_j A_j\lambda_j^{\,k}$',
-            transform=ax.transAxes, fontsize=7)
-    ax.legend(fontsize=6.5, loc='upper right')
-    P.panel_label(ax, 'b', dx=-0.24)
-
-    # (c) the two decompositions are not the same object -------------------
-    ax = fig.add_subplot(gs[1, 0])
-    mode = model.modes[0]
-    n = 1 << 15
-    fr = np.fft.rfftfreq(n, d=1.0 / FS)
-    own = np.fft.irfft(mode.psd(fr))[: nlags + 1]
-    own = own / own[0]
-    add = comps[0] / comps[0][0]
-    ax.plot(lags, add, color=P.MODE_COLORS[mode.kind], lw=1.6,
-            label="its term in the sum")
-    ax.plot(lags, own, color='k', lw=1.2, ls='--',
-            label="transform of its factor")
-    ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-    ax.set_xlim(0, 0.3)
-    ax.set_xlabel('Lag (s)')
-    ax.set_ylabel('Normalized')
-    ax.set_title(f'One mode, two decompositions\n'
-                 f'({mode.tau*1e3:.0f} ms, {mode.freq:.0f} Hz)', fontsize=8.5)
-    ax.legend(fontsize=6.5, loc='upper right')
-    P.panel_label(ax, 'c', dx=-0.24)
-
-    # (d) what to report for each mode ------------------------------------
-    ax = fig.add_subplot(gs[1, 1])
-    dom = model.dominant_subset(tol=0.1)
-    keep = set(dom['indices'])
-    # Relaxation modes have no frequency, so they get their own column at the
-    # left rather than being piled on top of each other at the axis edge.
-    relax_x = [0.9, 1.6]
-    n_rel = 0
-    for i, (mode, c) in enumerate(zip(model.modes, colours)):
-        if mode.kind == 'relaxation':
-            x = relax_x[min(n_rel, len(relax_x) - 1)]
-            n_rel += 1
-        else:
-            x = mode.freq
-        ax.scatter([x], [mode.tau * 1e3], s=30 + 260 * mode.importance,
-                   color=c, alpha=0.85 if i in keep else 0.3,
-                   edgecolor='k' if i in keep else 'none', lw=0.7, zorder=3)
-        txt = (f'{mode.tau*1e3:.0f} ms' if mode.kind == 'relaxation'
-               else f'{mode.tau*1e3:.0f} ms, {mode.n_cycles:.1f} cyc')
-        ax.annotate(txt, (x, mode.tau * 1e3), fontsize=5.8, ha='left',
-                    va='center', textcoords='offset points', xytext=(11, 0))
-    ax.axvline(2.6, color=P.LIGHT, lw=0.8, ls=':', zorder=0)
-    ax.set_xscale('log'); ax.set_yscale('log')
-    ax.set_xlim(0.6, 1200)
-    ax.set_xlabel('Mode frequency (Hz)')
-    ax.set_ylabel(r'Mode $\tau$ (ms)')
-    ax.set_title(f'What to report: {len(model.modes)} modes,\n'
-                 f'{dom["n_modes"]} of them dominant', fontsize=8.5)
-    ax.text(0.02, 0.97, 'relaxations\n(no frequency)', transform=ax.transAxes,
-            fontsize=5.6, color=P.GREY, va='top')
-    ax.text(0.98, 0.97, 'area = importance\noutlined = dominant',
-            transform=ax.transAxes, fontsize=6, color=P.GREY, ha='right',
-            va='top')
-    ax.set_ylim(1, 500)
-    P.panel_label(ax, 'd', dx=-0.24)
-
-    P.save(fig, FIG / 'figS_modes_domains.svg')
-
-
 def fig_population():
     """What AR(p) converges to with infinite data, and how order is chosen."""
     pop = pd.read_csv(RES / 'population_ar.csv')
@@ -244,29 +69,31 @@ def fig_population():
     ax.set_xticks(np.arange(len(PROCESS_KEYS)))
     ax.set_xticklabels(SHORT, rotation=32, ha='right', fontsize=6)
     ax.set_ylabel('Order chosen by BIC')
-    ax.set_title('Order selected from finite data', fontsize=8.5)
+    ax.set_title('Order selected', fontsize=9)
     ax.legend(fontsize=5.8, loc='center left', bbox_to_anchor=(0.02, 0.62))
     P.panel_label(ax, 'a', dx=-0.30)
 
     # (b) what order would be needed with unlimited data ------------------
-    # AR(1) and the AR(2) oscillator are omitted: an AR(p) model contains
-    # them exactly, so their divergence falls to numerical zero at p = 1 and
-    # p = 2 and the curve is a vertical drop that carries no information.
+    # Every process is shown.  The three that an AR(p) contains exactly drop
+    # to numerical zero at their own order, which is the informative part:
+    # the curve ends where the model becomes correct.  A floor keeps those
+    # drops on a log axis instead of running off the bottom.
     ax = fig.add_subplot(gs[0, 1])
-    exact = {'ar1', 'ar2_damped', 'arp_modes'}
-    keys = [k for k in PROCESS_KEYS if k not in exact]
-    labels = [t for k, t in zip(PROCESS_KEYS, SHORT) if k not in exact]
-    colours = plt.cm.viridis(np.linspace(0, 0.82, len(keys)))
-    for key, label, colour in zip(keys, labels, colours):
+    floor = 1e-9
+    colours = plt.cm.viridis(np.linspace(0, 0.88, len(PROCESS_KEYS)))
+    for key, label, colour in zip(PROCESS_KEYS, SHORT, colours):
         sub = pop[pop['process'] == key]
-        ax.semilogy(sub['order'], sub['is_div'], color=colour, lw=1.1,
-                    label=label)
+        ax.semilogy(sub['order'], np.maximum(sub['is_div'], floor),
+                    color=colour, lw=1.1, label=label)
+    ax.axhline(floor, color=P.LIGHT, lw=0.8, zorder=0)
+    ax.text(0.98, 0.03, 'exact', transform=ax.transAxes, fontsize=5.8,
+            ha='right', color=P.GREY)
+    ax.set_ylim(floor / 3, None)
     ax.set_xlabel('AR order $p$')
-    ax.set_ylabel('Itakura\u2013Saito divergence\nfrom the true spectrum',
-                  fontsize=7)
-    ax.set_title('Order needed with infinite data', fontsize=8.5)
-    ax.legend(fontsize=5.8, loc='upper right')
-    P.panel_label(ax, 'b', dx=-0.34)
+    ax.set_ylabel('Itakura\u2013Saito divergence', fontsize=7.5)
+    ax.set_title('Order needed', fontsize=9)
+    ax.legend(fontsize=5.6, loc='upper right')
+    P.panel_label(ax, 'b', dx=-0.30)
 
     # (c) --------------------------------------------------------------
     ax = fig.add_subplot(gs[0, 2])
@@ -276,7 +103,7 @@ def fig_population():
     ax.set_xscale('log')
     ax.set_xlabel('Oscillation frequency (Hz)')
     ax.set_ylabel('Smallest order with\nan oscillatory mode')
-    ax.set_title('Cost of an added rhythm', fontsize=8.5)
+    ax.set_title('Cost of a rhythm', fontsize=9)
     P.panel_label(ax, 'c', dx=-0.36)
 
     P.save(fig, FIG / 'figS_population.svg')
@@ -332,8 +159,6 @@ def fig_oscillation_grid():
 def main():
     P.use_style()
     FIG.mkdir(exist_ok=True)
-    fig_modes_technical()
-    fig_modes_two_domains()
     fig_population()
     fig_oscillation_grid()
 

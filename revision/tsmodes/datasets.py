@@ -53,6 +53,8 @@ DEFAULT_ANALYSIS = {
     'f_range': (1.0, 100.0),
     'welch_win_s': 4.0,
     'welch_overlap': 0.5,
+    'method': 'welch',
+    'nw': 4.0,
     'nlags': N_LAGS,
 }
 LINE_HALF_WIDTH = 2.0
@@ -133,6 +135,7 @@ def prepare_trace(trace, data, name='', **overrides):
     nlags = int(min(settings['nlags'], len(trace) // 3))
     return prepare(trace, fs, welch_win_s=welch_win_s, nlags=nlags,
                    welch_overlap=settings['welch_overlap'],
+                   method=settings['method'], nw=settings['nw'],
                    f_range=(f_lo, f_hi), name=name,
                    exclude_bands=line_bands(data['line_hz'], f_hi))
 
