@@ -128,6 +128,8 @@ stages:
       - tsmodes/plotting.py
       - results/oscillation_sweep.csv.gz
       - results/damped_grid.csv.gz
+      - tsmodes/sims.py
+      - tsmodes/estimators.py
     outs: [figures/fig_oscillations.svg]
 
   plot_realdata:
@@ -154,9 +156,6 @@ stages:
     deps:
       - scripts/make_supplement.py
       - tsmodes/plotting.py
-      - results/benchmark_main.csv.gz
       - results/oscillation_sweep.csv.gz
-      - results/oscillation_population_orders.csv
     outs:
-      - figures/figS_population.svg
       - figures/figS_oscillation_grid.svg

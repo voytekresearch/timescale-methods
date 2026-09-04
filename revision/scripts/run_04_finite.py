@@ -122,19 +122,5 @@ def main():
     # same question asked twice, so they share the main windows figure.
 
 
-def method_curve(df, process, method, column='tau_relaxation'):
-    med, lo, hi, sd = [], [], [], []
-    for duration in DURATIONS:
-        sub = df[(df['process'] == process) & (df['method'] == method)
-                 & np.isclose(df['duration'], duration)]
-        v = sub[column].to_numpy(dtype=float)
-        v = v[np.isfinite(v)]
-        med.append(np.median(v) if len(v) else np.nan)
-        lo.append(np.percentile(v, 16) if len(v) else np.nan)
-        hi.append(np.percentile(v, 84) if len(v) else np.nan)
-        sd.append(np.std(v) / np.mean(v) if len(v) > 2 else np.nan)
-    return np.array(med), np.array(lo), np.array(hi), np.array(sd)
-
-
 if __name__ == '__main__':
     main()

@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from tsmodes.modes import (ARModes, ar_acf, ar_impulse_response, ar_psd,
+from tsmodes.modes import (ARModes, ar_impulse_response, ar_psd,
                            ar_to_poles, pole_residues, poles_to_ar,
                            psd_from_poles)
 from tsmodes.estimators import prepare, estimate, population_ar
@@ -172,36 +172,68 @@ def coefficient_vs_mode_sweep(fs, freqs_hz=None):
     return pd.DataFrame(rows)
 
 
+def match_modes(fitted, truth_poles):
+    """Greedily pair fitted modes to constructed ones by pole location.
+
+    Matching on frequency alone cannot separate the two relaxation modes,
+    which both sit at 0 Hz, and matching on tau alone cannot separate modes
+    of similar decay at different frequencies.  The pole carries both
+    coordinates, so pair on distance in the complex plane.
+    """
+    avail = list(fitted)
+    out = []
+    for lam in truth_poles:
+        if not avail:
+            out.append(None)
+            continue
+        best = min(avail, key=lambda m: abs(complex(m.poles[0]) - lam))
+        avail.remove(best)
+        out.append(best)
+    return out
+
+
 def repeatability(phi_true, fs, n_reps=200, duration=60.0):
-    """Across-realization variability of phi_k vs of the mode parameters."""
+    """Across-realization recovery of each constructed mode.
+
+    Each of the five modes has a known ``tau``, so every one of them can be
+    scored; there is no ground truth for a coefficient read as if it were an
+    AR(1), which is why only modes appear here.
+    """
     rng = np.random.default_rng(7)
     order = len(phi_true)
-    phis, taus, freqs_, relax, naive, ar1 = [], [], [], [], [], []
+    # One representative pole per true mode (the one in the upper half plane).
+    truth_poles = [complex(p) for p in build_poles(TRUE_MODES, fs)
+                   if p.imag >= 0]
+    phis, naive, ar1 = [], [], []
+    taus = {i: [] for i in range(len(TRUE_MODES))}
+    freqs_ = {i: [] for i in range(len(TRUE_MODES))}
     for _ in range(n_reps):
         sig = sim_ar_process(phi_true, int(fs * duration), rng)
         signal = prepare(sig, fs, welch_win_s=4.0)
         fit = estimate(signal, 'arp_psd', order=order, robust=True)
         phis.append(fit.phi)
-        osc = [m for m in fit.modes.modes if m.kind == 'oscillatory']
-        rel = [m for m in fit.modes.modes if m.kind == 'relaxation']
-        target = min(osc, key=lambda m: abs(m.freq - 10.0)) if osc else None
-        taus.append(target.tau if target else np.nan)
-        freqs_.append(target.freq if target else np.nan)
-        relax.append(max((m.tau for m in rel), default=np.nan))
-        # The naive reading of an AR(p) fit: treat phi_1 as an AR(1) coefficient.
-        naive.append(-1.0 / (fs * np.log(fit.phi[0])) if 0 < fit.phi[0] < 1 else np.nan)
+        # Kept for the text, not for the figure: neither has a ground truth
+        # to be scored against, which is why only modes are plotted.
+        naive.append(-1.0 / (fs * np.log(fit.phi[0])) if 0 < fit.phi[0] < 1
+                     else np.nan)
         ar1.append(estimate(signal, 'ar1_psd', robust=True).tau)
+        paired = match_modes(fit.modes.modes, truth_poles)
+        for i, mode in enumerate(paired):
+            taus[i].append(mode.tau if mode is not None else np.nan)
+            freqs_[i].append(mode.freq if mode is not None else np.nan)
     phis = np.asarray(phis)
     rows = []
     for i in range(order):
         rows.append({'quantity': f'phi_{i+1}', 'mean': float(np.mean(phis[:, i])),
                      'sd': float(np.std(phis[:, i])),
                      'cv': float(np.std(phis[:, i]) / abs(np.mean(phis[:, i])))})
-    specs = (('tau_from_phi1_of_arp', np.asarray(naive, dtype=float), 0.10),
-             ('tau_from_ar1_psd_fit', np.asarray(ar1, dtype=float), 0.10),
-             ('mode_tau_relaxation', np.asarray(relax, dtype=float), 0.10),
-             ('mode_tau_10Hz', np.asarray(taus, dtype=float), 0.05),
-             ('mode_freq_10Hz', np.asarray(freqs_, dtype=float), 10.0))
+    specs = [('tau_from_phi1_of_arp', np.asarray(naive, dtype=float), 0.10),
+             ('tau_from_ar1_psd_fit', np.asarray(ar1, dtype=float), 0.10)]
+    for i, spec in enumerate(TRUE_MODES):
+        specs.append((f'mode{i}_tau', np.asarray(taus[i], dtype=float), spec['tau']))
+        if spec['kind'] != 'relaxation':
+            specs.append((f'mode{i}_freq', np.asarray(freqs_[i], dtype=float),
+                          spec['freq']))
     for name, vals, truth in specs:
         finite = vals[np.isfinite(vals)]
         rec = {'quantity': name, 'truth': truth,
@@ -218,11 +250,24 @@ def repeatability(phi_true, fs, n_reps=200, duration=60.0):
     return pd.DataFrame(rows)
 
 
+FIT_COLOR = '#009E73'      # AR(p) fit: far from both mode colours
+SUM_COLOR = '#FFB000'      # sum-of-modes check in panel c
+DOM_STYLE = (0, (2, 1.5))  # dominant mode
+NEG_STYLE = ':'            # negligible mode
+
+
+def _proxy(**kw):
+    from matplotlib.lines import Line2D
+    return Line2D([0], [0], **kw)
+
+
 def make_figure(model, fit, signal, sweep, repeat, dom):
-    """Six panels: what the modes are, how they combine in each domain, which
-    of them matter, and what an AR(p) buys over reading coefficients."""
+    """Five panels: what the modes are, how they combine in each domain, which
+    of them matter, and how well each one is recovered."""
     fig = plt.figure(figsize=(7.4, 5.0))
-    gs = fig.add_gridspec(2, 3, hspace=0.62, wspace=0.40)
+    # Row 1 spans are chosen so that every panel edge in the bottom row falls
+    # on a panel edge in the top row: d under a, e under b and c.
+    gs = fig.add_gridspec(2, 6, hspace=0.62, wspace=1.05)
     freqs = np.logspace(np.log10(0.5), np.log10(250), 600)
     # Slowest mode at the top, fastest at the bottom.
     order = np.argsort([-m.tau for m in model.modes])
@@ -230,9 +275,20 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
     colours = [P.MODE_COLORS[m.kind] for m in shown]
     nlags = 150
     lags = np.arange(nlags + 1) / model.fs
+    keep = set(dom['indices'])
+
+    style_handles = [
+        _proxy(color=P.MODE_COLORS['relaxation'], lw=1.4, label='relaxation mode'),
+        _proxy(color=P.MODE_COLORS['oscillatory'], lw=1.4, label='oscillatory mode'),
+    ]
+    weight_handles = [
+        _proxy(color=P.GREY, lw=1.1, ls=DOM_STYLE, label='mode, dominant'),
+        _proxy(color=P.GREY, lw=0.9, ls=NEG_STYLE, alpha=0.6,
+               label='mode, negligible'),
+    ]
 
     # (a) the modes themselves -------------------------------------------
-    ax = fig.add_subplot(gs[0, 0])
+    ax = fig.add_subplot(gs[0, 0:2])
     n, step = 125, 1.35
     t = np.arange(n) / model.fs
     comps = model.impulse_components(n)
@@ -252,13 +308,18 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
         ax.text(t[-1], base + 0.42, label, fontsize=6.2, ha='right',
                 va='bottom', color=colours[i])
     ax.set_yticks([])
+    ax.set_ylim(-1.5, top + 1.25)
     ax.set_xlabel('Time after input (s)')
     ax.set_title('Modes', fontsize=9)
     ax.spines['left'].set_visible(False)
+    ax.legend(handles=style_handles, fontsize=5.8, loc='lower center', ncol=2,
+              handlelength=1.5, borderpad=0.22, labelspacing=0.2,
+              columnspacing=1.0, frameon=True, framealpha=1.0,
+              edgecolor='none')
     P.panel_label(ax, 'a', dx=-0.09)
 
     # (b) they multiply in the spectrum ------------------------------------
-    ax = fig.add_subplot(gs[0, 1])
+    ax = fig.add_subplot(gs[0, 2:4])
     mask = signal.fit_mask & signal.exclude_mask
     fmask = signal.freqs[mask]
 
@@ -267,121 +328,112 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
         return power / np.exp(np.mean(np.log(ref)))
 
     ax.loglog(fmask, centred(signal.powers[mask]), color=P.LIGHT, lw=1.0,
-              zorder=0, label='one realization')
-    for mode, c in zip(shown, colours):
+              zorder=0)
+    for j, (mode, c) in enumerate(zip(shown, colours)):
         f = mode.psd(freqs)
-        ax.loglog(freqs, f / np.exp(np.mean(np.log(f))), lw=0.8, ls=':',
-                  color=c, zorder=1)
+        dominant = order[j] in keep
+        ax.loglog(freqs, f / np.exp(np.mean(np.log(f))), color=c, zorder=1,
+                  lw=1.1 if dominant else 0.9,
+                  ls=DOM_STYLE if dominant else NEG_STYLE,
+                  alpha=1.0 if dominant else 0.6)
     ax.loglog(freqs, centred(model.psd(freqs), model.psd(fmask)), color='k',
-              lw=1.6, label='generating spectrum', zorder=3)
+              lw=1.6, zorder=3)
     fitted = ar_psd(fit.phi, freqs, signal.fs, fit.offset)
     ax.loglog(freqs, centred(fitted, ar_psd(fit.phi, fmask, signal.fs,
                                             fit.offset)),
-              color=P.MODE_COLORS['oscillatory'], lw=1.2, ls='--',
-              label=f'AR({fit.order}) fit', zorder=4)
+              color=FIT_COLOR, lw=1.2, ls=(0, (4, 2.6)), zorder=4)
     ax.set_xlabel('Frequency (Hz)')
     ax.set_ylabel('Relative power')
     ax.set_title('Spectrum: modes multiply', fontsize=9)
-    ax.legend(fontsize=6.2, loc='lower left', handlelength=1.4,
-              borderpad=0.25, labelspacing=0.22)
+    ax.legend(handles=[
+        _proxy(color=P.LIGHT, lw=1.0, label='one realization'),
+        _proxy(color='k', lw=1.6, label='generating spectrum'),
+        _proxy(color=FIT_COLOR, lw=1.2, ls=(0, (4, 2.6)),
+               label=f'AR({fit.order}) fit'),
+    ] + weight_handles,
+        fontsize=5.5, loc='lower left', handlelength=1.5,
+        borderpad=0.22, labelspacing=0.2, frameon=True,
+        framealpha=1.0, edgecolor='none')
     P.panel_label(ax, 'b', dx=-0.26)
 
     # (c) they add in the autocorrelation ----------------------------------
-    ax = fig.add_subplot(gs[0, 2])
+    ax = fig.add_subplot(gs[0, 4:6])
     acf_comps = model.acf_components(nlags)
     for i, c in enumerate(colours):
-        ax.plot(lags, acf_comps[order[i]], lw=0.9, ls=':', color=c)
-    ax.plot(lags, model.acf(nlags), color='k', lw=1.6,
-            label='generating ACF')
-    ax.plot(lags, acf_comps.sum(axis=0), color='#FFB000', lw=1.1, ls='--',
-            label='sum of modes')
+        dominant = order[i] in keep
+        ax.plot(lags, acf_comps[order[i]], color=c,
+                lw=1.1 if dominant else 0.9,
+                ls=DOM_STYLE if dominant else NEG_STYLE,
+                alpha=1.0 if dominant else 0.6)
+    ax.plot(lags, model.acf(nlags), color='k', lw=1.6)
+    ax.plot(lags, acf_comps.sum(axis=0), color=SUM_COLOR, lw=1.1, ls='--')
     ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
     ax.set_xlim(0, 0.3)
     ax.set_xlabel('Lag (s)')
     ax.set_ylabel('Autocorrelation')
     ax.set_title('Autocorrelation: modes add', fontsize=9)
-    ax.legend(fontsize=6.2, loc='upper right', handlelength=1.4,
-              borderpad=0.25, labelspacing=0.22)
+    ax.legend(handles=[
+        _proxy(color='k', lw=1.6, label='generating ACF'),
+        _proxy(color=SUM_COLOR, lw=1.1, ls='--', label='sum of modes'),
+    ] + weight_handles,
+        fontsize=5.5, loc='upper right', handlelength=1.5,
+        borderpad=0.22, labelspacing=0.2, frameon=True,
+        framealpha=1.0, edgecolor='none')
     P.panel_label(ax, 'c', dx=-0.26)
 
     # (d) how many modes are needed ---------------------------------------
-    ax = fig.add_subplot(gs[1, 0])
+    ax = fig.add_subplot(gs[1, 0:2])
     curve = dom['r2_curve']
     ax.plot(np.arange(len(curve)), curve, 'o-', color='k', ms=4)
-    ax.axhline(0.99, color=P.MODE_COLORS['oscillatory'], ls='--', lw=1.0)
+    ax.axhline(0.99, color=P.GREY, ls='--', lw=1.0)
+    ax.text(0.1, 1.03, '$R^2 = 0.99$', fontsize=6.2, color=P.GREY, va='bottom')
     ax.axvline(dom['n_modes'], color=P.LIGHT, lw=1.0, zorder=0)
-    ax.text(dom['n_modes'] + 0.15, 0.25, f"{dom['n_modes']} of {len(shown)}\nsuffice",
-            fontsize=6.5)
+    ax.text(dom['n_modes'] + 0.15, 0.22,
+            f"{dom['n_modes']} of {len(shown)}\nsuffice", fontsize=6.5)
     ax.set_xlabel('Modes kept')
     ax.set_ylabel('Spectrum reproduced ($R^2$)', fontsize=7.5)
     ax.set_xticks(np.arange(len(curve)))
-    ax.set_ylim(-0.08, 1.12)
+    ax.set_ylim(-0.08, 1.18)
     ax.set_title('Mode ranking', fontsize=9)
-    P.panel_label(ax, 'd', dx=-0.26)
+    ax.text(0.97, 0.06, 'modes added in order\nof importance',
+            transform=ax.transAxes, fontsize=5.8, color=P.GREY,
+            ha='right', va='bottom')
+    P.panel_label(ax, 'd', dx=-0.34)
 
-    # (e) modes vs coefficients -------------------------------------------
-    ax = fig.add_subplot(gs[1, 1])
-    keys = ['tau_from_phi1_of_arp', 'tau_from_ar1_psd_fit',
-            'mode_tau_relaxation', 'mode_tau_10Hz']
-    labels = ['$\\varphi_1$ as AR(1)', 'AR(1) PSD fit',
-              'mode: 100 ms', 'mode: 10 Hz']
-    bar_colors = [P.GREY, P.GREY, P.MODE_COLORS['relaxation'],
-                  P.MODE_COLORS['oscillatory']]
-    ceiling = 1e3
-    vals, notes = [], []
-    for key in keys:
-        row = repeat[repeat['quantity'] == key].iloc[0]
-        vals.append(row['rel_error'])
-        notes.append('undefined' if row['frac_defined'] < 0.5 else
-                     ('saturated' if not np.isfinite(row['rel_error'])
-                      or row['rel_error'] > ceiling else ''))
-    plotted = [ceiling if (not np.isfinite(v) or v > ceiling) else v for v in vals]
-    xs = np.arange(len(keys))
-    ax.bar(xs, plotted, color=bar_colors, width=0.62,
-           hatch=['//' if nt else '' for nt in notes], edgecolor='white')
-    for x, nt in zip(xs, notes):
-        if nt:
-            ax.text(x, 1.6e3, nt, ha='center', va='bottom', fontsize=6)
+    # (e) how well each mode's timescale is recovered ----------------------
+    # Only quantities with a ground truth appear here, which means modes:
+    # each constructed mode has a known tau, and every one is scored.
+    ax = fig.add_subplot(gs[1, 2:6])
+    idx = sorted(range(len(TRUE_MODES)), key=lambda i: -TRUE_MODES[i]['tau'])
+    vals, labels, bar_colors = [], [], []
+    for i in idx:
+        spec = TRUE_MODES[i]
+        row = repeat[repeat['quantity'] == f'mode{i}_tau'].iloc[0]
+        vals.append(float(row['rel_error']))
+        bar_colors.append(P.MODE_COLORS[spec['kind']])
+        labels.append(f"{spec['tau']*1e3:g} ms"
+                      + ('' if spec['kind'] == 'relaxation'
+                         else f", {spec['freq']:g} Hz"))
+    xs = np.arange(len(idx))
+    ax.bar(xs, vals, color=bar_colors, width=0.62, edgecolor='white')
+    for x, v in zip(xs, vals):
+        ax.text(x, v * 1.25, f'{v*100:.0f}%', ha='center', va='bottom',
+                fontsize=6)
     ax.set_yscale('log')
-    ax.set_ylim(1e-3, 3e5)
+    top_v = max(vals)
+    ax.set_ylim(min(vals) / 5.0, top_v * 12.0)
     ax.set_xticks(xs)
-    ax.set_xticklabels(labels, fontsize=6.2, rotation=28, ha='right')
-    ax.set_ylabel('Error in the true $\\tau$')
-    ax.set_title('Timescale recovery', fontsize=9)
-    P.panel_label(ax, 'e', dx=-0.26)
-
-    # (f) the reportable summary ------------------------------------------
-    ax = fig.add_subplot(gs[1, 2])
-    keep = set(dom['indices'])
-    relax_x, n_rel = [0.9, 1.6], 0
-    for i, mode in enumerate(model.modes):
-        if mode.kind == 'relaxation':
-            x = relax_x[min(n_rel, 1)]
-            n_rel += 1
-        else:
-            x = mode.freq
-        ax.scatter([x], [mode.tau * 1e3], s=25 + 240 * mode.importance,
-                   color=P.MODE_COLORS[mode.kind],
-                   alpha=0.85 if i in keep else 0.3,
-                   edgecolor='k' if i in keep else 'none', lw=0.7, zorder=3)
-        txt = (f'{mode.tau*1e3:.0f} ms' if mode.kind == 'relaxation'
-               else f'{mode.tau*1e3:.0f} ms\n{mode.n_cycles:.1f} cyc')
-        ax.annotate(txt, (x, mode.tau * 1e3), fontsize=5.6, ha='left',
-                    va='center', textcoords='offset points', xytext=(10, 0))
-    ax.axvline(2.6, color=P.LIGHT, lw=0.8, ls=':', zorder=0)
-    ax.set_xscale('log'); ax.set_yscale('log')
-    ax.set_xlim(0.6, 3000); ax.set_ylim(1, 500)
-    ax.set_xlabel('Mode frequency (Hz)')
-    ax.set_ylabel(r'Mode $\tau$ (ms)')
-    ax.set_title('Timescale and frequency', fontsize=9)
-    ax.text(0.02, 0.97, 'relaxations\n(no frequency)', transform=ax.transAxes,
-            fontsize=5.6, color=P.GREY, va='top')
-    ax.text(0.98, 0.97, 'area = importance\noutlined = dominant',
-            transform=ax.transAxes, fontsize=5.6, color=P.GREY, ha='right',
-            va='top')
-    P.panel_label(ax, 'f', dx=-0.26)
+    ax.set_xticklabels(labels, fontsize=6.2, rotation=22, ha='right')
+    ax.set_xlabel('Constructed mode', fontsize=7.5)
+    ax.set_ylabel('Median error in $\\tau$', fontsize=7.5)
+    ax.set_title('Timescale recovery, per mode', fontsize=9)
+    ax.legend(handles=style_handles, fontsize=5.8, loc='upper left',
+              handlelength=1.5, borderpad=0.22, labelspacing=0.2,
+              frameon=True, framealpha=1.0, edgecolor='none')
+    P.panel_label(ax, 'e', dx=-0.16)
 
     P.save(fig, FIG / 'fig_modes.svg')
+
 
 if __name__ == '__main__':
     main()

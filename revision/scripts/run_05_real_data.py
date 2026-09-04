@@ -22,6 +22,7 @@ for _var in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS',
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 from tsmodes import plotting as P
 from tsmodes import datasets as D
@@ -34,6 +35,18 @@ FIG, RES = ROOT / 'figures', ROOT / 'results'
 METHODS = ['ar1_direct', 'arp_direct', 'ar1_acf', 'arp_acf',
            'ar1_psd', 'arp_psd']
 DOMINANT_TOL = 0.1   # keep modes until log-spectral R^2 >= 0.99
+
+
+def in_band(freq, data, signal):
+    """Is this mode a rhythm in the band the recording is expected to show?
+
+    A mode whose frequency falls outside the fitted range is an
+    extrapolation of the model past the data, so it cannot count as a
+    detected rhythm however well it sits inside the nominal band.
+    """
+    lo, hi = data['band_hz']
+    f_lo, f_hi = signal.f_range
+    return bool(lo <= freq <= hi and f_lo <= freq <= f_hi)
 
 
 def analyse_dataset(key):
@@ -76,8 +89,7 @@ def analyse_dataset(key):
                         'importance': mode.importance,
                         'rel_importance': mode.rel_importance,
                         'in_dominant_set': rank in dom['indices'],
-                        'in_band': (data['band_hz'][0] <= mode.freq
-                                    <= data['band_hz'][1])})
+                        'in_band': in_band(mode.freq, data, signal)})
     return data, pd.DataFrame(rows), pd.DataFrame(mode_rows)
 
 
@@ -185,25 +197,69 @@ def main():
     make_figure(keys, cache, fits, modes, summary)
 
 
+#: Two hues, one per model order, distinguishable to every kind of colour
+#: vision and to a greyscale printer.  Domain is carried by the group labels
+#: under panel c, not by colour: light and dark shades of one hue are hard to
+#: separate when two curves are overlaid.
+# One Okabe-Ito colour per estimator, used identically in all three panels,
+# so a box in c is the same colour as the curve it came from in a or b.  The
+# two spectral colours are warm/cool, as are the two lag-domain colours, and
+# the four hues are mutually distinguishable.  Data is always black.
+FIT_COLORS = {'ar1_psd': '#E69F00', 'arp_psd': '#0072B2',
+              'ar1_acf': '#CC79A7', 'arp_acf': '#009E73'}
+DATA_COLOR = '#000000'
+# Panel c compares the two spectral and the two lag-domain estimators; the
+# time-domain fits are computed and tabulated but not plotted.
+PANEL_METHODS = ['ar1_acf', 'arp_acf', 'ar1_psd', 'arp_psd']
+
+
+def decade_ticks(ax, vals, pad=1.7):
+    """Put two or three labelled ticks on a log axis, whatever the span.
+
+    Within one recording the estimators can agree to within a factor of two or
+    disagree by two decades, so a fixed locator either crowds the axis or
+    leaves it blank.  Step down through progressively finer 1-2-5 ladders and
+    take the first that lands at least two ticks inside the data range, so the
+    spacing between boxes is always readable off the axis.
+    """
+    lo = float(np.min(vals)) / pad
+    hi = float(np.max(vals)) * pad
+    ax.set_ylim(lo, hi)
+    best = None
+    for mant in ([1.0], [1.0, 3.0], [1.0, 2.0, 5.0],
+                 [1.0, 1.5, 2.0, 3.0, 5.0, 7.0]):
+        ticks = np.array(sorted(m * 10.0 ** e
+                                for e in range(-9, 10) for m in mant))
+        ticks = ticks[(ticks >= lo) & (ticks <= hi)]
+        if len(ticks) > 3:
+            ticks = ticks[::int(np.ceil(len(ticks) / 3.0))]
+        # Three labelled ticks read better than two; keep looking through the
+        # finer ladders until one gives three, and fall back on the best of
+        # the coarser ones if none does.
+        if best is None or len(ticks) > len(best):
+            best = ticks
+        if len(best) >= 3:
+            break
+    if best is not None and len(best) >= 2:
+        ax.set_yticks(best)
+        ax.set_yticklabels([f'{t:g}' for t in best])
+    ax.yaxis.set_minor_locator(mticker.NullLocator())
+
+
 def make_figure(keys, cache, fits, modes, summary):
     n = len(keys)
-    fig = plt.figure(figsize=(7.4, 1.12 * n + 0.8))
-    gs = fig.add_gridspec(n, 4, hspace=0.42, wspace=0.46,
-                          width_ratios=[1.0, 1.0, 1.05, 1.0])
+    fig = plt.figure(figsize=(6.4, 1.15 * n + 0.9))
+    gs = fig.add_gridspec(n, 3, hspace=0.45, wspace=0.42)
     from tsmodes.estimators import estimate
 
     for i, key in enumerate(keys):
         data = cache[key]
         sub = fits[fits['dataset'] == key]
-        band = (sub['band_lo'].iloc[0], sub['band_hi'].iloc[0])
-        # Panels a and b show the median across traces, not one trace.  A
-        # single trace is what an estimator sees, but it is not what the
-        # panel is claiming: panel c pools every trace, so the curve above it
-        # should too.  It also matters most where the data are thinnest -- a
-        # single 296-sample BOLD run gives a spectrum too noisy to read,
-        # while the median over twelve is legible.
         signal = D.prepare_trace(data['X'][0], data)
         mask = signal.fit_mask & signal.exclude_mask
+        first, last = i == 0, i == n - 1
+
+        # Median across traces, matching panel c, which pools them all.
         psd_data, acf_data = [], []
         curves = {m: {'psd': [], 'acf': []}
                   for m in ('ar1_psd', 'arp_psd', 'ar1_acf', 'arp_acf')}
@@ -227,184 +283,100 @@ def make_figure(keys, cache, fits, modes, summary):
                         + fit.params['acf_offset'])
         med = lambda a: np.median(np.vstack(a), axis=0)
         psd_data, acf_data = med(psd_data), med(acf_data)
-        first, last = i == 0, i == n - 1
 
         # -- a: spectrum ---------------------------------------------------
         ax = fig.add_subplot(gs[i, 0])
-        # The recording's expected rhythm band, taken from the dataset's own
-        # documentation, not from the fit.  It marks where a rhythm is
-        # expected; nothing in the estimation uses it.
-        ax.axvspan(band[0], band[1], color='#FFB000', alpha=0.16, lw=0,
-                   label='reference band' if first else None)
-        ax.loglog(signal.freqs[mask], psd_data, color=P.GREY, lw=1.2,
+        ax.loglog(signal.freqs[mask], psd_data, color=DATA_COLOR, lw=1.1,
                   label='data', zorder=1)
-        for method, ls, lab in (('ar1_psd', '--', 'AR(1)'),
-                                ('arp_psd', '-.', 'AR($p$)')):
+        for method, ls, lab in (('ar1_psd', (0, (5, 2)), 'AR(1) PSD'),
+                                ('arp_psd', (0, (1, 1.4)), 'AR($p$) PSD')):
             if curves[method]['psd']:
                 ax.loglog(signal.freqs[mask], med(curves[method]['psd']),
-                          color=P.METHOD_COLORS[method], lw=1.3, ls=ls,
-                          label=lab)
-        import matplotlib.ticker as mticker
-        ax.set_ylabel(data['short'], fontsize=7, labelpad=3)
+                          color=FIT_COLORS[method], lw=1.5, ls=ls, label=lab,
+                          zorder=3)
+        ax.set_ylabel(data['panel_name'], fontsize=7, labelpad=3)
         ax.set_yticks([])
         ax.yaxis.set_minor_locator(mticker.NullLocator())
         ax.tick_params(labelsize=6.5)
         if first:
             ax.set_title('Power spectrum', fontsize=9)
-            ax.legend(fontsize=5.8, loc='lower left', handlelength=1.3,
-                      framealpha=0.9, borderpad=0.2, labelspacing=0.2,
-                      bbox_to_anchor=(-0.02, -0.04))
-            P.panel_label(ax, 'a', dx=-0.30, dy=1.42)
+            ax.legend(fontsize=5.8, loc='lower left', handlelength=1.8,
+                      frameon=True, framealpha=1.0, edgecolor='none',
+                      borderpad=0.2, labelspacing=0.2)
+            P.panel_label(ax, 'a', dx=-0.24, dy=1.40)
         if last:
             ax.set_xlabel('Frequency (Hz)', fontsize=7.5)
 
         # -- b: autocorrelation --------------------------------------------
         ax = fig.add_subplot(gs[i, 1])
         lags = np.arange(nlags + 1) / signal.fs
-        ax.plot(lags, acf_data, color=P.GREY, lw=1.5, label='data', zorder=1)
-        # Data solid, both models dashed, so the empirical curve stays
-        # visible underneath the fits.
-        for method, ls, lab in (('ar1_acf', '--', 'AR(1)'),
-                                ('arp_acf', '-.', 'AR($p$)')):
+        ax.plot(lags, acf_data, color=DATA_COLOR, lw=1.1, label='data', zorder=1)
+        for method, ls, lab in (('ar1_acf', (0, (5, 2)), 'AR(1) ACF'),
+                                ('arp_acf', (0, (1, 1.4)), 'AR($p$) ACF')):
             if curves[method]['acf']:
-                ax.plot(lags, med(curves[method]['acf']),
-                        color=P.METHOD_COLORS[method], lw=1.3, ls=ls,
-                        label=lab)
+                ax.plot(lags, med(curves[method]['acf']), color=FIT_COLORS[method],
+                        lw=1.5, ls=ls, label=lab, zorder=3)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-        # Zoom on the decay.  Most of these autocorrelations reach zero within
-        # a fraction of the lags computed, and plotting the full range would
-        # compress the part of the curve the fit is actually about.
-        taus = [t for t in (sub['tau'].median(),
-                            sub['tau_relaxation'].median())
+        taus = [t for t in (sub['tau'].median(), sub['tau_relaxation'].median())
                 if np.isfinite(t) and t > 0]
-        # ... but never so tight that only a handful of lags remain.
         span = float(np.clip(max(6 * max(taus), 12 / signal.fs),
                              4 / signal.fs, lags[-1]))
         ax.set_xlim(0, span)
-        lo = float(np.min(signal.corrs[lags <= span]))
+        lo = float(np.min(acf_data[lags <= span]))
         ax.set_ylim(min(-0.25, 1.15 * lo), 1.05)
         ax.set_yticks([0, 1])
         ax.tick_params(labelsize=6.5)
         if first:
             ax.set_title('Autocorrelation', fontsize=9)
-            ax.legend(fontsize=6, loc='upper right', handlelength=1.4)
-            P.panel_label(ax, 'b', dx=-0.24, dy=1.42)
+            ax.legend(fontsize=5.8, loc='upper right', handlelength=1.8,
+                      frameon=True, framealpha=1.0, edgecolor='none',
+                      borderpad=0.2, labelspacing=0.2)
+            P.panel_label(ax, 'b', dx=-0.22, dy=1.40)
         if last:
             ax.set_xlabel('Lag (s)', fontsize=7.5)
 
-        # -- c: estimates, linear time -------------------------------------
+        # -- c: the timescale each estimator reports ------------------------
+        # A log axis, because within one recording the estimators can differ
+        # by two orders of magnitude and every box has to be visible.
         ax = fig.add_subplot(gs[i, 2])
-        medians, boxes = {}, {}
-        for k, method in enumerate(METHODS):
+        drawn = []
+        for k, method in enumerate(PANEL_METHODS):
             col = 'tau' if method.startswith('ar1_') else 'tau_relaxation'
             vals = sub.loc[sub['method'] == method, col].to_numpy(dtype=float)
-            vals = vals[np.isfinite(vals) & (vals > 0)]
-            medians[method] = np.median(vals) if len(vals) else np.nan
-        scale, unit = ((1e3, 'ms') if np.nanmedian(list(medians.values())) < 1
-                       else (1.0, 's'))
-        for k, method in enumerate(METHODS):
-            col = 'tau' if method.startswith('ar1_') else 'tau_relaxation'
-            vals = sub.loc[sub['method'] == method, col].to_numpy(dtype=float)
-            vals = vals[np.isfinite(vals) & (vals > 0)] * scale
+            vals = vals[np.isfinite(vals) & (vals > 0)] * 1e3
             x = k + 0.9 * (k // 2)
             if not len(vals):
-                ax.text(x, 0.05, 'none', fontsize=5.5, rotation=90,
-                        ha='center', va='bottom', color=P.GREY,
+                ax.text(x, 0.5, 'none', fontsize=5.5, rotation=90, ha='center',
+                        va='center', color=P.GREY,
                         transform=ax.get_xaxis_transform())
                 continue
-            boxes[method] = (x, vals)
-        finite = [v * scale for v in medians.values() if np.isfinite(v)]
-        # A linear axis is far easier to read than a log one, but a single
-        # badly mismatched estimator would otherwise flatten it.  The axis is
-        # scaled to the typical estimate; an estimator whose median falls
-        # outside it is marked instead of drawn.
-        top = 3.0 * float(np.median(finite)) if finite else 1.0
-        ax.set_ylim(0, top)
-        for method, (x, vals) in boxes.items():
-            colour = P.METHOD_COLORS[method]
-            if np.median(vals) > top:
-                # The box would be entirely off the axis, so drawing it would
-                # show nothing at all -- which is how a whole estimator came
-                # to be missing from the MEG row.
-                ax.plot([x], [top * 0.965], marker='^', ms=4.5, clip_on=False,
-                        color=colour, mec='none')
-                continue
+            drawn.append(vals)
+            colour = FIT_COLORS[method]
             bp = ax.boxplot([vals], positions=[x], widths=0.62,
                             patch_artist=True, showfliers=False,
-                            medianprops=dict(color='k', lw=1.2),
+                            medianprops=dict(color='k', lw=1.1),
                             whiskerprops=dict(color=colour, lw=0.8),
                             capprops=dict(color=colour, lw=0.8))
             for box in bp['boxes']:
-                box.set(facecolor=colour, alpha=0.6, lw=0.7, edgecolor=colour)
-        ax.locator_params(axis='y', nbins=3)
-        ax.set_xlim(-0.8, 7.6)
-        ax.set_xticks([0, 1, 2.9, 3.9, 5.8, 6.8])
-        ax.set_xticklabels(['AR(1)', 'AR($p$)'] * 3 if last else [],
+                box.set(facecolor=colour, alpha=0.55, lw=0.7, edgecolor=colour)
+        ax.set_yscale('log')
+        ax.set_xlim(-0.8, 4.7)
+        ax.set_xticks([0, 1, 2.9, 3.9])
+        ax.set_xticklabels(['AR(1)', 'AR($p$)'] * 2 if last else [],
                            fontsize=5.6, rotation=90)
-        ax.set_ylabel(unit, fontsize=7, labelpad=1)
+        ax.set_ylabel('ms', fontsize=7, labelpad=1)
         ax.tick_params(labelsize=6.5)
+        if drawn:
+            decade_ticks(ax, np.concatenate(drawn))
         if first:
-            ax.set_title('Aperiodic $\\tau$', fontsize=9)
-            P.panel_label(ax, 'c', dx=-0.28, dy=1.42)
+            ax.set_title('Timescale', fontsize=9)
+            P.panel_label(ax, 'c', dx=-0.30, dy=1.40)
         if last:
-            for x, (dom, name) in zip([0.5, 3.4, 6.3],
-                                      [('time', 'time'), ('acf', 'ACF'),
-                                       ('psd', 'PSD')]):
-                ax.text(x, -1.05, name, ha='center', va='top', fontsize=6.5,
-                        color=P.DOMAIN_COLORS[dom],
-                        transform=ax.get_xaxis_transform())
-            ax.text(3.4, -1.42, '\u25b2 median above the axis', ha='center',
-                    va='top', fontsize=5.8, color=P.GREY,
-                    transform=ax.get_xaxis_transform())
-
-        # -- d: oscillatory modes -------------------------------------------
-        ax = fig.add_subplot(gs[i, 3])
-        ax.axvspan(band[0], band[1], color='#FFB000', alpha=0.16, lw=0)
-        # The three most important rhythmic modes per trace, from each of the
-        # two AR(p) fits.  Showing every mode buries the rhythm in the
-        # high-frequency modes that describe the recording's filter roll-off.
-        for method, colour, off in (('arp_acf', P.METHOD_COLORS['arp_acf'], 0.97),
-                                    ('arp_psd', P.METHOD_COLORS['arp_psd'], 1.03)):
-            osc = modes[(modes['dataset'] == key)
-                        & (modes['method'] == method)
-                        & (modes['kind'] == 'oscillatory')
-                        & (modes['osc_rank'] <= 3)]
-            if not len(osc):
-                continue
-            ax.vlines(osc['freq_hz'] * off, 0, osc['importance'],
-                      color=colour, lw=1.0, alpha=0.6)
-            ax.scatter(osc['freq_hz'] * off, osc['importance'], s=6,
-                       color=colour, lw=0, alpha=0.8,
-                       label=('ACF' if method == 'arp_acf' else 'PSD')
-                       if first else None)
-        ax.set_xscale('log')
-        ax.set_xlim(max(0.5 * band[0], data['analysis']['f_range'][0] * 0.8),
-                    data['analysis']['f_range'][1])
-        ax.set_ylim(bottom=0)
-        ax.set_ylabel('importance', fontsize=7)
-        ax.tick_params(labelsize=6.5)
-        if first:
-            ax.set_title('Rhythmic modes', fontsize=9)
-            ax.legend(fontsize=6, ncol=2, loc='lower center',
-                      bbox_to_anchor=(0.5, 1.12), handlelength=1.0,
-                      columnspacing=0.8, frameon=False)
-            P.panel_label(ax, 'd', dx=-0.26, dy=1.42)
-        if last:
-            ax.set_xlabel('Mode frequency (Hz)', fontsize=7.5)
+            for x, name in zip([0.5, 3.4], ('ACF', 'PSD')):
+                ax.text(x, -0.72, name, ha='center', va='top', fontsize=6.5,
+                        color=P.GREY, transform=ax.get_xaxis_transform())
 
     P.save(fig, FIG / 'fig_realdata.svg')
-
-
-def _wrap(label, width=22):
-    words, lines, cur = label.split(), [], ''
-    for word in words:
-        if len(cur) + len(word) + 1 > width:
-            lines.append(cur)
-            cur = word
-        else:
-            cur = f'{cur} {word}'.strip()
-    lines.append(cur)
-    return '\n'.join(lines)
 
 
 if __name__ == '__main__':

@@ -268,6 +268,70 @@ def extract_neuropixels(probe_description='probeA', region='VISam',
         'label': 'Mouse Neuropixels LFP: natural movie'})
 
 
+def extract_neuropixels_spikes(region='VISp', bin_s=0.05, max_units=MAX_TRACES,
+                               min_rate=2.0):
+    """Spiking: binned spike counts from the same Allen Neuropixels session.
+
+    Every other recording here is a continuous field potential or BOLD, yet
+    the neural-timescale literature is built largely on spike-count
+    autocorrelations, so this is the one modality whose absence would be
+    conspicuous.  It also adds a region: the LFP traces are from VISam and
+    these units are from VISp.
+
+    Read straight from the cached NWB rather than through the AllenSDK, which
+    is a heavy dependency for one table of spike times.
+    """
+    import h5py
+    path = ALLEN_CACHE / 'session_715093703' / 'session_715093703.nwb'
+    if not path.exists():
+        raise RuntimeError(f'Allen session NWB not cached at {path}')
+    with h5py.File(path, 'r') as handle:
+        units = handle['units']
+        electrodes = handle['general/extracellular_ephys/electrodes']
+        dec = lambda a: np.array([v.decode() if isinstance(v, bytes) else v
+                                  for v in a])
+        region_of = dict(zip(electrodes['id'][:], dec(electrodes['location'][:])))
+        regions = np.array([region_of.get(c, '?')
+                            for c in units['peak_channel_id'][:]])
+        quality, rate = dec(units['quality'][:]), units['firing_rate'][:]
+        end = units['spike_times_index'][:]
+        begin = np.concatenate(([0], end[:-1]))
+
+        # The longest uninterrupted stretch of the same stimulus the LFP
+        # traces come from, so the two mouse rows are comparable.
+        pres = handle['intervals/natural_movie_one_presentations']
+        starts, stops = pres['start_time'][:], pres['stop_time'][:]
+        breaks = np.where(starts[1:] - stops[:-1] > 1.0)[0]
+        blocks = np.split(np.arange(len(starts)), breaks + 1)
+        block = max(blocks, key=lambda b: stops[b[-1]] - starts[b[0]])
+        t0, t1 = float(starts[block[0]]), float(stops[block[-1]])
+
+        keep = np.where((quality == 'good') & (regions == region)
+                        & (rate > min_rate))[0]
+        keep = keep[np.argsort(-rate[keep])][:max_units]
+        edges = np.arange(t0, t1, bin_s)
+        traces, kept = [], []
+        for i in keep:
+            spikes = units['spike_times'][begin[i]:end[i]]
+            spikes = spikes[(spikes >= t0) & (spikes < t1)]
+            traces.append(np.histogram(spikes, bins=edges)[0].astype(float))
+            kept.append(f'unit{int(units["id"][i])}')
+
+    save('mouse_neuropixels_spikes', np.vstack(traces), 1.0 / bin_s, {
+        'species': 'mouse', 'modality': 'Neuropixels spikes', 'region': region,
+        'state': 'natural movie', 'band_hz': [2, 8], 'line_noise_hz': None,
+        'subject': '715093703', 'traces': kept,
+        'source': 'Allen Visual Coding Neuropixels (10.1038/s41593-019-0550-9)',
+        'trace_definition': f'spike counts of one unit in {bin_s*1e3:g} ms bins',
+        # Above ~1.5 Hz the binned-count spectrum is within a factor of
+        # 1.5 of its flat Poisson shot-noise floor, which sigma^2/|A|^2
+        # cannot represent; fit only where the process exceeds it.
+        'analysis': {'f_range': [0.05, 2.0], 'welch_win_s': 60.0,
+                     'welch_overlap': 0.5, 'nlags': 100, 'fs_target': None,
+                     'method': 'welch', 'nw': 4.0},
+        'label': 'Mouse Neuropixels spikes: natural movie'})
+
+
 def extract_meg_cmc(channels=None, max_seconds=MAX_SECONDS):
     """MEG: MNE/FieldTrip cortico-muscular coherence data (CTF 151-channel)."""
     import mne
@@ -369,6 +433,7 @@ EXTRACTORS = {
     'macaque_visual_grating_ecog': extract_macaque,
     'human_meg_beta': extract_meg_cmc,
     'human_fmri_rest': extract_fmri_abide,
+    'mouse_neuropixels_spikes': extract_neuropixels_spikes,
 }
 
 

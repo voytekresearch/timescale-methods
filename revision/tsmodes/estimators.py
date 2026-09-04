@@ -91,7 +91,20 @@ N_LAGS = 250          # lag budget for ACF-domain fitting
 # fraction of the cost, and both domains use the same grid so that the selected
 # orders are comparable.
 ORDER_GRID = (1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20)
-ORDER_PATIENCE = 3
+#: Stop the order search this many grid points after the best so far.
+#:
+#: The spectral search does not use it (None): ORDER_GRID is not uniform, it
+#: steps 6, 8, 10, 13, 16, 20, so BIC is not unimodal over it and stopping
+#: early quit before the gains arrived.  On mouse LFP that returned order 3
+#: with 2.7% of the log spectrum unexplained where order 20 leaves 0.6%.
+#:
+#: The lag-domain search does use it.  Welch bins from non-overlapping
+#: segments are approximately independent, which is what BIC assumes, but
+#: neighbouring autocorrelation lags are strongly dependent, so the criterion
+#: counts far more information than the data hold and occasionally buys a
+#: large order for a process that is plainly AR(1).  The guard bounds that.
+ORDER_PATIENCE_PSD = None
+ORDER_PATIENCE_ACF = 3
 
 
 def multitaper_psd(sig, fs, nw=4.0, n_tapers=None):
@@ -585,7 +598,7 @@ def select_order_psd(freqs, powers, fs, orders, criterion='bic', **kwargs):
         fits.append((phi, offset, ok))
         tried.append(p)
         since_best = 0 if scores[-1] <= min(scores) else since_best + 1
-        if since_best >= ORDER_PATIENCE:
+        if ORDER_PATIENCE_PSD is not None and since_best >= ORDER_PATIENCE_PSD:
             break
     best = int(np.argmin(scores))
     return tried[best], np.asarray(scores), fits[best]
@@ -765,12 +778,18 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
 def select_order_acf(lags, corrs, fs, orders, criterion='bic', **kwargs):
     """AR order selection in the ACF domain, mirroring :func:`select_order_psd`.
 
-    ``BIC(p) = n log(RSS/n) + (p + 2) log(n)`` with ``n`` the number of fitted
-    lags.  Neighbouring lags are correlated, so this is a pragmatic criterion
-    rather than an exact likelihood; the same caveat applies to the spectral
-    criterion and the two are reported side by side.
+    ``BIC(p) = n log(RSS/n) + (p + 2) log(n)``, but with ``n`` the number of
+    *independent* lags rather than the number of fitted ones.  Neighbouring
+    autocorrelation lags are strongly dependent -- the curve is smooth on the
+    scale of the decay it describes -- so counting all of them treats the data
+    as far more informative than it is and buys orders the record cannot
+    support: on one realization of a plain AR(1), all 250 lags gave order 8
+    and a timescale of 13 ms against a truth of 50.  Dividing by the 1/e lag
+    is the crudest defensible correction and is enough to stop it.
     """
-    n = len(lags) - 1
+    below = np.where(np.abs(corrs) < np.exp(-1.0))[0]
+    lag_e = float(lags[below[0]]) if len(below) else float(lags[-1])
+    n = max(6, int(round((len(lags) - 1) / max(lag_e, 1.0))))
     scores, fits, tried = [], [], []
     previous = None
     since_best = 0
@@ -802,7 +821,7 @@ def select_order_acf(lags, corrs, fs, orders, criterion='bic', **kwargs):
         fits.append((phi, height, offset, ok))
         tried.append(p)
         since_best = 0 if scores[-1] <= min(scores) else since_best + 1
-        if since_best >= ORDER_PATIENCE:
+        if ORDER_PATIENCE_ACF is not None and since_best >= ORDER_PATIENCE_ACF:
             break
     best = int(np.argmin(scores))
     return tried[best], np.asarray(scores), fits[best]

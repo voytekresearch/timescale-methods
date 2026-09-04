@@ -13,7 +13,7 @@ from multiprocessing import Pool, cpu_count
 import numpy as np
 import pandas as pd
 
-from .estimators import (ESTIMATORS, ESTIMATOR_LABELS, estimate_all, prepare)
+from .estimators import (ESTIMATOR_LABELS, estimate_all, prepare)
 
 N_MODES_RECORDED = 3
 
@@ -121,18 +121,6 @@ def run_condition(process, fs=500.0, duration=100.0, n_reps=100, methods=None,
         with Pool(processes=n_jobs) as pool:
             results = pool.map(worker, range(n_reps))
     return [row for rows in results for row in rows]
-
-
-def run_grid(conditions, n_jobs=-1, progress=True, **kwargs):
-    """Run a list of ``(process, duration)`` conditions and return a DataFrame."""
-    rows = []
-    for i, (process, duration) in enumerate(conditions):
-        if progress:
-            print(f'  [{i+1}/{len(conditions)}] {process.name} T={duration:g}s',
-                  flush=True)
-        rows.extend(run_condition(process, duration=duration, n_jobs=n_jobs,
-                                  **kwargs))
-    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------

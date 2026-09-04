@@ -69,7 +69,8 @@ SHORT_LABELS = ['AR(1)', 'AR(1) + sine', 'AR(2) oscillator',
                 'AR(8), 5 modes', 'Power law']
 MAIN_PROCESSES = ['ar1', 'ar1_sine', 'ar2_damped', 'arp_modes', 'power_law']
 MAX_ORDER = 30
-YLIM = (-3.1, 1.0)     # log10 seconds, for panel c
+YLIM = (-3.1, 1.7)     # log10 seconds, for panel c; wide enough that
+                       # every box fits and no off-scale marker is needed
 
 # Processes whose ground-truth timescale is the decay of an *intrinsic*
 # oscillator: there the AR(p) answer is the oscillatory mode, not a relaxation
@@ -253,19 +254,18 @@ def make_figure(df, pop):
                 ax.text(x, -2.9, 'n/a', fontsize=5.5, rotation=90,
                         ha='center', color=P.GREY)
                 continue
-            jitter = rng.uniform(-0.18, 0.18, len(vals))
-            ax.scatter(x + jitter, np.log10(vals), s=1.2,
-                       color=P.METHOD_COLORS[method], alpha=0.4, lw=0)
+            colour = P.METHOD_COLORS[method]
+            bp = ax.boxplot([np.log10(vals)], positions=[x], widths=0.62,
+                            patch_artist=True, showfliers=False,
+                            medianprops=dict(color='k', lw=1.1),
+                            whiskerprops=dict(color=colour, lw=0.8),
+                            capprops=dict(color=colour, lw=0.8))
+            for box in bp['boxes']:
+                box.set(facecolor=colour, alpha=0.6, lw=0.7, edgecolor=colour)
             med = np.log10(np.median(vals))
             if med > YLIM[1]:
-                # An estimate off the top of the axis, usually a fit that ran
-                # to the bound of the search.  Mark it rather than dropping
-                # it, which would read as a missing measurement.
                 ax.plot([x], [YLIM[1] - 0.12], marker='^', ms=5, clip_on=False,
-                        color=P.METHOD_COLORS[method], mec='none')
-            else:
-                ax.plot([x - 0.34, x + 0.34], [med] * 2, color='k', lw=1.3,
-                        solid_capstyle='butt')
+                        color=colour, mec='none')
         if np.isfinite(proc.tau_true):
             # A damped oscillator has no relaxation timescale: it rings rather
             # than decaying monotonically.  What it does have is an envelope

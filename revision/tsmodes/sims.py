@@ -391,6 +391,71 @@ class PowerLaw(Process):
 
 
 @dataclass(kw_only=True)
+class AR1PlusAR2(Process):
+    """Aperiodic relaxation plus a *broadband* stochastic rhythm.
+
+    The closest of these processes to a real recording.  ``AR1PlusSine`` adds
+    a line no autoregressive model can represent, and ``AR2Damped`` is a
+    rhythm with no separate aperiodic component; neural data is neither.  It
+    is a broadband background with a broadband peak on top, both stochastic,
+    which is what a spectrum with an alpha or beta bump actually looks like.
+
+    The sum of an AR(1) and an AR(2) is ARMA(3, 2), so no pure AR(p) model
+    reproduces it exactly -- but unlike an added sinusoid it can be
+    approximated well, and the rhythm can be modelled rather than avoided.
+    """
+
+    tau: float = 0.05
+    f_osc: float = 10.0
+    tau_osc: float = 0.15
+    snr: float = 1.0        # rhythm variance / aperiodic variance
+
+    def __post_init__(self):
+        self.name = 'ar1_ar2'
+        self.has_oscillation = True
+        self.label = (f'AR(1)+AR(2), $\\tau$={self.tau*1e3:g} ms, '
+                      f'{self.f_osc:g} Hz')
+        self.tau_true = self.tau
+        self.params = {'tau': self.tau, 'f_osc': self.f_osc,
+                       'tau_osc': self.tau_osc, 'snr': self.snr}
+
+    def _parts(self, fs):
+        phi1 = np.array([tau_to_phi(self.tau, fs)])
+        r = np.exp(-1.0 / (self.tau_osc * fs))
+        theta = 2 * np.pi * self.f_osc / fs
+        phi2 = poles_to_ar(np.array([r * np.exp(1j * theta),
+                                     r * np.exp(-1j * theta)]))
+        return phi1, phi2
+
+    def simulate(self, n_seconds, fs, rng):
+        n = int(round(n_seconds * fs))
+        phi1, phi2 = self._parts(fs)
+        aperiodic = sim_ar_process(phi1, n, rng)
+        rhythm = sim_ar_process(phi2, n, rng)
+        aperiodic = aperiodic / aperiodic.std()
+        rhythm = rhythm / rhythm.std()
+        return aperiodic + np.sqrt(self.snr) * rhythm
+
+    def psd(self, freqs, fs):
+        phi1, phi2 = self._parts(fs)
+        # Unit-variance components, so the spectra add in the same proportion
+        # the signals do.
+        a = ar_psd(phi1, freqs, fs, 1.0)
+        o = ar_psd(phi2, freqs, fs, 1.0)
+        a = a / np.trapezoid(a, freqs)
+        o = o / np.trapezoid(o, freqs)
+        return a + self.snr * o
+
+    def acf(self, lags, fs):
+        phi1, phi2 = self._parts(fs)
+        lags = np.atleast_1d(np.asarray(lags))
+        n = int(np.max(lags))
+        w = 1.0 / (1.0 + self.snr)
+        return (w * ar_acf(phi1, n)[lags.astype(int)]
+                + (1 - w) * ar_acf(phi2, n)[lags.astype(int)])
+
+
+@dataclass(kw_only=True)
 class ARpModes(Process):
     """A genuine high-order AR(p) built from a list of modes.
 

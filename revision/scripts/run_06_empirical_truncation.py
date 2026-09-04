@@ -193,11 +193,5 @@ def main():
     # bias and truncation bias belong together.
 
 
-def _short(key_or_label):
-    if key_or_label in D.SHORT_NAMES:
-        return D.SHORT_NAMES[key_or_label]
-    return key_or_label.split(':')[0] if ':' in key_or_label else key_or_label
-
-
 if __name__ == '__main__':
     main()

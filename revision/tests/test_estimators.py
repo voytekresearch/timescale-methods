@@ -360,3 +360,21 @@ def test_estimate_all_can_switch_robustness_on_in_one_place():
                      welch_win_s=4.0)
     fits = estimate_all(signal, methods=['ar1_psd'], robust=True)
     assert abs(fits['ar1_psd'].tau - 0.05) / 0.05 < 0.25
+
+
+def test_lag_domain_order_selection_counts_independent_lags():
+    """250 correlated lags are not 250 observations.
+
+    Counting them all made BIC treat the autocorrelation as far more
+    informative than it is, and on some realizations of a plain AR(1) it
+    bought order 8 and a timescale of 13 ms against a truth of 50.
+    """
+    rng_taus = []
+    for seed in range(8):
+        signal = prepare(AR1(tau=0.05).simulate(200.0, FS,
+                                                np.random.default_rng(seed)),
+                         FS, welch_win_s=4.0)
+        fit = estimate(signal, 'arp_acf')
+        assert fit.order == 1, f'seed {seed}: order {fit.order} for an AR(1)'
+        rng_taus.append(fit.tau_relaxation)
+    assert abs(np.median(rng_taus) - 0.05) / 0.05 < 0.15

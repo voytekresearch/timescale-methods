@@ -155,8 +155,8 @@ def _median_curve(df, method, column, xs, xcol, fixed=None):
 def make_figure(sweep, damped, pop):
     """Two rows: an oscillation added to the signal, and an oscillation that is
     part of the signal."""
-    fig = plt.figure(figsize=(7.3, 4.2))
-    gs = fig.add_gridspec(2, 3, hspace=0.62, wspace=0.42)
+    fig = plt.figure(figsize=(7.6, 4.4))
+    gs = fig.add_gridspec(2, 3, hspace=0.70, wspace=0.42)
     rng = np.random.default_rng(3)
     show = ['ar1_acf', 'arp_acf', 'ar1_psd', 'arp_psd']
 
@@ -183,10 +183,10 @@ def make_figure(sweep, damped, pop):
         ax.plot(t, y / np.std(y), color='k', lw=0.6)
         ax.set_ylim(-4, 4)
         ax.set_yticks([])
-        ax.set_xlabel('Time (s)', fontsize=8)
+        ax.set_xlabel('Time (s)', fontsize=9)
         ax.spines['left'].set_visible(False)
-        ax.set_title(title, fontsize=8.5, loc='left')
-        ax.tick_params(labelsize=7)
+        ax.set_title(title, fontsize=10, loc='left')
+        ax.tick_params(labelsize=8)
         P.panel_label(ax, 'ad'[r], dx=-0.16)
 
         # -- the spectrum --------------------------------------------------
@@ -195,19 +195,20 @@ def make_figure(sweep, damped, pop):
         f = signal.freqs[mask]
         # Data solid, every model dashed, so the data stays visible
         # underneath the curves that claim to describe it.
-        ax.loglog(f, signal.powers[mask], color=P.LIGHT, lw=0.9)
+        ax.loglog(f, signal.powers[mask], color='k', lw=1.0, label='data')
         ax.loglog(f, ar_psd(fit1.phi, f, FS, fit1.offset),
-                  color=P.METHOD_COLORS['ar1_psd'], lw=1.4, ls='--',
-                  label='AR(1)')
-        ax.loglog(f, ar_psd(fitp.phi, f, FS, fitp.offset),
-                  color=P.METHOD_COLORS['arp_psd'], lw=1.4, ls='-.',
-                  label=(f'AR($p$), $p$={fitp.order}' if fitp.order == 1
-                         else f'AR({fitp.order})'))
-        ax.set_xlabel('Frequency (Hz)', fontsize=8)
-        ax.set_ylabel('Power', fontsize=8)
+                  color='#E69F00', lw=1.6, ls=(0, (5, 2)), label='AR(1)')
+        if fitp.order > 1:
+            # In the first row the order search returns p = 1, so an AR(p)
+            # curve there would just be the AR(1) curve drawn twice.
+            ax.loglog(f, ar_psd(fitp.phi, f, FS, fitp.offset),
+                      color='#0072B2', lw=1.6, ls=(0, (1, 1.4)),
+                      label=f'AR({fitp.order})')
+        ax.set_xlabel('Frequency (Hz)', fontsize=9)
+        ax.set_ylabel('Power', fontsize=9)
         ax.set_yticks([])
         ax.legend(fontsize=7, loc='lower left')
-        ax.tick_params(labelsize=7)
+        ax.tick_params(labelsize=8)
         P.panel_label(ax, 'be'[r], dx=-0.20)
 
         # -- what the estimators report -------------------------------------
@@ -222,13 +223,14 @@ def make_figure(sweep, damped, pop):
             ax.axhline(TAU, color='k', ls='--', lw=1.0)
             ax.set_xscale('log')
             ax.set_yscale('log')
-            ax.set_xlabel('Oscillation / aperiodic power', fontsize=8)
-            ax.set_ylabel('Aperiodic $\\hat\\tau$ (s)', fontsize=8)
-            ax.set_title('Aperiodic $\\tau$ vs rhythm power',
-                         fontsize=8.5)
+            ax.set_xlabel('Oscillation / aperiodic power', fontsize=9)
+            ax.set_ylabel('Aperiodic $\\hat\\tau$ (s)', fontsize=9)
+            ax.set_title('Bias',
+                         fontsize=10)
             ax.set_ylim(8e-3, 2e-1)
-            ax.legend(fontsize=5.6, loc='lower left', ncol=2,
-                      columnspacing=0.6, handlelength=1.4)
+            ax.legend(fontsize=5.6, loc='upper left', ncol=2,
+                      columnspacing=0.6, handlelength=1.4, frameon=True,
+                      framealpha=1.0, edgecolor='none')
         else:
             for method, col, lab in (('arp_acf', 'top_osc_tau', 'AR($p$) ACF'),
                                      ('arp_psd', 'top_osc_tau', 'AR($p$) PSD')):
@@ -248,15 +250,16 @@ def make_figure(sweep, damped, pop):
             ax.set_yscale('log')
             # Not the relaxation time of panel c: an oscillator has none.
             # This is the decay of the envelope multiplying its cosine.
-            ax.set_xlabel('True envelope decay $\\tau_{env}$ (s)', fontsize=8)
-            ax.set_ylabel('Estimated $\\tau_{env}$ (s)', fontsize=8)
-            ax.set_title('Envelope decay recovery',
-                         fontsize=8.5)
+            ax.set_xlabel('True envelope decay $\\tau_{env}$ (s)', fontsize=9)
+            ax.set_ylabel('Estimated $\\tau_{env}$ (s)', fontsize=9)
+            ax.set_title('Envelope decay',
+                         fontsize=10)
             ax.set_ylim(8e-3, 1.1)
             ax.legend(fontsize=5.6, loc='upper left', ncol=2,
-                      columnspacing=0.6, handlelength=1.4)
-        ax.tick_params(labelsize=7)
-        P.panel_label(ax, 'cf'[r], dx=-0.22)
+                      columnspacing=0.6, handlelength=1.4, frameon=True,
+                      framealpha=1.0, edgecolor='none')
+        ax.tick_params(labelsize=8)
+        P.panel_label(ax, 'cf'[r], dx=-0.26, dy=1.16)
 
     P.save(fig, FIG / 'fig_oscillations.svg')
 

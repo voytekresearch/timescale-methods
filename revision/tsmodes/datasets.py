@@ -28,10 +28,9 @@ DATASET_KEYS = [
     'human_lemon_alpha',
     'human_meg_beta',
     'human_cole_m1_beta',
-    'human_ssvep_12hz',
     'macaque_visual_grating_ecog',
     'mouse_neuropixels_natural_movie',
-    'rat_medial_septum_theta',
+    'mouse_neuropixels_spikes',
     'rat_hc3_ca1_ca3',
 ]
 
@@ -44,9 +43,33 @@ SHORT_NAMES = {
     'human_ssvep_12hz': 'EEG SSVEP',
     'macaque_visual_grating_ecog': 'Macaque ECoG',
     'mouse_neuropixels_natural_movie': 'Mouse LFP',
+    'mouse_neuropixels_spikes': 'Mouse spikes',
     'rat_medial_septum_theta': 'Rat septal',
     'rat_hc3_ca1_ca3': 'Rat CA1/CA3',
 }
+
+# Row labels for the real-data figure: "<Species> <modality>", the coarse
+# modality only, so that rows are comparable across recordings.
+SHORT_MODALITY = {
+    'human_fmri_rest': 'fMRI',
+    'human_lemon_alpha': 'EEG',
+    'human_meg_beta': 'MEG',
+    'human_cole_m1_beta': 'ECoG',
+    'human_ssvep_12hz': 'EEG',
+    'macaque_visual_grating_ecog': 'ECoG',
+    'mouse_neuropixels_natural_movie': 'LFP',
+    'mouse_neuropixels_spikes': 'spikes',
+    'rat_medial_septum_theta': 'LFP',
+    'rat_hc3_ca1_ca3': 'LFP',
+}
+
+
+def panel_name(key, meta):
+    """``"Human fMRI"``-style label from the species and coarse modality."""
+    species = str(meta.get('species', '')).capitalize()
+    modality = SHORT_MODALITY.get(key) or str(meta.get('modality', ''))
+    return f'{species} {modality}'.strip()
+
 
 DEFAULT_ANALYSIS = {
     'fs_target': 250.0,
@@ -108,6 +131,7 @@ def load(key, data_dir=DATA_DIR, max_traces=None, max_seconds=None,
     return {'key': key, 'X': X, 'fs': fs, 'meta': meta, 'analysis': analysis,
             'label': meta.get('label', key),
             'short': SHORT_NAMES.get(key, key),
+            'panel_name': panel_name(key, meta),
             'band_hz': tuple(meta.get('band_hz', (8, 13))),
             'line_hz': meta.get('line_noise_hz')}
 
