@@ -4,3 +4,7 @@
 # Ignore cache files
 __pycache__/
 **/__pycache__/
+
+# Revision sub-module: extracted recordings are large and re-derivable
+revision/data/
+revision/figures/*.png

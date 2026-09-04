@@ -1,0 +1,195 @@
+{
+  "psd_reconstruction_max_rel_error": 6.535698564322282e-11,
+  "phi_roundtrip_max_abs_error": 1.4210854715202004e-14,
+  "order": 8,
+  "n_modes": 5,
+  "phi_true": [
+    4.0348944487007135,
+    -6.388227032394475,
+    4.861605256806755,
+    -1.7999359815071498,
+    0.59146193307409,
+    -0.5622892573130972,
+    0.3212127787969331,
+    -0.058816471642429896
+  ],
+  "cross_mode_variance_fraction": -0.28561789137159715,
+  "within_mode_variance_fractions": [
+    0.30168527744056867,
+    0.00010340083775405709,
+    0.9838292125402218,
+    5.653530916499841e-11,
+    4.965171408469671e-10
+  ],
+  "impulse_response_max_error": 7.077005648170598e-11,
+  "acf_component_sum_max_error": 1.8215984276537256e-13,
+  "dominant_subset": {
+    "criterion": "smallest set with log-spectral R^2 >= 0.99",
+    "n_modes": 3,
+    "kept_modes": [
+      {
+        "tau_s": 0.049999999999936984,
+        "freq_hz": 9.999999999996176
+      },
+      {
+        "tau_s": 0.01000000000000052,
+        "freq_hz": 40.00000000000069
+      },
+      {
+        "tau_s": 0.10000000000039165,
+        "freq_hz": 0.0
+      }
+    ],
+    "error": 0.18675027750933335,
+    "curve": [
+      2.8096343434166804,
+      1.4484517622495383,
+      0.6402329139716563,
+      0.18675027750933335,
+      0.23011606125064288,
+      0.0
+    ],
+    "r2_curve": [
+      0.0,
+      0.7342284634340568,
+      0.9480750139287677,
+      0.9955820285398777,
+      0.9932919814009771,
+      1.0
+    ]
+  },
+  "estimated_order": 8,
+  "estimated_r2_logpsd": 0.9998001620399667,
+  "repeatability": [
+    {
+      "quantity": "phi_1",
+      "mean": 4.035102109474945,
+      "sd": 0.0057568116980280205,
+      "cv": 0.00142668302854351,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_2",
+      "mean": -6.3900377043291385,
+      "sd": 0.024384458822777063,
+      "cv": 0.0038160117281087432,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_3",
+      "mean": 4.866893909374643,
+      "sd": 0.046680196128757276,
+      "cv": 0.009591373265573258,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_4",
+      "mean": -1.8072321833933471,
+      "sd": 0.05785301249348572,
+      "cv": 0.03201194236418371,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_5",
+      "mean": 0.5967205311186496,
+      "sd": 0.05731467241179645,
+      "cv": 0.0960494392648947,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_6",
+      "mean": -0.5644581405717197,
+      "sd": 0.04700031259091046,
+      "cv": 0.08326624989995804,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_7",
+      "mean": 0.32192641697145846,
+      "sd": 0.025465624815478552,
+      "cv": 0.07910386806726799,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "phi_8",
+      "mean": -0.05901119601895978,
+      "sd": 0.006145303283062305,
+      "cv": 0.10413792123596127,
+      "truth": NaN,
+      "frac_defined": NaN,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "tau_from_phi1_of_arp",
+      "mean": NaN,
+      "sd": NaN,
+      "cv": NaN,
+      "truth": 0.1,
+      "frac_defined": 0.0,
+      "rel_bias": NaN,
+      "rel_error": NaN
+    },
+    {
+      "quantity": "tau_from_ar1_psd_fit",
+      "mean": 19.99899907203364,
+      "sd": 1.7657231764166977e-06,
+      "cv": 8.829057744624149e-08,
+      "truth": 0.1,
+      "frac_defined": 1.0,
+      "rel_bias": 198.9899907203364,
+      "rel_error": 198.9899973456703
+    },
+    {
+      "quantity": "mode_tau_relaxation",
+      "mean": 0.09800918425719393,
+      "sd": 0.008133802120956374,
+      "cv": 0.08299020324066567,
+      "truth": 0.1,
+      "frac_defined": 1.0,
+      "rel_bias": -0.019908157428060735,
+      "rel_error": 0.06283193752947988
+    },
+    {
+      "quantity": "mode_tau_10Hz",
+      "mean": 0.050049610538419546,
+      "sd": 0.002416257451895045,
+      "cv": 0.04827724783273298,
+      "truth": 0.05,
+      "frac_defined": 1.0,
+      "rel_bias": 0.0009922107683908443,
+      "rel_error": 0.030196040245362987
+    },
+    {
+      "quantity": "mode_freq_10Hz",
+      "mean": 9.985113560176734,
+      "sd": 0.12399086456989943,
+      "cv": 0.012417571800525905,
+      "truth": 10.0,
+      "frac_defined": 1.0,
+      "rel_bias": -0.0014886439823266207,
+      "rel_error": 0.008378500707769554
+    }
+  ]
+}

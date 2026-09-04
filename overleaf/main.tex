@@ -1,0 +1,191 @@
+
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+
+%\usepackage[utf8]{inputenc}
+\usepackage{caption}
+%\usepackage[section]{placeins}
+\usepackage{svg}
+
+% \theoremstyle{thmstyleone}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{proposition}[theorem]{Proposition}
+% \theoremstyle{thmstyletwo}
+% \newtheorem{example}{Example}
+% \newtheorem{remark}{Remark}
+% \theoremstyle{thmstylethree}
+% \newtheorem{definition}{Definition}
+
+\raggedbottom
+
+\begin{document}
+
+%% Header
+\title{Estimating Neural Timescales}
+
+
+\author*[1]{\fnm{Ryan} \sur{Hammonds} \email{rphammonds@ucsd.edu}}
+% \sur{Author}}\email{iauthor@gmail.com}
+\author[2]{\fnm{Dillan} \sur{Cellier}}
+\author[3]{\fnm{Blanca} \sur{Martin-Burgos}}
+\author[3]{\fnm{Trevor} \sur{McPherson}}
+\author[4]{\fnm{Richard} \sur{Gao}}
+\author*[1, 2, 3, 5]{\fnm{Bradley} \sur{Voytek} \email{bradley.voytek@gmail.com}}
+
+\affil[1]{\orgdiv{Halıcıoğlu Data Science Institute}}
+\affil[2]{\orgdiv{Department of Cognitive Science}}
+\affil[3]{\orgdiv{Neurosciences Graduate Program}}
+\affil[4]{\orgdiv{Kavli Institute for Brain and Mind}, \orgname{University of California, San Diego}, \city{La Jolla}, \postcode{92093}, \state{CA}, \country{USA}}
+
+\affil[5]{\orgdiv{Bernstein Center for Computational Neuroscience}}
+\affil[6]{\orgdiv{Machine Learning in Science}, \orgname{University of Tübingen \& Tübingen AI Center}, \state{Tübingen}, \country{Germany}}
+
+\abstract{
+In our collective attempt to understand the “neural code”, we have developed many conceptual and mathematical tools for deciphering neuronal activity. Analyses of firing rates complemented by those of spike timing and the interdependence of spike times relative to one another. In sensory cortices, for example, all forms of neural activity, from spiking to EEG, can reliably predict future neural activity up to a few hundred milliseconds later, after which neural activity is more independent. In contrast, activity in association cortex predicts subsequent activity up to several seconds later. This temporal dependency of neural activity is often captured under the conceptual umbrella of “neural timescales”, a concept that has received a lot of recent attention due to the fact that signals with longer timescales are argued to have a longer “memory”, making timescales attractive for neuroscience applications. While intuitive, there are many different descriptive mathematical models for quantifying timescales, such as extracting a decay parameter from the autocorrelation function or fitting Lorentzian functions to power spectra. Here, we show in both simulated and real neural data how common neural signal features such as neural oscillations, dynamic timescales, and the finite duration of our signals can yield inaccurate and/or uninterpretable timescale estimates under traditional timescale quantification methods. We show that autoregressive (AR) models, which are designed to explicitly predict future data from current time points, can more flexibly handle these common issues. We hope that by highlighting how timescale estimates are biased or made ambiguous under common parametrization methods, and providing a timescales analytical framework based on predictive AR models, can help guide future studies of neural timescales.
+}
+\maketitle
+\section{Timescales}\label{sec1}
+Many real world processes are correlated at varying scales. For example, when trying to predict tomorrow's high temperature, a reasonable starting point is to use the high temperature from today. This also works to predict the high temperature the day after, and the day after that, and so on. One common approach for capturing these temporal relationships is through the use of an autocorrelation, which quantifies how correlated with itself at every temporal lag. The autocorrelation function (AFC) describes the resulting curve, which can be visualized as the correlation at each time lag (Fig. 1).
+
+At very short lags, the correlation will be much higher, and the farther out in time you get, the lower the correlations become. The rate at which the ACF decays from correlated to uncorrelated is usually described as the "timescale" of the process. For purely random, Gaussian distributed, white noise processes, the timescale is very "fast" – dropping from perfectly correlated at lag-zero to uncorrelated at all other lags. Timescales are often quantified as the exponential decay rate of the ACF, where numerous real-world processes, ranging from the atomic scale with radioactive decay \cite{semkow_oscillations_2009}, to the astronomical with stellar flares \cite{anfinogentov_decaying_2013}, show temporal dependence. In the context of neuroscience, timescales have been observed across recording modalities, from single unit recordings \cite{murray_hierarchy_2014} and neuronal population local field potentials (LFP) \cite{haider_millisecond_2016} to human electroencephalography (EEG) \cite{meisel_decline_2017}, magnetoencephalography (MEG) \cite{zhigalov_relationship_2015}, and functional magnetic resonance imaging (fMRI) \cite{watanabe_atypical_2019}. Regardless of the domain or modality, the mathematical basis of timescales is the same, while interpretations and ground truth mechanisms will vary based on the signal's context.
+
+Returning to the temperature example, if we were to record temperature at much higher fidelity, we would see that temperature fluctuates periodically quickly, on a day/night basis, as well as more slowly, on a seasonal basis. These periodic oscillations introduce oscillations in the ACF. This is because an oscillation will be strongly anticorrelated with itself at every half-cycle lag and strongly correlated at every full-cycle lag. Just like with temperature, neural data also oscillates periodically, though often manifesting as more infrequent bursts. Neural oscillations are embedded within a non-oscillatory, aperiodic signal, which is thought to reflect asynchronous neuronal drive, capturing the timescale of the underlying neural activity \cite{gao_neuronal_2020}. This mixing of aperiodic and periodic features means that the ACF also blends aperiodic timescales with neural oscillations. As we will explore in more detail below, this mixing of periodic and aperiodic processes can result in significant biases and errors in estimates of the timescale from the ACF.
+
+To overcome this mixing of signal features, we recently leveraged the mathematical relationship between the ACF and neural power spectral density (PSD) to show that (aperiodic) neuronal timescales can be more reliably estimated from the PSD, independent of the influence of oscillations. To do this, we used our power spectral parameterization approach for separating periodic and aperiodic processes, where oscillations manifest as narrowband "bumps" atop the aperiodic spectral component from which the neural timescale is derived. Using this method, we showed that neural timescales in human participants are dynamic depending on task state, dilating or expanding during working memory \cite{gao_neuronal_2020}.
+
+While the spectral approach for estimating timescales helps overcome some of the biases introduced by oscillations, short-time spectral estimates are noisy and very limited by their small sampling duration, especially within the context of a behavioral or cognitive task. This finite sampling bias, as it is known, also significantly impacts ACF-based timescale estimates. These three factors – the presence of oscillations, the fact that timescales can themselves be dynamic over short timescales as a function of the behavioral state of the person or animal, and the finite sampling bias – all have significant influences on any given timescale estimate. That is, most common methods for quantifying neuronal timescales suffer from some kind of bias.
+
+In this paper, we illustrate how these common methods for estimating timescales – from the ACF and the PSD – are impacted by common neural signal qualities: oscillations, finite samples, and dynamic shifts in timescales. We show this in both simulated and real data, and provide recommendations for addressing these issues. Finally, at the risk of introducing yet another method with implicit and overlooked timescale estimation biases, we introduce autoregressive (AR) models as a viable alternative for quantifying neuronal timescales.
+
+\section{Autoregressive Models}
+
+
+The simplest AR model is the first-order autoregressive, AR(1), model: $T_{\text{tomorrow}} = \varphi T_{\text{today}} + \epsilon$. Assuming tomorrow's temperature will be very close to today's, the coefficient, $\varphi$, will be approach one. As $\varphi$ approaches zero, today's temperature is increasingly less indicative of tomorrow's temperature and trends towards a Gaussian distributed random white noise process dominated by $\epsilon$.
+
+Processes that are periodic and oscillatory are distinct from those that are aperiodic, such as modeled by an AR(1) process, but these oscillations must be taken into account when modeling temperature. Timescales are derived from the aperiodic component and are directly related to the AR(1) coefficient, but fail to capture or are significantly biased by oscillations.
+
+The AR(1) model may be applied to varying temporal scales. If $T_0$ is today's temperature and $T_k$ is the temperature in $k$-days, we can update the temperature model to: $T_k = \varphi^k T_0 + \epsilon$. This AR(1) form is a discrete-time analog of the stochastic motion of particles under Brownian motion (replacing temperature with velocity \cite{uhlenbeck_theory_1930}. In these lagged cases, the AR(1) coefficient, $\varphi$, depends on the discrete time step, $k$. This is equivalent to the value of the autocorrelation function (ACF) at the corresponding lag step, given the sampling rate, $f_s$. The ACF, $A(k)$, of an AR(1) process is described by an exponentially decaying function and may be alternatively expressed in terms of the AR(1) coefficient, $\varphi$ (eq. \ref{eq:acf}). The autcorrelation at lag one is equal to $\varphi$. The AR(1) model can simulate a signal, $x$, given an initial white noise input (eq. \ref{eq:ar}).
+
+\begin{align}
+x_t &= \varphi^k x_{t-k} + \epsilon \label{eq:ar} \\
+A(k) &= e^{\frac{-k}{\tau f_s}} = \varphi^k \label{eq:acf} \\
+\tau &= \frac{-1}{f_s \log{\phi}} \label{eq:tau}
+\end{align}
+
+Timescales, $\tau$, may be expressed as the AR(1) coefficient, $\varphi$ (eq. \ref{eq:tau}), and are bounded by the scale of the observation, defined by the sampling rate, $f_s$, and the length of the signal, $n$. Sampling rate lower bounds observable timescales, as very short timescales, relative to $f_s$, will be undetectable. For example, if a timescale related to temperature fluctuations is on the order of days, but temperature is sampled once a week, the daily timescale will be impossible to detect. Inversely, the length of the signal upper bounds detectable timescales. If a timescale is on the order of years, but only one week of data is collected, the yearly timescale will be undetectable.
+
+
+\section{Neural Timescales}
+
+Neural timescales characterize the length of time in which an input is integrated and maintained by neuronal populations. That is, if an input causes a change in neural activity that then immediately reverts back to random, its timescale will be very short, or fast: you can’t predict future values from the current state. However, if an input causes a lasting, predictable structure in activity, its timescale will be longer, or slower: given its current state, you can predict future values. This is interpreted as that activity having a longer “memory” of the input. This interpretation of neural timescales reflects the maintenance of information, or memory, of a neural time series is what makes timescales particularly attractive from a computational neuroscience perspective. However, this is also what makes accurate measurement of timescales so critical, especially given the rapid emergence of studies that examine the functional role of timescales in cognition \cite{cavanagh_diversity_2020, gao_neuronal_2020} and their alteration in disease states \cite{watanabe_atypical_2019, wengler_distinct_2020}.
+
+Related to the potential functional role of neural timescales is the fact that the structure of neural timescales are not random across the brain. Rather, they are spatially organized in a cortical hierarchy \cite{hasson_hierarchy_2008, kiebel_hierarchy_2008, murray_hierarchy_2014, gao_neuronal_2020, misic_brain_2010}. The lowest levels of the hierarchy are associated with short timescales, on the order of milliseconds, in visual \cite{buracas_efficient_1998} and auditory \cite{yang_millisecond-scale_2008} sensory cortices. At higher levels along the cortical hierarchy, longer timescales, on the order of seconds, are associated with decision making \cite{brody_timing_2003} and working memory \cite{wang_probabilistic_2002} in the prefrontal and parietal cortices. This hierarchical distribution has also been observed across species, suggesting evolutionary preservation \cite{buzsaki_scaling_2013}. The current work focuses on neural timescales, rather than 2D and 3D spatial extensions, e.g. spatial scales. However, the spatial distribution of timescales highlights the importance of finding local regions that are approximately stationary.
+
+\begin{figure}[htbp]
+  \centering
+  \includesvg[width=0.95\linewidth]{fig_0.svg}
+  \caption{Timescales, represented as an AR(1) model and process (left), autocorrelation (middle), and power spectral density (right), and the corresponding AR(1) forms (bottom). A key connection is between AR(1) coefficient and timescales, where $\varphi$ is equal to autocorrelation at lag one, $A(1)$.}
+\end{figure}
+
+Despite the increasing popularity of studying neural timescales, there are many caveats and limitations that significantly impact the accuracy of fitting mathematical models to the data which, in turn, impacts the accuracy of timescale estimates and downstream interpretations. This primer evaluates and compares timescale estimation approaches via parameterization of ACF and power spectral density (PSD), with respect to the corresponding AR(1) form (Fig. 1). The ACF and PSD are connected through the Fourier transform, described by the Wiener-Khinchin theorem. The AR(1) model has forms in both the ACF and PSD (Fig. 1). Timescales, $\tau$, may be alternatively expressed in terms of the AR(1) coefficient, $\varphi$, equal to the correlation at lag one of the ACF, given an AR(1) process. The $\varphi$ parameter and the PSD of an AR(1) process have a long history \cite{yule_1927, gilman_power_1963} to build upon. The complexity of an AR(1) model increases as the order or number of past values, $p$, increases, e.g. an AR($p$) model. The extensive history of theoretical analysis, flexible complexity, and connection between $\varphi$ and $\tau$ make AR models a target when studying of neural timescales.
+
+Because ground truth timescales are unknown in neurobiology, we cannot know which method works under which conditions or why. To address this, neural signals are assumed to be described by AR(1) processes. Signals are simulated using a white noise input to an AR(1) system, or equivalently, a discrete Ornstein-Uhlenbeck process \cite{uhlenbeck_theory_1930} or a branching process \cite{zierenberg_description_2020}. A binary spiking process, such as neuronal spike trains, may simulated by convolving an exponentially decaying kernel with a Poisson point process \cite{meyer_inferring_2019}. This time series may be treated as probability of a spike occurring and sampled to yield a binary process. The spikes may be binned \cite{murray_hierarchy_2014}, giving a time series that has a desired timescale, dependent on the decay rate of the initial convolutional kernel. Regardless of simulation method, the core assumption is that the signal produced will be an AR(1) realization, and bound by: $0 < \varphi < 1$ or $0 < \tau < \infty$. These bounds narrow as the sampling rate or number of samples decreases.
+
+\section{Estimation Bias}
+
+Simulations allow the study of timescale estimation bias when analytical solutions do not exist. Timescales estimation is evaluated when the AR(1) assumption holds and when it fails. Specifically, estimation bias is evaluated under: 1) the presence of neural oscillations \cite{berger_uber_1929, buzsaki_neuronal_2004}, 2) finite duration or decreasing the number of samples in the signal \cite{broersen_finite_2000, schwarz_estimating_1978, zeraati_flexible_2022}, 3) dynamic, non-constant timescales associated with behavioral or task states, or neural regions \cite{gao_neuronal_2020, spitmaan_multiple_2020}, and 4) model mismatch or when a process is better described by a higher-order AR($p$) model \cite{broersen_finite_2000}. General recommendations for accounting for these sources of bias are provided. 
+% These recommendations are finally applied to xxx dataset.
+
+\begin{figure}[htbp]
+  \centering
+  \includesvg[width=0.95\linewidth]{fig_1.svg}
+  \caption{Timescale estimation bias in autocorrelation (top) and power spectral density (bottom). a) Oscillations correspond to a cosine function in the ACF or a delta function in the PSD. Robust regression of the PSD is an optimal solution. b) As signals have fewer samples, the ACF and PSD deviate randomly from the expected form. Longer signals or more observations narrow the confidence interval around the estimated timescale. c) A non-constant timescale violates the assumption of stationarity and accurate timescales estimation depends on an appropriate windowing scheme. d) If observed data deviates from expected AR(1), there will be model mismatch. Robust regression sometimes offers a solution, otherwise a higher order AR($p$) model is suggested.}
+\end{figure}
+
+\subsection{Oscillations}
+
+In the context of neural data, timescales are typically estimated from the autocorrelation of LFPs or binned spike counts \cite{murray_hierarchy_2014}. However both LFPs and single-unit spiking often exhibit rhythmic fluctuations - oscillations. While an interesting signal in their own right, in the context of estimating neuronal timescales, oscillations can significantly impact the accuracy of timescale estimation. Oscillatory activity manifests as a cosine in the ACF \cite{brunel_fast_1999} or as a narrow peak in PSD \cite{he_scale-free_2014, buzsaki_scaling_2013}. The addition of a cosine can account for a oscillatory components in the ACF model (Fig. 2a). Optimizing the solution to cosine frequency is difficult and non-convex without strong priors, e.g., a priori knowledge of the oscillatory frequency. A poorly optimize cosine function, or lack thereof, will bias timescales estimates.
+
+Recent methods allow for parameterization of oscillatory activity from the PSD \cite{donoghue_parameterizing_2020}, modeled as Gaussian peaks. Either robust regression or explicit oscillatory modeling provides an alternative to ACF fitting.  In the frequency domain, oscillations are limited to narrow frequency bands. Power outside of the oscillatory bandwidth is minimally affected, allowing for accurate recovery of the timescale. This is performed using using the AR(1) form of PSD (Fig. 1, bottom right), or the approximate Lorentzian form \cite{gao_neuronal_2020}. A mixture of oscillations and stochastic processes also arise from AR(2) models \cite{stralrowski_charts_1970}, e.g. with autoregressive coefficients: $\varphi = [1.95, -0.99]$. This produces a damped cosine in the ACF. The topic of higher-order AR($p$) models is further discussed in the model mismatch section. 
+
+Oscillations may also be removed from a signal. A narrow-band filter will, in addition to oscillatory power, greedily remove aperiodic power in the narrow-band. Singular spectrum analysis (SSA) is another option \cite{hassani_singular_2021}, a method based on eigendecomposition. SSA depends on combining principal components, or scaled eigenvectors, associated with the stochastic process, or by removing oscillatory components. These methods are optimal when oscillations are stationary or constant across the signal. The topic of bursting oscillations is similar to dynamic, non-stationary biases (Fig. 2c), and depends on an accurate burst detection algorithm, such as applying thresholds to the analytic amplitude from the Hilbert transform \cite{feingold_bursts_2015}. 
+
+\subsection{Finite Sampling}
+
+Stochastic processes suffer from a statistical bias related to finite duration recorded signals (Fig. 2b). Short duration time series increase estimation bias, limit the maximum detectable timescale, and decrease confidence. As the duration of a time series decreases and as $\varphi \to 1$, \textit{a)} timescale estimates are increasingly biased and \textit{b)} confidence intervals around the timescale estimate widen. Moving towards unbiased timescale estimation approaches is necessary for studying the fast temporal dynamics of task designs (Fig. 2c). Dynamic timescales have been observed in working memory \cite{wasmuht_intrinsic_2018, gao_neuronal_2020}, decision making \cite{ganupuru_flexibility_2019} and auditory processing \cite{chien_constructing_2020} tasks. 
+
+In the context of event-related task designs or neuronal spiking activity, bias is often mitigated by averaging the ACFs of trials or binned spike counts \cite{murray_hierarchy_2014}. In these approaches, when there are multiple neurons, channels, or repeat trials, it is recommended to take the median or mean PSD or ACF across recordings, neurons, and/or time periods, prior to model fitting. Averaging across neuronal populations, regions, and time has been shown to reduce estimation bias attributed to short duration recordings \cite{spitzner_mr_2021}. However, averaging limits the ability to examine between-neuron, region, or trial timescale variability. This suggests that across regions or neurons, signals should be stationary, with a constant timescale, prior to computing an average ACF or PSD.
+
+These methods are compatible regardless of how the ACF or PSD is computed. Parametric spectral estimators, such as AR($p$) models, are favored over non-parameteric, Fourier-based methods, such as periodograms, as signals become shorter \cite{spyers-ashby_comparison_1998}. This is under the assumption that an observed process or signal aligns with the AR(1) model associated with timescales. The AR(1) model makes assumptions about neural data: as the length of a signal increases, the empirical ACF or PSD should approach and converge to the expected AR(1) forms (Fig. 1).
+
+Computing confidence intervals around an estimated $\varphi$ has a long history \cite{mann_statistical_1943}. The least-squares estimate of the variance of the AR(1) coefficient is:
+
+\begin{align}
+\mathbb{E}[ \hat{\varphi}^2 ] &= \frac{1 - \varphi^2}{n-1} \label{eq:var}
+\end{align}
+
+However, this measure is increasing bias as $\varphi \to 1$. Confidence intervals (CIs) may instead be computed as a weighted average between the least-squares and Cauchy estimators \cite{gallagher_small_2008}. This CI is useful for determining unbiased upper and lower confidence bounds of an estimated $\varphi$ or timescale (Fig. 3). CIs are also useful for determining confidence in short window estimates, required when neural signals are non-stationary or when timescales are non-constant.
+
+%% Add supplmental info about CI from Gallaher 2008. This is too much math to add in the main text.
+
+\begin{figure}[htbp]
+  \centering
+  \includesvg[width=0.95\linewidth]{fig_2.svg}
+  \caption{Finite bias and confidence intervals (CIs) around estimated AR(1) coefficients. The CIs narrow around the true $\varphi$ as the number of samples increases from 100 (left) to 1000 (right). Estimates and CIs (gray) were averaged over 1000 simulations.}
+\end{figure}
+
+\subsection{Dynamic Timescales}
+
+Dynamic timescales refer to a signal whose $\varphi$ or $\tau$ is non-constant across time, referred to as a violation of stationarity. This occurs when timescales are associated with behavioral or task states, or neural regions \cite{gao_neuronal_2020, spitmaan_multiple_2020}. If a signal spans across these states or regions, a single timescale will combine distinct processes and ignore relevant temporal dynamics (Fig. 2c). Timescales should be estimated from signals that are relatively homogeneous or stationary, with respect to a) anatomical or functional boundaries or b) behavioral or task states. This requires the selection of an optimal  window size and accurate window clustering or a priori determination of which windows to combine. However, windowing increases finite sampling bias and each timescale estimate will be less confident. This leads to a min-max problem with the aim to minimize violations of stationarity while simultaneously maximizing window size.
+
+\subsection{Model Mismatch}
+
+Model mismatch occurs when the AR(1) model is the incorrect model, after other biases have been carefully handled (Fig. 2d). This is a generalized extension of oscillatory bias, when there is temporal structure that does not neatly fall into the AR(1) form.  In these cases, the AR(1) model is the incorrect model after oscillations have been accounted for, the signal is confirmed to be stationary, and the signal is sufficiently long, yet is not well described by an AR(1) model. When this occurs, the use of higher order AR($p$) offers a solution (eq. \ref{eq:arp}). Increasing the AR order flexibly models PSD and ACF, allowing for forms that deviate from the expected. AR($p$) models use multiple past values to predict the current (eq. \ref{eq:arp}). The AR($p$) model also has forms in the ACF and PSD (eq. \ref{eq:arp_psd}).
+
+\begin{align}
+    x_t &= \sum_{k=1}^p \varphi_k x_{t-k} + \epsilon \label{eq:arp}\\
+    P(f) &= \frac{\sigma^{2}}{|1 - \sum\limits_{k=1}^p \varphi_{k} e\strut^{-j 2 \pi f k}|^{2}} \label{eq:arp_psd}
+\end{align}
+
+The denominator of eq. \ref{eq:arp_psd} is a polynomial: $\varphi_1 (e^{-j 2 \pi f})^1 + \varphi_2 (e^{-j 2 \pi f})^2 + \dots + \varphi_k (e^{-j 2 \pi f})^k$. This allows application of Weierstrass approximation theorem, which suggests that the AR($p$) model can fit any spectral form, e.g. universal approximation, given a sufficiently large order, $p$. However, it is desirable to keep $k$ small and the set of $[ \varphi_1, \varphi_2, \cdots, \varphi_k ]^{\top}$ sparse. Given universal approximation, the AR($p$) model may overfit other sources of variance, such as finite bias. This highlights the importance of evaluating other potential sources of bias while also minimizing the complexity of the AR($p$) model. One solution is to introduce sparsity through an L1 penalty on AR coeffcients. Bayesian information criteria (BIC) may also be used to evaluate a set of models with varying $p$ to determine an optimal, minimized AR order \cite{vidaurre_survey_2013}.
+
+\section{Minimizing Biases}
+
+Estimation bias prevents accurate quantification of timescales, limiting functional and physiological interpretations. Oscillatory and finite sampling bias may not exist separately and are often overlapping. Therefore, accounting for oscillatory activity is also important when studying, potentially dynamic, timescales, as oscillatory dynamics are associated cognitive and disease states \cite{ward_synchronous_2003}.
+
+This emphasizes the importance of jointly accounting for oscillatory, finite, and dynamic biases when studying timescales. The presence of oscillations suggests using PSD to robustly fit the AR(1)-PSD form. Finite biases should be considered when designing tasks. Simulations and confidence intervals are helpful in determining the minimum number of samples required to quantify timescales or $\varphi$ within a desired degree of error. Finite windows are required either by task design, or when evaluating if timescales are constant or dynamic. Even after accounting for oscillations, finite, and dynamic biases, empirical signals may not be of an AR(1) form, and a single $\tau$ may not be reflective of the entirety of a signal's dynamics. One solution is to increase the complexity of the model, e.g. AR($p$), or to find alternative spectral models that best fit empirical data.
+
+\section{Application}
+
+Human neural signals corresponding to wake and non-REM sleep were used for analysis \cite{frauscher_atlas_2018, frauscher_highfrequency_2018, von_ellenrieder_how_2020}. Data was sub-selected to contain only DIXI intracerebral electrodes, spanning across frontal, motor, insular, and cingulate regions. This selection criteria led to 69 participants and a total of 12.5 hours of recordings. Preprocessing was performed in \cite{frauscher_atlas_2018, frauscher_highfrequency_2018, von_ellenrieder_how_2020} and includes: resampling to 200 Hertz, reduction of power-line interference, exclusion of artifacts noted by trained neurophysiologists, and mean-centering.
+
+Power spectral density was computed using Welch’s method with 10 second windows and one second of overlap \cite{cole_neurodsp_2019}. Spectra were fit using the AR(p) spectral form (eq. \ref{eq:arp_psd}). All software and analyses are available at \href{https://github.com/voytekresearch/timescale-methods}{https://github.com/voytekresearch/timescale-methods}, including robust PSD and ACF model fitting using a variety of model forms, including AR($p$).
+
+Signals were long enough to minimize finite bias. However, oscillations were sparsely present. Observed PSD and ACF (Fig. 4, left) contain narrow peaks in the PSD and damped oscillations in the ACF.  The AR(1) model was relatively insufficient, e.g. model mismatch bias. The ACF did not follow the exponential decay form required for $\tau$, thus PSD did not closely follow the spectral AR(1) form. AR(1) and AR(5) models were compared (Fig. 4, right). Model mismatch is indicated by non-normal distribution of AR(1) residuals across frequency, even after correcting for oscillations. The AR(5) model improves the normality of power residuals and the mean-squared error (Fig. 4, lower right).
+
+\begin{figure}[htbp]
+    \centering
+    \includesvg[width=1.0\linewidth]{fig_3.svg}
+    \caption{Application of AR(1) and AR(5) models with human intracranial recordings. Power spectral density (PSD) and autocorrelation were computed for wake and non-REM trials (left). Spectra were subsequently fit using AR(1) and AR(5) forms (right).}
+    \label{fig:application}
+\end{figure}
+
+A prediction task was used to demonstrate the practical utility of the learned AR coefficients. Logistic regression was used to predict wake and non-REM sleep, a binary classification task. The AR(1) coefficient gave an F1-score of 0.77 on the 20\% held out test set. The AR(5) coefficients increased the F1-score to 0.88. This highlights the usefulness of increasing the complexity of autoregressive models when AR(1) is insufficient.
+
+\bibliography{references}
+
+\end{document}
