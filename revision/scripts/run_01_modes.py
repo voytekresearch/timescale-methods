@@ -27,13 +27,26 @@ FIG = ROOT / 'figures'
 RES = ROOT / 'results'
 FS = 500.0
 
-# A ground-truth AR(5): one slow relaxation plus two damped oscillators.
+# A ground-truth AR(7): two relaxations that both matter, two rhythms that
+# ring for more than a cycle, and one fast relaxation that does not matter.
+#
+# Two dominant relaxations are the point.  A single timescale cannot describe
+# this process however it is estimated, so it is the case where reading the
+# model as modes is not a refinement but the only way to get an answer.
+#
+# Both rhythms have f*tau > 1, so tau is unambiguously the envelope decay and
+# cannot be misread as the period: the 10 Hz mode has a 100 ms period and a
+# 150 ms envelope.  Both stay inside the range seen in the real recordings,
+# where the largest in-band f*tau is 1.93.
+#
+# The relaxation knees sit at 1/(2 pi tau) = 0.80 and 8.0 Hz, an order of
+# magnitude apart and both well inside the band a 4 s Welch window resolves.
 TRUE_MODES = [
-    {'kind': 'relaxation', 'tau': 0.100, 'freq': 0.0},
-    {'kind': 'oscillatory', 'tau': 0.050, 'freq': 10.0},
-    {'kind': 'oscillatory', 'tau': 0.010, 'freq': 40.0},
+    {'kind': 'relaxation', 'tau': 0.200, 'freq': 0.0},
+    {'kind': 'oscillatory', 'tau': 0.150, 'freq': 10.0},
+    {'kind': 'oscillatory', 'tau': 0.060, 'freq': 40.0},
+    {'kind': 'relaxation', 'tau': 0.020, 'freq': 0.0},
     {'kind': 'relaxation', 'tau': 0.002, 'freq': 0.0},
-    {'kind': 'oscillatory', 'tau': 0.003, 'freq': 180.0},
 ]
 
 
@@ -133,7 +146,7 @@ def main():
               flush=True)
         sweep = pd.read_csv(RES / 'modes_vs_coefficients_sweep.csv')
         repeat = pd.read_csv(cached)
-        make_figure(model, fit, signal, sweep, repeat, dom)
+        make_figure(model, sweep, repeat, dom)
         return
 
     sweep = coefficient_vs_mode_sweep(FS)
@@ -148,7 +161,7 @@ def main():
     print(json.dumps({k: v for k, v in checks.items()
                       if k not in ('repeatability',)}, indent=2)[:1500])
 
-    make_figure(model, fit, signal, sweep, repeat, dom)
+    make_figure(model, sweep, repeat, dom)
 
 
 def coefficient_vs_mode_sweep(fs, freqs_hz=None):
@@ -250,8 +263,11 @@ def repeatability(phi_true, fs, n_reps=200, duration=60.0):
     return pd.DataFrame(rows)
 
 
-FIT_COLOR = '#009E73'      # AR(p) fit: far from both mode colours
-SUM_COLOR = '#FFB000'      # sum-of-modes check in panel c
+# Panels b and c make the same claim in two domains, so they are drawn with
+# the same vocabulary: one colour for the exact recombination of the modes
+# ("product of modes" in the spectrum, "sum of modes" in the lag domain), one
+# style for a dominant mode and one for a negligible one.
+RECOMBINED_COLOR = '#FFB000'
 DOM_STYLE = (0, (2, 1.5))  # dominant mode
 NEG_STYLE = ':'            # negligible mode
 
@@ -261,14 +277,14 @@ def _proxy(**kw):
     return Line2D([0], [0], **kw)
 
 
-def make_figure(model, fit, signal, sweep, repeat, dom):
+def make_figure(model, sweep, repeat, dom):
     """Five panels: what the modes are, how they combine in each domain, which
     of them matter, and how well each one is recovered."""
     fig = plt.figure(figsize=(7.4, 5.0))
     # Row 1 spans are chosen so that every panel edge in the bottom row falls
     # on a panel edge in the top row: d under a, e under b and c.
     gs = fig.add_gridspec(2, 6, hspace=0.62, wspace=1.05)
-    freqs = np.logspace(np.log10(0.5), np.log10(250), 600)
+    freqs = np.logspace(np.log10(0.5), np.log10(150), 600)
     # Slowest mode at the top, fastest at the bottom.
     order = np.argsort([-m.tau for m in model.modes])
     shown = [model.modes[i] for i in order]
@@ -294,21 +310,21 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
     comps = model.impulse_components(n)
     total = comps.sum(axis=0)
     top = len(shown) * step
-    ax.plot(t, total / np.max(np.abs(total)) + top, color='k', lw=1.3)
-    ax.text(t[-1], top + 0.42, 'response to an input', fontsize=6.5,
+    ax.plot(t, 0.5 * total / np.max(np.abs(total)) + top, color='k', lw=1.3)
+    ax.text(t[-1], top + 0.6, 'response to an input', fontsize=6.5,
             ha='right', va='bottom')
     for i, mode in enumerate(shown):
         base = (len(shown) - 1 - i) * step
-        y = comps[order[i]] / np.max(np.abs(comps[order[i]])) + base
+        y = 0.5 * comps[order[i]] / np.max(np.abs(comps[order[i]])) + base
         ax.axhline(base, color=P.LIGHT, lw=0.5, zorder=0)
         ax.plot(t, y, color=colours[i], lw=1.2)
         label = (f'$\\tau$ = {mode.tau*1e3:.0f} ms'
                  + ('' if mode.kind == 'relaxation'
-                    else f', {mode.freq:.0f} Hz ({mode.n_cycles:.1f} cyc)'))
-        ax.text(t[-1], base + 0.42, label, fontsize=6.2, ha='right',
+                    else f', {mode.freq:.0f} Hz'))
+        ax.text(t[-1], base + 0.6, label, fontsize=6.2, ha='right',
                 va='bottom', color=colours[i])
     ax.set_yticks([])
-    ax.set_ylim(-1.5, top + 1.25)
+    ax.set_ylim(-1.35, top + 1.15)
     ax.set_xlabel('Time after input (s)')
     ax.set_title('Modes', fontsize=9)
     ax.spines['left'].set_visible(False)
@@ -319,37 +335,33 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
     P.panel_label(ax, 'a', dx=-0.09)
 
     # (b) they multiply in the spectrum ------------------------------------
+    # The mirror of panel c: there the modes are summed, here they are
+    # multiplied, and in both the recombination lies on the generating curve.
     ax = fig.add_subplot(gs[0, 2:4])
-    mask = signal.fit_mask & signal.exclude_mask
-    fmask = signal.freqs[mask]
 
-    def centred(power, ref=None):
-        ref = power if ref is None else ref
-        return power / np.exp(np.mean(np.log(ref)))
+    def centred(power):
+        return power / np.exp(np.mean(np.log(power)))
 
-    ax.loglog(fmask, centred(signal.powers[mask]), color=P.LIGHT, lw=1.0,
-              zorder=0)
     for j, (mode, c) in enumerate(zip(shown, colours)):
         f = mode.psd(freqs)
         dominant = order[j] in keep
-        ax.loglog(freqs, f / np.exp(np.mean(np.log(f))), color=c, zorder=1,
+        ax.loglog(freqs, centred(f), color=c, zorder=1,
                   lw=1.1 if dominant else 0.9,
                   ls=DOM_STYLE if dominant else NEG_STYLE,
                   alpha=1.0 if dominant else 0.6)
-    ax.loglog(freqs, centred(model.psd(freqs), model.psd(fmask)), color='k',
-              lw=1.6, zorder=3)
-    fitted = ar_psd(fit.phi, freqs, signal.fs, fit.offset)
-    ax.loglog(freqs, centred(fitted, ar_psd(fit.phi, fmask, signal.fs,
-                                            fit.offset)),
-              color=FIT_COLOR, lw=1.2, ls=(0, (4, 2.6)), zorder=4)
+    generating = model.psd(freqs)
+    product = psd_from_poles(np.concatenate([m.poles for m in model.modes]),
+                            freqs, model.fs, model.offset)
+    ax.loglog(freqs, centred(generating), color='k', lw=1.6, zorder=3)
+    ax.loglog(freqs, centred(product), color=RECOMBINED_COLOR, lw=1.1,
+              ls='--', zorder=4)
     ax.set_xlabel('Frequency (Hz)')
     ax.set_ylabel('Relative power')
     ax.set_title('Spectrum: modes multiply', fontsize=9)
     ax.legend(handles=[
-        _proxy(color=P.LIGHT, lw=1.0, label='one realization'),
         _proxy(color='k', lw=1.6, label='generating spectrum'),
-        _proxy(color=FIT_COLOR, lw=1.2, ls=(0, (4, 2.6)),
-               label=f'AR({fit.order}) fit'),
+        _proxy(color=RECOMBINED_COLOR, lw=1.1, ls='--',
+               label='product of modes'),
     ] + weight_handles,
         fontsize=5.5, loc='lower left', handlelength=1.5,
         borderpad=0.22, labelspacing=0.2, frameon=True,
@@ -366,7 +378,8 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
                 ls=DOM_STYLE if dominant else NEG_STYLE,
                 alpha=1.0 if dominant else 0.6)
     ax.plot(lags, model.acf(nlags), color='k', lw=1.6)
-    ax.plot(lags, acf_comps.sum(axis=0), color=SUM_COLOR, lw=1.1, ls='--')
+    ax.plot(lags, acf_comps.sum(axis=0), color=RECOMBINED_COLOR, lw=1.1,
+            ls='--')
     ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
     ax.set_xlim(0, 0.3)
     ax.set_xlabel('Lag (s)')
@@ -374,7 +387,7 @@ def make_figure(model, fit, signal, sweep, repeat, dom):
     ax.set_title('Autocorrelation: modes add', fontsize=9)
     ax.legend(handles=[
         _proxy(color='k', lw=1.6, label='generating ACF'),
-        _proxy(color=SUM_COLOR, lw=1.1, ls='--', label='sum of modes'),
+        _proxy(color=RECOMBINED_COLOR, lw=1.1, ls='--', label='sum of modes'),
     ] + weight_handles,
         fontsize=5.5, loc='upper right', handlelength=1.5,
         borderpad=0.22, labelspacing=0.2, frameon=True,

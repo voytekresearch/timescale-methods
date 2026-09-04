@@ -37,6 +37,23 @@ METHODS = ['ar1_direct', 'arp_direct', 'ar1_acf', 'arp_acf',
 DOMINANT_TOL = 0.1   # keep modes until log-spectral R^2 >= 0.99
 
 
+def resolvable_modes(fit, signal):
+    """The fit's modes, most important first, dropping unresolvable ones.
+
+    A mode slower than ``1 / (2 pi f_lo)`` has its knee below the fitted
+    band, so its timescale is an extrapolation of the model past the data
+    rather than something the recording measured.  Left in, these are the
+    near-unit-root poles that report a 393 s timescale from a 300 s
+    recording; they carry high importance precisely because deleting them
+    changes the lowest frequencies a lot.
+    """
+    if fit.modes is None:
+        return []
+    tau_max = 1.0 / (2.0 * np.pi * signal.f_range[0])
+    keep = [m for m in fit.modes.modes if m.tau <= tau_max]
+    return sorted(keep, key=lambda m: -m.importance)
+
+
 def in_band(freq, data, signal):
     """Is this mode a rhythm in the band the recording is expected to show?
 
@@ -201,16 +218,19 @@ def main():
 #: vision and to a greyscale printer.  Domain is carried by the group labels
 #: under panel c, not by colour: light and dark shades of one hue are hard to
 #: separate when two curves are overlaid.
-# One Okabe-Ito colour per estimator, used identically in all three panels,
-# so a box in c is the same colour as the curve it came from in a or b.  The
-# two spectral colours are warm/cool, as are the two lag-domain colours, and
-# the four hues are mutually distinguishable.  Data is always black.
-FIT_COLORS = {'ar1_psd': '#E69F00', 'arp_psd': '#0072B2',
-              'ar1_acf': '#CC79A7', 'arp_acf': '#009E73'}
 DATA_COLOR = '#000000'
-# Panel c compares the two spectral and the two lag-domain estimators; the
-# time-domain fits are computed and tabulated but not plotted.
-PANEL_METHODS = ['ar1_acf', 'arp_acf', 'ar1_psd', 'arp_psd']
+FIT_COLOR = '#0072B2'          # the AR(p) fit, in whichever domain it is drawn
+FIT_STYLE = (0, (4, 2))
+FIT_LW = 1.5
+# One colour per mode, by importance rank.  The same three colours carry the
+# same three modes through panel b, where their autocorrelation components are
+# drawn, and panel c, where their timescales are boxed -- so a curve in b can
+# be read straight across to its box in c.
+MODE_COLORS = ['#D55E00', '#009E73', '#CC79A7']
+N_MODES_SHOWN = 3
+#: Draw a mode's box only when this fraction of traces reached that rank.
+#: A box built from one trace is not a distribution.
+MIN_TRACE_FRACTION = 0.5
 
 
 def decade_ticks(ax, vals, pad=1.7):
@@ -261,39 +281,47 @@ def make_figure(keys, cache, fits, modes, summary):
 
         # Median across traces, matching panel c, which pools them all.
         psd_data, acf_data = [], []
-        curves = {m: {'psd': [], 'acf': []}
-                  for m in ('ar1_psd', 'arp_psd', 'ar1_acf', 'arp_acf')}
+        psd_fit, acf_fit = [], []
+        # Mode components and timescales, collected by importance rank so the
+        # curve in b and the box in c describe the same mode.
+        mode_curves = [[] for _ in range(N_MODES_SHOWN)]
+        mode_taus = [[] for _ in range(N_MODES_SHOWN)]
         nlags = len(signal.corrs) - 1
+        n_traces = 0
         for trace in data['X']:
             sig = D.prepare_trace(trace, data)
             if len(sig.corrs) - 1 != nlags:
                 continue
+            n_traces += 1
             psd_data.append(sig.powers[mask])
             acf_data.append(sig.corrs)
-            for method in curves:
-                fit = estimate(sig, method, robust=True)
-                if not fit.success or fit.phi is None:
-                    continue
-                if method.endswith('psd'):
-                    curves[method]['psd'].append(
-                        ar_psd(fit.phi, sig.freqs[mask], sig.fs, fit.offset))
-                else:
-                    curves[method]['acf'].append(
-                        fit.params['height'] * ar_acf_fft(fit.phi, nlags)
-                        + fit.params['acf_offset'])
+
+            fp = estimate(sig, 'arp_psd', robust=True)
+            if fp.success and fp.phi is not None:
+                psd_fit.append(ar_psd(fp.phi, sig.freqs[mask], sig.fs, fp.offset))
+
+            fa = estimate(sig, 'arp_acf', robust=True)
+            if not (fa.success and fa.phi is not None):
+                continue
+            height = fa.params['height']
+            acf_fit.append(height * ar_acf_fft(fa.phi, nlags)
+                           + fa.params['acf_offset'])
+            comps = fa.modes.acf_components(nlags)
+            index = {id(m): j for j, m in enumerate(fa.modes.modes)}
+            for r, mode in enumerate(resolvable_modes(fa, sig)[:N_MODES_SHOWN]):
+                mode_curves[r].append(height * comps[index[id(mode)]])
+                mode_taus[r].append(mode.tau * 1e3)
         med = lambda a: np.median(np.vstack(a), axis=0)
         psd_data, acf_data = med(psd_data), med(acf_data)
+        enough = lambda a: len(a) >= MIN_TRACE_FRACTION * max(n_traces, 1)
 
         # -- a: spectrum ---------------------------------------------------
         ax = fig.add_subplot(gs[i, 0])
         ax.loglog(signal.freqs[mask], psd_data, color=DATA_COLOR, lw=1.1,
                   label='data', zorder=1)
-        for method, ls, lab in (('ar1_psd', (0, (5, 2)), 'AR(1) PSD'),
-                                ('arp_psd', (0, (1, 1.4)), 'AR($p$) PSD')):
-            if curves[method]['psd']:
-                ax.loglog(signal.freqs[mask], med(curves[method]['psd']),
-                          color=FIT_COLORS[method], lw=1.5, ls=ls, label=lab,
-                          zorder=3)
+        if psd_fit:
+            ax.loglog(signal.freqs[mask], med(psd_fit), color=FIT_COLOR,
+                      lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit', zorder=3)
         ax.set_ylabel(data['panel_name'], fontsize=7, labelpad=3)
         ax.set_yticks([])
         ax.yaxis.set_minor_locator(mticker.NullLocator())
@@ -311,11 +339,17 @@ def make_figure(keys, cache, fits, modes, summary):
         ax = fig.add_subplot(gs[i, 1])
         lags = np.arange(nlags + 1) / signal.fs
         ax.plot(lags, acf_data, color=DATA_COLOR, lw=1.1, label='data', zorder=1)
-        for method, ls, lab in (('ar1_acf', (0, (5, 2)), 'AR(1) ACF'),
-                                ('arp_acf', (0, (1, 1.4)), 'AR($p$) ACF')):
-            if curves[method]['acf']:
-                ax.plot(lags, med(curves[method]['acf']), color=FIT_COLORS[method],
-                        lw=1.5, ls=ls, label=lab, zorder=3)
+        # The modes the fit is made of, drawn under it: each is an exponential
+        # decay or a damped cosine, and together with the modes too small to
+        # draw they add up to the dashed curve.
+        for r in range(N_MODES_SHOWN):
+            if not enough(mode_curves[r]):
+                continue
+            ax.plot(lags, med(mode_curves[r]), color=MODE_COLORS[r], lw=1.2,
+                    zorder=2)
+        if acf_fit:
+            ax.plot(lags, med(acf_fit), color=FIT_COLOR, lw=FIT_LW,
+                    ls=FIT_STYLE, zorder=3)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
         taus = [t for t in (sub['tau'].median(), sub['tau_relaxation'].median())
                 if np.isfinite(t) and t > 0]
@@ -327,10 +361,17 @@ def make_figure(keys, cache, fits, modes, summary):
         ax.set_yticks([0, 1])
         ax.tick_params(labelsize=6.5)
         if first:
+            from matplotlib.lines import Line2D
             ax.set_title('Autocorrelation', fontsize=9)
-            ax.legend(fontsize=5.8, loc='upper right', handlelength=1.8,
-                      frameon=True, framealpha=1.0, edgecolor='none',
-                      borderpad=0.2, labelspacing=0.2)
+            handles = [Line2D([0], [0], color=DATA_COLOR, lw=1.1, label='data')]
+            handles += [Line2D([0], [0], color=MODE_COLORS[r], lw=1.2,
+                               label=f'mode {r + 1}')
+                        for r in range(N_MODES_SHOWN)]
+            handles.append(Line2D([0], [0], color=FIT_COLOR, lw=FIT_LW,
+                                  ls=FIT_STYLE, label='AR($p$) fit'))
+            ax.legend(handles=handles, fontsize=5.5, loc='upper right',
+                      handlelength=1.8, frameon=True, framealpha=1.0,
+                      edgecolor='none', borderpad=0.2, labelspacing=0.18)
             P.panel_label(ax, 'b', dx=-0.22, dy=1.40)
         if last:
             ax.set_xlabel('Lag (s)', fontsize=7.5)
@@ -340,19 +381,13 @@ def make_figure(keys, cache, fits, modes, summary):
         # by two orders of magnitude and every box has to be visible.
         ax = fig.add_subplot(gs[i, 2])
         drawn = []
-        for k, method in enumerate(PANEL_METHODS):
-            col = 'tau' if method.startswith('ar1_') else 'tau_relaxation'
-            vals = sub.loc[sub['method'] == method, col].to_numpy(dtype=float)
-            vals = vals[np.isfinite(vals) & (vals > 0)] * 1e3
-            x = k + 0.9 * (k // 2)
-            if not len(vals):
-                ax.text(x, 0.5, 'none', fontsize=5.5, rotation=90, ha='center',
-                        va='center', color=P.GREY,
-                        transform=ax.get_xaxis_transform())
+        for r in range(N_MODES_SHOWN):
+            vals = np.array([v for v in mode_taus[r] if np.isfinite(v) and v > 0])
+            if not enough(vals):
                 continue
             drawn.append(vals)
-            colour = FIT_COLORS[method]
-            bp = ax.boxplot([vals], positions=[x], widths=0.62,
+            colour = MODE_COLORS[r]
+            bp = ax.boxplot([vals], positions=[r], widths=0.6,
                             patch_artist=True, showfliers=False,
                             medianprops=dict(color='k', lw=1.1),
                             whiskerprops=dict(color=colour, lw=0.8),
@@ -360,21 +395,21 @@ def make_figure(keys, cache, fits, modes, summary):
             for box in bp['boxes']:
                 box.set(facecolor=colour, alpha=0.55, lw=0.7, edgecolor=colour)
         ax.set_yscale('log')
-        ax.set_xlim(-0.8, 4.7)
-        ax.set_xticks([0, 1, 2.9, 3.9])
-        ax.set_xticklabels(['AR(1)', 'AR($p$)'] * 2 if last else [],
-                           fontsize=5.6, rotation=90)
+        ax.set_xlim(-0.7, N_MODES_SHOWN - 0.3)
+        ax.set_xticks(np.arange(N_MODES_SHOWN))
+        ax.set_xticklabels([f'mode {r + 1}' for r in range(N_MODES_SHOWN)]
+                           if last else [], fontsize=5.6, rotation=90)
         ax.set_ylabel('ms', fontsize=7, labelpad=1)
         ax.tick_params(labelsize=6.5)
         if drawn:
             decade_ticks(ax, np.concatenate(drawn))
         if first:
-            ax.set_title('Timescale', fontsize=9)
+            ax.set_title('Mode timescales', fontsize=9)
             P.panel_label(ax, 'c', dx=-0.30, dy=1.40)
         if last:
-            for x, name in zip([0.5, 3.4], ('ACF', 'PSD')):
-                ax.text(x, -0.72, name, ha='center', va='top', fontsize=6.5,
-                        color=P.GREY, transform=ax.get_xaxis_transform())
+            ax.text(0.5, -0.92, 'by importance', ha='center', va='top',
+                    fontsize=6.5, color=P.GREY,
+                    transform=ax.transAxes)
 
     P.save(fig, FIG / 'fig_realdata.svg')
 
