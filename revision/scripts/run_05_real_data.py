@@ -196,12 +196,37 @@ def make_figure(keys, cache, fits, modes, summary):
         data = cache[key]
         sub = fits[fits['dataset'] == key]
         band = (sub['band_lo'].iloc[0], sub['band_hi'].iloc[0])
+        # Panels a and b show the median across traces, not one trace.  A
+        # single trace is what an estimator sees, but it is not what the
+        # panel is claiming: panel c pools every trace, so the curve above it
+        # should too.  It also matters most where the data are thinnest -- a
+        # single 296-sample BOLD run gives a spectrum too noisy to read,
+        # while the median over twelve is legible.
         signal = D.prepare_trace(data['X'][0], data)
-        fit1 = estimate(signal, 'ar1_psd', robust=True)
-        fitp = estimate(signal, 'arp_psd', robust=True)
-        facf1 = estimate(signal, 'ar1_acf', robust=True)
-        facfp = estimate(signal, 'arp_acf', robust=True)
         mask = signal.fit_mask & signal.exclude_mask
+        psd_data, acf_data = [], []
+        curves = {m: {'psd': [], 'acf': []}
+                  for m in ('ar1_psd', 'arp_psd', 'ar1_acf', 'arp_acf')}
+        nlags = len(signal.corrs) - 1
+        for trace in data['X']:
+            sig = D.prepare_trace(trace, data)
+            if len(sig.corrs) - 1 != nlags:
+                continue
+            psd_data.append(sig.powers[mask])
+            acf_data.append(sig.corrs)
+            for method in curves:
+                fit = estimate(sig, method, robust=True)
+                if not fit.success or fit.phi is None:
+                    continue
+                if method.endswith('psd'):
+                    curves[method]['psd'].append(
+                        ar_psd(fit.phi, sig.freqs[mask], sig.fs, fit.offset))
+                else:
+                    curves[method]['acf'].append(
+                        fit.params['height'] * ar_acf_fft(fit.phi, nlags)
+                        + fit.params['acf_offset'])
+        med = lambda a: np.median(np.vstack(a), axis=0)
+        psd_data, acf_data = med(psd_data), med(acf_data)
         first, last = i == 0, i == n - 1
 
         # -- a: spectrum ---------------------------------------------------
@@ -211,16 +236,14 @@ def make_figure(keys, cache, fits, modes, summary):
         # expected; nothing in the estimation uses it.
         ax.axvspan(band[0], band[1], color='#FFB000', alpha=0.16, lw=0,
                    label='reference band' if first else None)
-        ax.loglog(signal.freqs[mask], signal.powers[mask], color=P.GREY,
-                  lw=1.2, label='data', zorder=1)
-        ax.loglog(signal.freqs[mask],
-                  ar_psd(fit1.phi, signal.freqs[mask], signal.fs, fit1.offset),
-                  color=P.METHOD_COLORS['ar1_psd'], lw=1.3, ls='--',
-                  label='AR(1)')
-        ax.loglog(signal.freqs[mask],
-                  ar_psd(fitp.phi, signal.freqs[mask], signal.fs, fitp.offset),
-                  color=P.METHOD_COLORS['arp_psd'], lw=1.3, ls='-.',
-                  label='AR($p$)')
+        ax.loglog(signal.freqs[mask], psd_data, color=P.GREY, lw=1.2,
+                  label='data', zorder=1)
+        for method, ls, lab in (('ar1_psd', '--', 'AR(1)'),
+                                ('arp_psd', '-.', 'AR($p$)')):
+            if curves[method]['psd']:
+                ax.loglog(signal.freqs[mask], med(curves[method]['psd']),
+                          color=P.METHOD_COLORS[method], lw=1.3, ls=ls,
+                          label=lab)
         import matplotlib.ticker as mticker
         ax.set_ylabel(data['short'], fontsize=7, labelpad=3)
         ax.set_yticks([])
@@ -237,27 +260,23 @@ def make_figure(keys, cache, fits, modes, summary):
 
         # -- b: autocorrelation --------------------------------------------
         ax = fig.add_subplot(gs[i, 1])
-        nlags = len(signal.corrs) - 1
         lags = np.arange(nlags + 1) / signal.fs
-        ax.plot(lags, signal.corrs, color=P.GREY, lw=1.5,
-                label='data', zorder=1)
+        ax.plot(lags, acf_data, color=P.GREY, lw=1.5, label='data', zorder=1)
         # Data solid, both models dashed, so the empirical curve stays
         # visible underneath the fits.
-        for fit, method, ls in ((facf1, 'ar1_acf', '--'),
-                                (facfp, 'arp_acf', '-.')):
-            # The fitted curve itself, not a band-limited redrawing of it: an
-            # AR(1) fit must appear on the figure as the decaying exponential
-            # that it is.
-            model = (fit.params['height'] * ar_acf_fft(fit.phi, nlags)
-                     + fit.params['acf_offset'])
-            ax.plot(lags, model, color=P.METHOD_COLORS[method], lw=1.3, ls=ls,
-                    label='AR(1)' if method == 'ar1_acf' else 'AR($p$)')
+        for method, ls, lab in (('ar1_acf', '--', 'AR(1)'),
+                                ('arp_acf', '-.', 'AR($p$)')):
+            if curves[method]['acf']:
+                ax.plot(lags, med(curves[method]['acf']),
+                        color=P.METHOD_COLORS[method], lw=1.3, ls=ls,
+                        label=lab)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
         # Zoom on the decay.  Most of these autocorrelations reach zero within
         # a fraction of the lags computed, and plotting the full range would
         # compress the part of the curve the fit is actually about.
-        taus = [t for t in (fit1.tau, facf1.tau, fitp.tau_relaxation,
-                            facfp.tau_relaxation) if np.isfinite(t) and t > 0]
+        taus = [t for t in (sub['tau'].median(),
+                            sub['tau_relaxation'].median())
+                if np.isfinite(t) and t > 0]
         # ... but never so tight that only a handful of lags remain.
         span = float(np.clip(max(6 * max(taus), 12 / signal.fs),
                              4 / signal.fs, lags[-1]))

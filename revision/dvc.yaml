@@ -1,5 +1,9 @@
 # Fitting and plotting are separate stages on purpose.
 #
+# Each stage lists only the modules its script imports, so a change is scoped
+# to the work it can actually affect: editing tsmodes/finite.py rebuilds the
+# finite-sampling and truncation fits, not the mode decomposition.
+#
 # Changing a figure used to mean rerunning every fit, because the two lived in
 # one script and nothing recorded what depended on what.  Here each analysis
 # has a `fit` stage that writes tables and a `plot` stage that reads them, so
@@ -17,9 +21,6 @@ stages:
       - tsmodes/estimators.py
       - tsmodes/modes.py
       - tsmodes/sims.py
-      - tsmodes/benchmark.py
-      - tsmodes/finite.py
-      - tsmodes/datasets.py
     outs:
       - results/modes_checks.json
       - results/modes_ground_truth_table.csv
@@ -36,8 +37,6 @@ stages:
       - tsmodes/modes.py
       - tsmodes/sims.py
       - tsmodes/benchmark.py
-      - tsmodes/finite.py
-      - tsmodes/datasets.py
     outs:
       - results/benchmark_main.csv.gz
       - results/benchmark_main_summary.csv
@@ -53,8 +52,6 @@ stages:
       - tsmodes/modes.py
       - tsmodes/sims.py
       - tsmodes/benchmark.py
-      - tsmodes/finite.py
-      - tsmodes/datasets.py
     outs:
       - results/oscillation_sweep.csv.gz
       - results/damped_grid.csv.gz
@@ -70,7 +67,6 @@ stages:
       - tsmodes/sims.py
       - tsmodes/benchmark.py
       - tsmodes/finite.py
-      - tsmodes/datasets.py
     outs:
       - results/finite_sampling.csv.gz
       - results/finite_summary.csv
@@ -83,9 +79,7 @@ stages:
       - tsmodes/__init__.py
       - tsmodes/estimators.py
       - tsmodes/modes.py
-      - tsmodes/sims.py
       - tsmodes/benchmark.py
-      - tsmodes/finite.py
       - tsmodes/datasets.py
       - data
     outs:
@@ -100,10 +94,9 @@ stages:
       - tsmodes/__init__.py
       - tsmodes/estimators.py
       - tsmodes/modes.py
-      - tsmodes/sims.py
       - tsmodes/benchmark.py
-      - tsmodes/finite.py
       - tsmodes/datasets.py
+      - tsmodes/finite.py
       - data
     outs:
       - results/empirical_truncation.csv.gz

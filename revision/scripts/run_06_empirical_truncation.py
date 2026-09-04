@@ -36,6 +36,10 @@ ROOT = Path(__file__).resolve().parents[1]
 FIG, RES = ROOT / 'figures', ROOT / 'results'
 METHODS = ['ar1_direct', 'ar1_acf', 'ar1_psd', 'arp_acf', 'arp_psd']
 DURATIONS = np.array([0.5, 1, 2, 4, 8, 16, 32, 64, 128], dtype=float)
+#: A window with fewer samples than this cannot support a spectral estimate
+#: worth fitting, whatever the estimator.  For BOLD at TR = 2 s the shortest
+#: nominal window, 16 s, is eight samples.
+MIN_SAMPLES = 24
 # fMRI is sampled at 0.5 Hz, so its window ladder lives on a different scale.
 DURATIONS_SLOW = np.array([16, 32, 64, 128, 256, 592], dtype=float)
 N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
@@ -86,7 +90,8 @@ def _analyse_window(args, key=None, data=None, duration=None):
 def analyse(key, n_jobs=N_JOBS):
     data = D.load(key)
     trace_seconds = data['X'].shape[1] / data['fs']
-    durations = [d for d in durations_for(data) if d <= trace_seconds]
+    durations = [d for d in durations_for(data)
+                 if d <= trace_seconds and d * data['fs'] >= MIN_SAMPLES]
     rows = []
     for duration in durations:
         wins = list(enumerate(windows_for(data, duration)))

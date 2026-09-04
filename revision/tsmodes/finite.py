@@ -32,10 +32,19 @@ def phi_of_tau(tau, fs):
 
 
 def tau_of_phi(phi, fs):
-    phi = np.asarray(phi, dtype=float)
+    """Timescale of an AR(1) coefficient, scalar in and scalar out.
+
+    ``np.where`` returns a 0-d array for scalar input, and a list of those
+    lands in pandas as an ``object`` column.  That is invisible until
+    something numeric touches it: the finite-sampling figure crashed inside
+    ``fill_between`` on the freshly computed table while working perfectly on
+    the same table after a CSV round trip had quietly cast it to float.
+    """
+    phi_arr = np.asarray(phi, dtype=float)
     with np.errstate(divide='ignore', invalid='ignore'):
-        out = -1.0 / (fs * np.log(phi))
-    return np.where((phi > 0) & (phi < 1), out, np.nan)
+        out = -1.0 / (fs * np.log(phi_arr))
+    out = np.where((phi_arr > 0) & (phi_arr < 1), out, np.nan)
+    return float(out) if np.ndim(phi) == 0 else out
 
 
 def ar1_phi_bias(phi, n):

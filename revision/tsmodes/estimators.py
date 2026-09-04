@@ -106,7 +106,14 @@ def multitaper_psd(sig, fs, nw=4.0, n_tapers=None):
     from scipy.signal.windows import dpss
     sig = np.asarray(sig, dtype=float)
     n = len(sig)
+    # A short record cannot support a large time-bandwidth product: DPSS
+    # requires more samples than tapers, and a resolution bandwidth of 2NW/n
+    # wider than the band is meaningless anyway.  Windowed analyses cut the
+    # same recording into pieces a few samples long, so clamp rather than
+    # fail.
+    nw = float(np.clip(nw, 1.25, max(1.25, n / 8.0)))
     n_tapers = int(2 * nw - 1) if n_tapers is None else int(n_tapers)
+    n_tapers = int(np.clip(n_tapers, 1, max(1, n - 1)))
     tapers = dpss(n, nw, n_tapers)
     power = np.zeros(n // 2 + 1)
     for taper in tapers:

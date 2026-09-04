@@ -1,5 +1,6 @@
 """Tests for the analytic finite-sample results."""
 
+import pandas as pd
 import numpy as np
 import pytest
 
@@ -116,3 +117,26 @@ def test_phi_ci_is_centred_on_the_bias_corrected_value():
     assert centre < 0.95
     assert lo < centre < hi
     assert hi - lo == pytest.approx(2 * 1.959963985 * sd, rel=1e-6)
+
+
+def test_scalar_input_gives_scalar_output():
+    """A 0-d array in a pandas column becomes an object column silently.
+
+    The finite-sampling figure crashed inside ``fill_between`` on a freshly
+    computed table while working on the same table after a CSV round trip,
+    because ``np.where`` had returned 0-d arrays that pandas stored as
+    objects and the round trip cast to float.
+    """
+    from tsmodes.finite import tau_of_phi, ar1_tau_ci
+    assert isinstance(tau_of_phi(0.9, FS), float)
+    assert np.ndim(tau_of_phi(0.9, FS)) == 0
+    for value in ar1_tau_ci(0.05, 1.0, FS):
+        assert isinstance(value, float), 'confidence bound is not a float'
+
+    frame = pd.DataFrame({'lo': [ar1_tau_ci(0.05, d, FS)[0]
+                                 for d in (0.5, 1.0, 2.0)]})
+    assert frame['lo'].dtype == np.float64, 'object column would crash plotting'
+
+    # arrays still come back as arrays
+    out = tau_of_phi(np.array([0.9, 0.8]), FS)
+    assert isinstance(out, np.ndarray) and out.shape == (2,)

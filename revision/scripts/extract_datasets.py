@@ -302,38 +302,58 @@ def extract_meg_cmc(channels=None, max_seconds=MAX_SECONDS):
         'label': 'Human MEG: sensorimotor beta'})
 
 
-def extract_fmri_abide(subjects=ABIDE_SUBJECTS, tr=2.0, max_traces=MAX_TRACES):
-    """fMRI: ABIDE preprocessed resting-state ROI time series (no temporal filter).
+# Harvard-Oxford cortical region index of the precuneus, verified against the
+# atlas XML.  ABIDE's rois_ho columns are named "#<region><hemisphere>" with
+# region 1-48 in atlas order and hemisphere 01 = left, 02 = right.
+PRECUNEUS = 31
+
+
+def extract_fmri_abide(subjects=ABIDE_SUBJECTS, tr=2.0, region=PRECUNEUS):
+    """fMRI: ABIDE resting-state precuneus time series (no temporal filter).
 
     The ``nofilt_noglobal`` CPAC strategy is used deliberately: the usual
     0.01-0.1 Hz band-pass would remove most of the spectrum a timescale is
     estimated from.
+
+    One named region, both hemispheres, every participant, rather than the
+    highest-variance ROI per participant.  Two reasons.  A single 296-sample
+    BOLD run gives a spectrum too noisy to fit, and averaging over regions is
+    the obvious remedy but the wrong one here, because regions differ in
+    exactly the property being measured -- precuneus, medial prefrontal and
+    occipital spectra have visibly different shapes in this data, so a
+    111-region average describes no region at all.  Restricting to one
+    default-mode hub keeps the average interpretable, and makes a trace here
+    the same kind of thing as a channel in the other recordings.
     """
     traces, kept = [], []
     for subject in subjects:
         path = download_to_cache(f'{ABIDE_ROOT}/{subject}_rois_ho.1D',
                                  DATA_ROOT / 'abide' / f'{subject}_rois_ho.1D')
+        with open(path) as handle:
+            ids = [int(c.lstrip('#')) for c in handle.readline().split()]
         table = np.loadtxt(path, skiprows=1)
         if table.ndim != 2 or table.shape[0] < 100:
             continue
-        # One ROI per trace; take the ROIs with the most variance so that
-        # dropout / edge regions are excluded.
-        variance = table.var(axis=0)
-        roi = int(np.argmax(variance))
-        traces.append(table[:, roi])
-        kept.append(f'{subject}:roi{roi}')
-        if len(traces) >= max_traces:
-            break
+        for hemi, name in ((1, 'L'), (2, 'R')):
+            try:
+                col = ids.index(region * 100 + hemi)
+            except ValueError:
+                continue
+            series = table[:, col]
+            if series.std() < 1e-9:
+                continue
+            traces.append(series)
+            kept.append(f'{subject}:precuneus-{name}')
     if not traces:
-        raise RuntimeError('No ABIDE ROI time series could be loaded.')
+        raise RuntimeError('No ABIDE precuneus time series could be loaded.')
     length = min(len(t) for t in traces)
     X = np.vstack([t[:length] for t in traces])
     save('human_fmri_rest', X, 1.0 / tr, {
-        'species': 'human', 'modality': 'fMRI BOLD', 'region': 'cortex',
+        'species': 'human', 'modality': 'fMRI BOLD', 'region': 'precuneus',
         'state': 'resting state', 'band_hz': [0.01, 0.1], 'line_noise_hz': None,
         'subject': 'ABIDE UM_1', 'traces': kept,
         'source': 'ABIDE preprocessed (CPAC, nofilt_noglobal, Harvard-Oxford ROIs)',
-        'trace_definition': 'one cortical ROI time series per participant',
+        'trace_definition': 'precuneus, left and right, one trace each per participant',
         'analysis': {'f_range': [0.01, 0.24], 'welch_win_s': 128.0,
                      'nlags': 60, 'fs_target': None},
         'label': 'Human fMRI: resting-state BOLD'})

@@ -37,7 +37,7 @@ DATASET_KEYS = [
 
 # Short names used in figures and tables.
 SHORT_NAMES = {
-    'human_fmri_rest': 'fMRI rest',
+    'human_fmri_rest': 'fMRI precuneus',
     'human_lemon_alpha': 'EEG alpha',
     'human_meg_beta': 'MEG beta',
     'human_cole_m1_beta': 'ECoG beta',
