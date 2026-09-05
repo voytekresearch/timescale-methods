@@ -139,9 +139,12 @@ corrs = phi ** lags
 freqs = np.linspace(.5, fs / 2, 1000)
 powers = 1 / (1 + phi ** 2 - 2 * phi * np.cos(2 * np.pi * freqs * (1 / fs)))
 
-with plt.rc_context({'text.usetex': HAVE_LATEX,
-                     'text.latex.preamble': r'\usepackage{amsmath}',
-                     'font.family': 'sans-serif'}):
+# Jupyter draws the figure after the cell has finished, outside the context
+# below, and each text keeps the usetex flag it was created with.  The
+# preamble it needs is therefore set for good (it is inert while usetex is
+# off), so the inline display does not fail with `align*` undefined.
+mpl.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+with plt.rc_context({'text.usetex': HAVE_LATEX, 'font.family': 'sans-serif'}):
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(12, 5), height_ratios=[.7, .3])
     fig.subplots_adjust(wspace=.2, hspace=0.5)
 
