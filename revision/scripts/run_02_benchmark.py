@@ -10,7 +10,6 @@ Outputs
 -------
 results/benchmark_main.csv.gz, results/benchmark_main_summary.csv
 results/population_ar.csv
-figures/fig_benchmark.svg
 """
 
 import os
@@ -25,17 +24,14 @@ for _var in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS',
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
-from tsmodes import plotting as P
 from tsmodes.benchmark import run_condition, summarize
-from tsmodes.estimators import (ESTIMATOR_LABELS, estimate, population_ar,
-                                prepare, is_divergence)
+from tsmodes.estimators import population_ar, is_divergence
 from tsmodes.modes import ARModes, ar_psd
 from tsmodes.sims import AR1, AR1PlusSine, AR2Damped, ARpModes, PowerLaw
 
 ROOT = Path(__file__).resolve().parents[1]
-FIG, RES = ROOT / 'figures', ROOT / 'results'
+RES = ROOT / 'results'
 FS = 500.0
 DURATION = 100.0
 N_REPS = 200
@@ -132,8 +128,6 @@ def population_analysis(processes, fs, orders=range(1, MAX_ORDER + 1),
 
 
 def main():
-    P.use_style()
-    FIG.mkdir(exist_ok=True)
     RES.mkdir(exist_ok=True)
 
     print('Population AR analysis ...', flush=True)
@@ -170,141 +164,6 @@ def main():
     print('\n--- vs the integrated timescale ---')
     print(summary_int[cols].to_string(index=False))
 
-    make_figure(df, pop)
-
-
-def example_fits(proc, fs, duration, seed=3):
-    rng = np.random.default_rng(seed)
-    sig = proc.simulate(duration, fs, rng)
-    signal = prepare(sig, fs, welch_win_s=WELCH_WIN_S)
-    robust = proc.has_oscillation
-    fit1 = estimate(signal, 'ar1_psd', robust=robust)
-    fitp = estimate(signal, 'arp_psd', robust=robust)
-    return signal, fit1, fitp
-
-
-def make_figure(df, pop):
-    """Three rows: what the signal looks like, what its spectrum looks like,
-    and what each estimator reports."""
-    idx = [i for i, proc in enumerate(PROCESSES) if proc.name in MAIN_PROCESSES]
-    procs = [PROCESSES[i] for i in idx]
-    labels = [SHORT_LABELS[i] for i in idx]
-    n = len(procs)
-
-    fig = plt.figure(figsize=(7.3, 5.2))
-    gs = fig.add_gridspec(3, n, hspace=0.45, wspace=0.3,
-                          height_ratios=[0.75, 1.0, 1.15])
-
-    methods = list(P.METHOD_ORDER)
-    groups = [('time', 'time'), ('acf', 'ACF'), ('psd', 'PSD')]
-    rng = np.random.default_rng(7)
-
-    for j, (proc, label) in enumerate(zip(procs, labels)):
-        signal, fit1, fitp = example_fits(proc, FS, DURATION)
-
-        # -- row 1: the signal itself -------------------------------------
-        ax = fig.add_subplot(gs[0, j])
-        seconds = 1.5
-        t = np.arange(int(seconds * FS)) / FS
-        y = signal.sig[:len(t)]
-        ax.plot(t, y / np.std(y), color='k', lw=0.5)
-        ax.set_ylim(-4, 4)
-        ax.set_xticks([0, 1])
-        ax.set_yticks([])
-        ax.tick_params(labelsize=7)
-        ax.set_title(label, fontsize=8.5)
-        ax.spines['left'].set_visible(False)
-        if j == 0:
-            ax.set_ylabel('signal', fontsize=8)
-            P.panel_label(ax, 'a', dx=-0.30, dy=1.30)
-        if j == n // 2:
-            ax.set_xlabel('Time (s)', fontsize=8)
-
-        # -- row 2: spectrum and fits --------------------------------------
-        ax = fig.add_subplot(gs[1, j])
-        mask = signal.fit_mask
-        f, p_emp = signal.freqs[mask], signal.powers[mask]
-        # Data solid, every model dashed, so the data stays visible
-        # underneath the curves that claim to describe it.
-        ax.loglog(f, p_emp, color=P.LIGHT, lw=0.9)
-        ax.loglog(f, ar_psd(fit1.phi, f, FS, fit1.offset),
-                  color=P.METHOD_COLORS['ar1_psd'], lw=1.4, ls='--',
-                  label='AR(1) fit')
-        ax.loglog(f, ar_psd(fitp.phi, f, FS, fitp.offset),
-                  color=P.METHOD_COLORS['arp_psd'], lw=1.4, ls='-.',
-                  label='AR($p$) fit')
-        ax.set_xticks([1, 100])
-        ax.tick_params(labelsize=7)
-        ax.set_yticks([])
-        if j == 0:
-            ax.set_ylabel('Power', fontsize=8)
-            ax.legend(fontsize=6.5, loc='lower left')
-            P.panel_label(ax, 'b', dx=-0.30, dy=1.18)
-        if j == n // 2:
-            ax.set_xlabel('Frequency (Hz)', fontsize=8)
-
-        # -- row 3: what each estimator reports ----------------------------
-        ax = fig.add_subplot(gs[2, j])
-        sub = df[df['process'] == proc.name]
-        for i, method in enumerate(methods):
-            vals = sub.loc[sub['method'] == method, 'tau_target'].to_numpy(float)
-            vals = vals[np.isfinite(vals) & (vals > 0)]
-            x = i + 0.9 * (i // 2)
-            if not len(vals):
-                ax.text(x, -2.9, 'n/a', fontsize=5.5, rotation=90,
-                        ha='center', color=P.GREY)
-                continue
-            colour = P.METHOD_COLORS[method]
-            bp = ax.boxplot([np.log10(vals)], positions=[x], widths=0.62,
-                            patch_artist=True, showfliers=False,
-                            medianprops=dict(color='k', lw=1.1),
-                            whiskerprops=dict(color=colour, lw=0.8),
-                            capprops=dict(color=colour, lw=0.8))
-            for box in bp['boxes']:
-                box.set(facecolor=colour, alpha=0.6, lw=0.7, edgecolor=colour)
-            med = np.log10(np.median(vals))
-            if med > YLIM[1]:
-                ax.plot([x], [YLIM[1] - 0.12], marker='^', ms=5, clip_on=False,
-                        color=colour, mec='none')
-        if np.isfinite(proc.tau_true):
-            # A damped oscillator has no relaxation timescale: it rings rather
-            # than decaying monotonically.  What it does have is an envelope
-            # that decays, and that is what the line marks.
-            colour = (P.MODE_COLORS['oscillatory']
-                      if proc.name in OSCILLATORY_TRUTH else 'k')
-            ax.axhline(np.log10(proc.tau_true), color=colour, ls='--', lw=1.0)
-        tint = proc.tau_integrated(FS)
-        if np.isfinite(tint):
-            ax.axhline(np.log10(tint), color='#FFB000', ls=':', lw=1.3)
-        ax.set_xlim(-0.8, 7.6)
-        ax.set_ylim(*YLIM)
-        ax.set_xticks([0, 1, 2.9, 3.9, 5.8, 6.8])
-        ax.set_xticklabels(['AR(1)', 'AR($p$)'] * 3, fontsize=5.6,
-                           rotation=90)
-        for x, (domain, name) in zip([0.5, 3.4, 6.3], groups):
-            # Below the rotated tick labels, not on top of them.
-            ax.text(x, -0.46, name, ha='center', va='top', fontsize=7.5,
-                    color=P.DOMAIN_COLORS[domain],
-                    transform=ax.get_xaxis_transform())
-        P.log_tick_labels(ax)
-        ax.tick_params(labelsize=7)
-        if j == 0:
-            ax.set_ylabel('Estimated $\\tau$ (s)', fontsize=8)
-            P.panel_label(ax, 'c', dx=-0.30, dy=1.14)
-        else:
-            ax.set_yticklabels([])
-
-    handles = [plt.Line2D([], [], color='k', ls='--', lw=1.0,
-                          label='true $\\tau$'),
-               plt.Line2D([], [], color=P.MODE_COLORS['oscillatory'], ls='--',
-                          lw=1.0,
-                          label='envelope decay of the oscillator'),
-               plt.Line2D([], [], color='#FFB000', ls=':', lw=1.3,
-                          label='integrated $\\tau$ (area under the ACF)')]
-    fig.legend(handles=handles, loc='lower center', ncol=3, fontsize=7.0,
-               bbox_to_anchor=(0.5, -0.12), frameon=False)
-
-    P.save(fig, FIG / 'fig_benchmark.svg')
 
 
 if __name__ == '__main__':

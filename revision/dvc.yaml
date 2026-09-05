@@ -104,58 +104,34 @@ stages:
       - results/empirical_stability_requirements.csv
 
   # ---- figures --------------------------------------------------------
-  plot_modes:
-    cmd: python scripts/run_01_modes.py --figures-only
+  # Every figure is drawn by one notebook, so it can be edited figure by
+  # figure in Jupyter; this stage executes it headlessly.
+  plot_figures:
+    cmd: python scripts/run_notebook.py notebooks/figures.ipynb
     deps:
-      - scripts/run_01_modes.py
+      - notebooks/figures.ipynb
+      - scripts/run_notebook.py
       - tsmodes/plotting.py
+      - tsmodes/datasets.py
+      - tsmodes/estimators.py
+      - tsmodes/modes.py
+      - tsmodes/sims.py
+      - tsmodes/finite.py
+      - data
       - results/modes_vs_coefficients_repeatability.csv
-      - results/modes_vs_coefficients_sweep.csv
-    outs: [figures/fig_modes.svg]
-
-  plot_benchmark:
-    cmd: python scripts/run_02_benchmark.py
-    deps:
-      - scripts/run_02_benchmark.py
-      - tsmodes/plotting.py
-      - results/benchmark_main.csv.gz
-    outs: [figures/fig_benchmark.svg]
-
-  plot_oscillations:
-    cmd: python scripts/run_03_oscillations.py
-    deps:
-      - scripts/run_03_oscillations.py
-      - tsmodes/plotting.py
       - results/oscillation_sweep.csv.gz
       - results/damped_grid.csv.gz
-      - tsmodes/sims.py
-      - tsmodes/estimators.py
-    outs: [figures/fig_oscillations.svg]
-
-  plot_realdata:
-    cmd: python scripts/run_05_real_data.py --figures-only
-    deps:
-      - scripts/run_05_real_data.py
-      - tsmodes/plotting.py
-      - results/real_data_fits.csv
-      - results/real_data_modes.csv
-    outs: [figures/fig_realdata.svg]
-
-  plot_windows:
-    cmd: python scripts/run_07_windows.py
-    deps:
-      - scripts/run_07_windows.py
-      - tsmodes/plotting.py
       - results/finite_sampling.csv.gz
-      - results/finite_analytic.csv
+      - results/real_data_fits.csv
+      - results/benchmark_main.csv.gz
       - results/empirical_truncation_summary.csv
-    outs: [figures/fig_windows.svg]
-
-  plot_supplement:
-    cmd: python scripts/make_supplement.py
-    deps:
-      - scripts/make_supplement.py
-      - tsmodes/plotting.py
-      - results/oscillation_sweep.csv.gz
     outs:
+      - figures/fig_ar1.svg
+      - figures/fig_bias.svg
+      - figures/fig_modes.svg
+      - figures/fig_oscillations.svg
+      - figures/fig_finite.svg
+      - figures/fig_realdata.svg
+      - figures/figS_benchmark.svg
       - figures/figS_oscillation_grid.svg
+      - figures/figS_windows.svg

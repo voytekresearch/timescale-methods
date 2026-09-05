@@ -2,28 +2,21 @@
 
 Outputs
 -------
-figures/fig_modes.svg    mode gallery, spectrum with the fit, importance,
-                         and recovery against reading the coefficients
 results/modes_*.csv      the numbers quoted in the manuscript
 """
-import sys
-
 import json
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from tsmodes.modes import (ARModes, ar_impulse_response, ar_psd,
                            ar_to_poles, pole_residues, poles_to_ar,
                            psd_from_poles)
-from tsmodes.estimators import prepare, estimate, population_ar
+from tsmodes.estimators import prepare, estimate
 from tsmodes.sims import sim_ar_process
-from tsmodes import plotting as P
 
 ROOT = Path(__file__).resolve().parents[1]
-FIG = ROOT / 'figures'
 RES = ROOT / 'results'
 FS = 500.0
 
@@ -63,8 +56,6 @@ def build_poles(spec, fs):
 
 
 def main():
-    P.use_style()
-    FIG.mkdir(exist_ok=True)
     RES.mkdir(exist_ok=True)
     rng = np.random.default_rng(0)
 
@@ -138,17 +129,6 @@ def main():
     checks['estimated_r2_logpsd'] = float(fit.gof['r2_logpsd'])
 
     # ------------------------------------ modes vs raw coefficients: stability
-    # --figures-only replots from the cached tables; the 200-realization
-    # repeatability run is the expensive part and rarely the thing changed.
-    cached = RES / 'modes_vs_coefficients_repeatability.csv'
-    if '--figures-only' in sys.argv and cached.exists():
-        print('Loading cached mode results (omit --figures-only to recompute)',
-              flush=True)
-        sweep = pd.read_csv(RES / 'modes_vs_coefficients_sweep.csv')
-        repeat = pd.read_csv(cached)
-        make_figure(model, sweep, repeat, dom)
-        return
-
     sweep = coefficient_vs_mode_sweep(FS)
     sweep.to_csv(RES / 'modes_vs_coefficients_sweep.csv', index=False)
 
@@ -161,7 +141,6 @@ def main():
     print(json.dumps({k: v for k, v in checks.items()
                       if k not in ('repeatability',)}, indent=2)[:1500])
 
-    make_figure(model, sweep, repeat, dom)
 
 
 def coefficient_vs_mode_sweep(fs, freqs_hz=None):
@@ -261,191 +240,6 @@ def repeatability(phi_true, fs, n_reps=200, duration=60.0):
                         'rel_bias': np.nan, 'rel_error': np.nan})
         rows.append(rec)
     return pd.DataFrame(rows)
-
-
-# Panels b and c make the same claim in two domains, so they are drawn with
-# the same vocabulary: one colour for the exact recombination of the modes
-# ("product of modes" in the spectrum, "sum of modes" in the lag domain), one
-# style for a dominant mode and one for a negligible one.
-RECOMBINED_COLOR = '#FFB000'
-DOM_STYLE = (0, (2, 1.5))  # dominant mode
-NEG_STYLE = ':'            # negligible mode
-
-
-def _proxy(**kw):
-    from matplotlib.lines import Line2D
-    return Line2D([0], [0], **kw)
-
-
-def make_figure(model, sweep, repeat, dom):
-    """Five panels: what the modes are, how they combine in each domain, which
-    of them matter, and how well each one is recovered."""
-    fig = plt.figure(figsize=(7.4, 5.0))
-    # Row 1 spans are chosen so that every panel edge in the bottom row falls
-    # on a panel edge in the top row: d under a, e under b and c.
-    gs = fig.add_gridspec(2, 6, hspace=0.62, wspace=1.05)
-    freqs = np.logspace(np.log10(0.5), np.log10(150), 600)
-    # Slowest mode at the top, fastest at the bottom.
-    order = np.argsort([-m.tau for m in model.modes])
-    shown = [model.modes[i] for i in order]
-    colours = [P.MODE_COLORS[m.kind] for m in shown]
-    nlags = 150
-    lags = np.arange(nlags + 1) / model.fs
-    keep = set(dom['indices'])
-
-    style_handles = [
-        _proxy(color=P.MODE_COLORS['relaxation'], lw=1.4, label='relaxation mode'),
-        _proxy(color=P.MODE_COLORS['oscillatory'], lw=1.4, label='oscillatory mode'),
-    ]
-    weight_handles = [
-        _proxy(color=P.GREY, lw=1.1, ls=DOM_STYLE, label='mode, dominant'),
-        _proxy(color=P.GREY, lw=0.9, ls=NEG_STYLE, alpha=0.6,
-               label='mode, negligible'),
-    ]
-
-    # (a) the modes themselves -------------------------------------------
-    ax = fig.add_subplot(gs[0, 0:2])
-    n, step = 125, 1.35
-    t = np.arange(n) / model.fs
-    comps = model.impulse_components(n)
-    total = comps.sum(axis=0)
-    top = len(shown) * step
-    ax.plot(t, 0.5 * total / np.max(np.abs(total)) + top, color='k', lw=1.3)
-    ax.text(t[-1], top + 0.6, 'response to an input', fontsize=6.5,
-            ha='right', va='bottom')
-    for i, mode in enumerate(shown):
-        base = (len(shown) - 1 - i) * step
-        y = 0.5 * comps[order[i]] / np.max(np.abs(comps[order[i]])) + base
-        ax.axhline(base, color=P.LIGHT, lw=0.5, zorder=0)
-        ax.plot(t, y, color=colours[i], lw=1.2)
-        label = (f'$\\tau$ = {mode.tau*1e3:.0f} ms'
-                 + ('' if mode.kind == 'relaxation'
-                    else f', {mode.freq:.0f} Hz'))
-        ax.text(t[-1], base + 0.6, label, fontsize=6.2, ha='right',
-                va='bottom', color=colours[i])
-    ax.set_yticks([])
-    ax.set_ylim(-1.35, top + 1.15)
-    ax.set_xlabel('Time after input (s)')
-    ax.set_title('Modes', fontsize=9)
-    ax.spines['left'].set_visible(False)
-    ax.legend(handles=style_handles, fontsize=5.8, loc='lower center', ncol=2,
-              handlelength=1.5, borderpad=0.22, labelspacing=0.2,
-              columnspacing=1.0, frameon=True, framealpha=1.0,
-              edgecolor='none')
-    P.panel_label(ax, 'a', dx=-0.09)
-
-    # (b) they multiply in the spectrum ------------------------------------
-    # The mirror of panel c: there the modes are summed, here they are
-    # multiplied, and in both the recombination lies on the generating curve.
-    ax = fig.add_subplot(gs[0, 2:4])
-
-    def centred(power):
-        return power / np.exp(np.mean(np.log(power)))
-
-    for j, (mode, c) in enumerate(zip(shown, colours)):
-        f = mode.psd(freqs)
-        dominant = order[j] in keep
-        ax.loglog(freqs, centred(f), color=c, zorder=1,
-                  lw=1.1 if dominant else 0.9,
-                  ls=DOM_STYLE if dominant else NEG_STYLE,
-                  alpha=1.0 if dominant else 0.6)
-    generating = model.psd(freqs)
-    product = psd_from_poles(np.concatenate([m.poles for m in model.modes]),
-                            freqs, model.fs, model.offset)
-    ax.loglog(freqs, centred(generating), color='k', lw=1.6, zorder=3)
-    ax.loglog(freqs, centred(product), color=RECOMBINED_COLOR, lw=1.1,
-              ls='--', zorder=4)
-    ax.set_xlabel('Frequency (Hz)')
-    ax.set_ylabel('Relative power')
-    ax.set_title('Spectrum: modes multiply', fontsize=9)
-    ax.legend(handles=[
-        _proxy(color='k', lw=1.6, label='generating spectrum'),
-        _proxy(color=RECOMBINED_COLOR, lw=1.1, ls='--',
-               label='product of modes'),
-    ] + weight_handles,
-        fontsize=5.5, loc='lower left', handlelength=1.5,
-        borderpad=0.22, labelspacing=0.2, frameon=True,
-        framealpha=1.0, edgecolor='none')
-    P.panel_label(ax, 'b', dx=-0.26)
-
-    # (c) they add in the autocorrelation ----------------------------------
-    ax = fig.add_subplot(gs[0, 4:6])
-    acf_comps = model.acf_components(nlags)
-    for i, c in enumerate(colours):
-        dominant = order[i] in keep
-        ax.plot(lags, acf_comps[order[i]], color=c,
-                lw=1.1 if dominant else 0.9,
-                ls=DOM_STYLE if dominant else NEG_STYLE,
-                alpha=1.0 if dominant else 0.6)
-    ax.plot(lags, model.acf(nlags), color='k', lw=1.6)
-    ax.plot(lags, acf_comps.sum(axis=0), color=RECOMBINED_COLOR, lw=1.1,
-            ls='--')
-    ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-    ax.set_xlim(0, 0.3)
-    ax.set_xlabel('Lag (s)')
-    ax.set_ylabel('Autocorrelation')
-    ax.set_title('Autocorrelation: modes add', fontsize=9)
-    ax.legend(handles=[
-        _proxy(color='k', lw=1.6, label='generating ACF'),
-        _proxy(color=RECOMBINED_COLOR, lw=1.1, ls='--', label='sum of modes'),
-    ] + weight_handles,
-        fontsize=5.5, loc='upper right', handlelength=1.5,
-        borderpad=0.22, labelspacing=0.2, frameon=True,
-        framealpha=1.0, edgecolor='none')
-    P.panel_label(ax, 'c', dx=-0.26)
-
-    # (d) how many modes are needed ---------------------------------------
-    ax = fig.add_subplot(gs[1, 0:2])
-    curve = dom['r2_curve']
-    ax.plot(np.arange(len(curve)), curve, 'o-', color='k', ms=4)
-    ax.axhline(0.99, color=P.GREY, ls='--', lw=1.0)
-    ax.text(0.1, 1.03, '$R^2 = 0.99$', fontsize=6.2, color=P.GREY, va='bottom')
-    ax.axvline(dom['n_modes'], color=P.LIGHT, lw=1.0, zorder=0)
-    ax.text(dom['n_modes'] + 0.15, 0.22,
-            f"{dom['n_modes']} of {len(shown)}\nsuffice", fontsize=6.5)
-    ax.set_xlabel('Modes kept')
-    ax.set_ylabel('Spectrum reproduced ($R^2$)', fontsize=7.5)
-    ax.set_xticks(np.arange(len(curve)))
-    ax.set_ylim(-0.08, 1.18)
-    ax.set_title('Mode ranking', fontsize=9)
-    ax.text(0.97, 0.06, 'modes added in order\nof importance',
-            transform=ax.transAxes, fontsize=5.8, color=P.GREY,
-            ha='right', va='bottom')
-    P.panel_label(ax, 'd', dx=-0.34)
-
-    # (e) how well each mode's timescale is recovered ----------------------
-    # Only quantities with a ground truth appear here, which means modes:
-    # each constructed mode has a known tau, and every one is scored.
-    ax = fig.add_subplot(gs[1, 2:6])
-    idx = sorted(range(len(TRUE_MODES)), key=lambda i: -TRUE_MODES[i]['tau'])
-    vals, labels, bar_colors = [], [], []
-    for i in idx:
-        spec = TRUE_MODES[i]
-        row = repeat[repeat['quantity'] == f'mode{i}_tau'].iloc[0]
-        vals.append(float(row['rel_error']))
-        bar_colors.append(P.MODE_COLORS[spec['kind']])
-        labels.append(f"{spec['tau']*1e3:g} ms"
-                      + ('' if spec['kind'] == 'relaxation'
-                         else f", {spec['freq']:g} Hz"))
-    xs = np.arange(len(idx))
-    ax.bar(xs, vals, color=bar_colors, width=0.62, edgecolor='white')
-    for x, v in zip(xs, vals):
-        ax.text(x, v * 1.25, f'{v*100:.0f}%', ha='center', va='bottom',
-                fontsize=6)
-    ax.set_yscale('log')
-    top_v = max(vals)
-    ax.set_ylim(min(vals) / 5.0, top_v * 12.0)
-    ax.set_xticks(xs)
-    ax.set_xticklabels(labels, fontsize=6.2, rotation=22, ha='right')
-    ax.set_xlabel('Constructed mode', fontsize=7.5)
-    ax.set_ylabel('Median error in $\\tau$', fontsize=7.5)
-    ax.set_title('Timescale recovery, per mode', fontsize=9)
-    ax.legend(handles=style_handles, fontsize=5.8, loc='upper left',
-              handlelength=1.5, borderpad=0.22, labelspacing=0.2,
-              frameon=True, framealpha=1.0, edgecolor='none')
-    P.panel_label(ax, 'e', dx=-0.16)
-
-    P.save(fig, FIG / 'fig_modes.svg')
 
 
 if __name__ == '__main__':
