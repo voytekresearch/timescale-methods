@@ -51,8 +51,8 @@ mpl.rcParams.update({
 FS = 500.0            # sampling rate of every simulation
 TAU = 0.05            # the constructed timescale of the AR(1) simulations, s
 
-# Colours shared by every figure.  Data is black and solid; an AR fit or the
-# expected AR(1) form is this blue and dashed; modes are coloured by importance
+# Colours shared by every figure.  Data is black and solid; an AR fit is this
+# blue and dashed; modes are coloured by importance
 # rank.  The two mode-kind colours (relaxation blue, oscillatory red) live in
 # tsmodes.plotting.
 DATA_COLOR = '#000000'
@@ -237,40 +237,30 @@ def ar1_acf(tau, n=N_ACF):
 
 
 # a) model mismatch: the AR(7) of fig_modes, the same model object and the
-#    same exact spectrum as its panel b, against the AR(1) of its dominant
-#    relaxation (200 ms) at the same innovation variance.
+#    same exact spectrum as its panel b.
 model7 = ARModes.from_phi(PHI7, FS, offset=1.0, freqs=np.linspace(0, FS / 2, 1025))
 FREQS_A = np.logspace(np.log10(0.25), np.log10(FS / 2), 500)
 acf_a = model7.acf(NL)
 psd_a = model7.psd(FREQS_A)
-TAU_A = 0.200
-acf_a_ar1 = ar1_acf(TAU_A, NL)
-psd_a_ar1 = ar_psd([phi_of_tau(TAU_A, FS)], FREQS_A, FS, 1.0)
 sig_a = sim_ar_process(PHI7, int(T_SHOW * FS), rng)
 
 # b) oscillations, as in new_figures.ipynb: an AR(1) plus a cosine carrying a
-#    fifth of the aperiodic variance; the AR(1) form is the AR(1)'s own share
-#    of the mixture, corrs_ap / (1 + osc_amp), transformed the same way.
+#    fifth of the aperiodic variance.
 OSC_AMP, F_OSC = 0.2, 20.0
 acf_b_ar1 = ar1_acf(TAU)
 acf_b = (acf_b_ar1 + OSC_AMP * np.cos(2 * np.pi * F_OSC * np.arange(N_ACF + 1) / FS)) / (1 + OSC_AMP)
 f_b, psd_b = acf_to_psd(acf_b, FS)
-_, psd_b_ar1 = acf_to_psd(acf_b_ar1 / (1 + OSC_AMP), FS)
 t_b = np.arange(int(T_SHOW * FS)) / FS
 sig_b_ap = sim_ar_process(np.array([phi_of_tau(TAU, FS)]), len(t_b), rng)
 sig_b_ap = (sig_b_ap - sig_b_ap.mean()) / sig_b_ap.std()
 sig_b = sig_b_ap + np.sqrt(2 * OSC_AMP) * np.cos(2 * np.pi * F_OSC * t_b)
 
-# c) finite samples: one second of an AR(1), observed rather than theoretical;
-#    the theoretical form is transformed at the same number of lags so the
-#    two spectra share a grid and a scale.
+# c) finite samples: one second of an AR(1), observed rather than theoretical.
 T_FINITE = 1.0
 sig_c = sim_ar_process(np.array([phi_of_tau(TAU, FS)]), int(T_FINITE * FS), rng)
 sig_c = (sig_c - sig_c.mean()) / sig_c.std()
 acf_c = sample_acf(sig_c, len(sig_c) - 1)
-acf_c_ar1 = ar1_acf(TAU, len(acf_c) - 1)
 f_c, psd_c = acf_to_psd(acf_c, FS)
-_, psd_c_ar1 = acf_to_psd(acf_c_ar1, FS)
 
 # d) dynamic timescales: an AR(1) whose coefficient rises over the recording,
 #    with evenly spaced windows and the theoretical AR(1) of each window
@@ -319,13 +309,10 @@ for j in range(4):
     ax = fig.add_subplot(gs[1, j])
     if j == 0:
         ax.plot(lags, acf_a, color=DATA_COLOR, lw=1.4, label='AR(7)', zorder=2)
-        ax.plot(lags, acf_a_ar1, color=FIT_COLOR, ls=FIT_STYLE, lw=FIT_LW, label='AR(1) form', zorder=3)
     elif j == 1:
         ax.plot(lags, acf_b[:NL + 1], color=DATA_COLOR, lw=1.4, label='AR(1) + osc.', zorder=2)
-        ax.plot(lags, acf_b_ar1[:NL + 1], color=FIT_COLOR, ls=FIT_STYLE, lw=FIT_LW, label='AR(1) form', zorder=3)
     elif j == 2:
         ax.plot(lags, acf_c[:NL + 1], color=DATA_COLOR, lw=1.4, label='observed, 1 s', zorder=2)
-        ax.plot(lags, acf_c_ar1[:NL + 1], color=FIT_COLOR, ls=FIT_STYLE, lw=FIT_LW, label='AR(1) form', zorder=3)
     else:
         for acf_w, _, _, wc, label in win_curves:
             ax.plot(lags, acf_w, color=wc, lw=1.4, label=label, zorder=2)
@@ -335,19 +322,21 @@ for j in range(4):
     ax.set_xlabel('Lag (s)')
     if j == 0:
         ax.set_ylabel('Autocorrelation')
-    ax.legend(loc='upper right', fontsize=8, handlelength=1.6, labelspacing=0.25)
+    if dynamic:      # four entries: below the curves, which never go negative
+        ax.legend(loc='lower center', ncol=2, fontsize=7, handlelength=1.0,
+                  handletextpad=0.4, columnspacing=0.6, labelspacing=0.2,
+                  borderaxespad=0.1)
+    else:
+        ax.legend(loc='upper right', fontsize=8, handlelength=1.6, labelspacing=0.25)
 
     # -- row 3: the power spectrum -------------------------------------------
     ax = fig.add_subplot(gs[2, j])
     if j == 0:
         ax.loglog(FREQS_A, psd_a, color=DATA_COLOR, lw=1.2, zorder=2)
-        ax.loglog(FREQS_A, psd_a_ar1, color=FIT_COLOR, ls=FIT_STYLE, lw=FIT_LW, zorder=3)
     elif j == 1:
         ax.loglog(f_b, psd_b, color=DATA_COLOR, lw=1.2, zorder=2)
-        ax.loglog(f_b, psd_b_ar1, color=FIT_COLOR, ls=FIT_STYLE, lw=FIT_LW, zorder=3)
     elif j == 2:
         ax.loglog(f_c, psd_c, color=DATA_COLOR, lw=1.2, zorder=2)
-        ax.loglog(f_c, psd_c_ar1, color=FIT_COLOR, ls=FIT_STYLE, lw=FIT_LW, zorder=3)
     else:
         for _, f_w, psd_w, wc, _ in win_curves:
             ax.loglog(f_w, psd_w, color=wc, lw=1.4, zorder=2)

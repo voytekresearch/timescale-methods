@@ -453,8 +453,8 @@ stages:
       nfiles: 10
     - path: notebooks/figures.ipynb
       hash: md5
-      md5: e629a1b92b4e646aae2fe3f66eabc920
-      size: 54685
+      md5: c39bc264bae5a337628bae42fb77804c
+      size: 53620
     - path: results/benchmark_main.csv.gz
       hash: md5
       md5: 6a995c5e4a6343d1751229ede4a469e4
@@ -530,8 +530,8 @@ stages:
       size: 240309
     - path: figures/fig_bias.svg
       hash: md5
-      md5: ab24ab26571c56fa91227ee5d9614120
-      size: 193924
+      md5: fe5a1a919221a311b6e43e8374350393
+      size: 185942
     - path: figures/fig_finite.svg
       hash: md5
       md5: cbac4a90950c22c4a42ea306f5d2f5b4
@@ -546,5 +546,5 @@ stages:
       size: 314056
     - path: scripts/plot_figures.py
       hash: md5
-      md5: ca3bd796ebda26b8724d4ce1d2743065
-      size: 40602
+      md5: 574eddec94e969afcf87b3e7f2220cbe
+      size: 39691
