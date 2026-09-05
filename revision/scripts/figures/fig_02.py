@@ -1,0 +1,153 @@
+"""Fig. 2 -- four ways a timescale estimate goes wrong (fig_bias.svg).
+
+Run on its own from any directory: python scripts/figures/fig_02.py
+"""
+# %%
+import matplotlib.ticker as mticker
+import numpy as np
+import matplotlib.pyplot as plt
+
+from fig_common import (
+    ARModes, DATA_COLOR, FS, P, PHI7, TAU, TEXT_WIDTH, phi_of_tau, save,
+    sim_ar_process)
+
+# %%
+rng = np.random.default_rng(1)
+T_SHOW = 5.0                                   # seconds drawn in the signal row
+NL = 150                                       # lags drawn in the ACF row
+ks = np.arange(NL + 1)
+lags = ks / FS
+N_ACF = int(4 * FS)                            # lags used to transform ACF -> PSD
+
+
+def acf_to_psd(corrs, fs):
+    """Spectrum as the Fourier transform of an autocorrelation, exactly as in
+    new_figures.ipynb (no normalization)."""
+    powers = np.abs(np.fft.fft(corrs)) ** 2
+    freqs = np.fft.fftfreq(len(corrs), 1 / fs)
+    keep = slice(1, len(corrs) // 2)
+    return freqs[keep], powers[keep]
+
+
+def sample_acf(x, nlags):
+    """Plain sample autocorrelation, normalized to one at lag zero."""
+    x = x - x.mean()
+    full = np.correlate(x, x, mode='full')[len(x) - 1:]
+    return full[:nlags + 1] / full[0]
+
+
+def ar1_acf(tau, n=N_ACF):
+    return phi_of_tau(tau, FS) ** np.arange(n + 1)
+
+
+# a) model mismatch: the AR(7) of fig_modes, the same model object and the
+#    same exact spectrum as its panel b.
+model7 = ARModes.from_phi(PHI7, FS, offset=1.0, freqs=np.linspace(0, FS / 2, 1025))
+FREQS_A = np.logspace(np.log10(0.25), np.log10(FS / 2), 500)
+acf_a = model7.acf(NL)
+psd_a = model7.psd(FREQS_A)
+sig_a = sim_ar_process(PHI7, int(T_SHOW * FS), rng)
+
+# b) oscillations, as in new_figures.ipynb: an AR(1) plus a cosine carrying a
+#    fifth of the aperiodic variance.
+OSC_AMP, F_OSC = 0.2, 20.0
+acf_b_ar1 = ar1_acf(TAU)
+acf_b = (acf_b_ar1 + OSC_AMP * np.cos(2 * np.pi * F_OSC * np.arange(N_ACF + 1) / FS)) / (1 + OSC_AMP)
+f_b, psd_b = acf_to_psd(acf_b, FS)
+t_b = np.arange(int(T_SHOW * FS)) / FS
+sig_b_ap = sim_ar_process(np.array([phi_of_tau(TAU, FS)]), len(t_b), rng)
+sig_b_ap = (sig_b_ap - sig_b_ap.mean()) / sig_b_ap.std()
+sig_b = sig_b_ap + np.sqrt(2 * OSC_AMP) * np.cos(2 * np.pi * F_OSC * t_b)
+
+# c) finite samples: one second of an AR(1), observed rather than theoretical.
+T_FINITE = 1.0
+sig_c = sim_ar_process(np.array([phi_of_tau(TAU, FS)]), int(T_FINITE * FS), rng)
+sig_c = (sig_c - sig_c.mean()) / sig_c.std()
+acf_c = sample_acf(sig_c, len(sig_c) - 1)
+f_c, psd_c = acf_to_psd(acf_c, FS)
+
+# d) dynamic timescales: an AR(1) whose coefficient rises over the recording,
+#    with evenly spaced windows and the theoretical AR(1) of each window
+n_d = int(T_SHOW * FS)
+tau_t = np.linspace(0.010, 0.200, n_d)             # 10 ms -> 200 ms
+phi_t = phi_of_tau(tau_t, FS)
+eps = rng.normal(size=n_d)
+sig_d = np.zeros(n_d)
+for i in range(1, n_d):
+    sig_d[i] = phi_t[i] * sig_d[i - 1] + eps[i]
+WINDOWS = [(0.2, 1.0), (1.4, 2.2), (2.6, 3.4), (3.8, 4.6)]      # s, evenly spaced
+WIN_COLORS = plt.cm.viridis(np.linspace(0.05, 0.85, len(WINDOWS)))
+win_tau = [float(np.mean(tau_t[int(a * FS):int(b * FS)])) for a, b in WINDOWS]
+win_curves = []
+for tw, wc in zip(win_tau, WIN_COLORS):
+    acf_w = ar1_acf(tw)
+    f_w, psd_w = acf_to_psd(acf_w, FS)
+    win_curves.append((acf_w[:NL + 1], f_w, psd_w, wc, f'$\\tau$ = {tw * 1e3:.0f} ms'))
+
+fig = plt.figure(figsize=(TEXT_WIDTH, TEXT_WIDTH * 6.2 / 8.4))
+gs = fig.add_gridspec(3, 4, hspace=0.62, wspace=0.38, height_ratios=[0.7, 1.0, 1.0])
+titles = ['Model\nmismatch', 'Oscillations', 'Finite\nsamples', 'Dynamic\ntimescales']
+signals = [sig_a, sig_b, sig_c, sig_d]
+for j in range(4):
+    dynamic = j == 3
+
+    # -- row 1: the signal ---------------------------------------------------
+    ax = fig.add_subplot(gs[0, j])
+    sig = signals[j]
+    t = np.arange(len(sig)) / FS
+    ax.plot(t, sig / np.std(sig), color=DATA_COLOR, lw=0.4)
+    if dynamic:
+        for (a, b), wc in zip(WINDOWS, WIN_COLORS):
+            ax.axvspan(a, b, color=wc, alpha=0.28, lw=0)
+    ax.set_xlim(0, T_SHOW)
+    ax.set_ylim(-4, 4)
+    ax.set_yticks([])
+    ax.spines['left'].set_visible(False)
+    ax.set_title(titles[j])
+    ax.set_xlabel('Time (s)')
+    if j == 0:
+        ax.set_ylabel('Signal')
+    P.panel_label(ax, 'abcd'[j], dx=-0.22, dy=1.45, fontsize=9)
+
+    # -- row 2: the autocorrelation ------------------------------------------
+    ax = fig.add_subplot(gs[1, j])
+    if j == 0:
+        ax.plot(lags, acf_a, color=DATA_COLOR, lw=1.4, label='AR(7)', zorder=2)
+    elif j == 1:
+        ax.plot(lags, acf_b[:NL + 1], color=DATA_COLOR, lw=1.4, label='AR(1) + osc.', zorder=2)
+    elif j == 2:
+        ax.plot(lags, acf_c[:NL + 1], color=DATA_COLOR, lw=1.4, label='observed, 1 s', zorder=2)
+    else:
+        for acf_w, _, _, wc, label in win_curves:
+            ax.plot(lags, acf_w, color=wc, lw=1.4, label=label, zorder=2)
+    ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
+    ax.set_ylim(-0.45, 1.05)
+    ax.set_yticks([0, 1])
+    ax.set_xlabel('Lag (s)')
+    if j == 0:
+        ax.set_ylabel('Autocorrelation')
+    if dynamic:      # four entries: below the curves, which never go negative
+        ax.legend(loc='lower center', ncol=2, fontsize=5.5, handlelength=1.0,
+                  handletextpad=0.4, columnspacing=0.6, labelspacing=0.2,
+                  borderaxespad=0.1)
+    else:
+        ax.legend(loc='upper right', fontsize=6, handlelength=1.0, borderaxespad=0.0, labelspacing=0.25)
+
+    # -- row 3: the power spectrum -------------------------------------------
+    ax = fig.add_subplot(gs[2, j])
+    if j == 0:
+        ax.loglog(FREQS_A, psd_a, color=DATA_COLOR, lw=1.2, zorder=2)
+    elif j == 1:
+        ax.loglog(f_b, psd_b, color=DATA_COLOR, lw=1.2, zorder=2)
+    elif j == 2:
+        ax.loglog(f_c, psd_c, color=DATA_COLOR, lw=1.2, zorder=2)
+    else:
+        for _, f_w, psd_w, wc, _ in win_curves:
+            ax.loglog(f_w, psd_w, color=wc, lw=1.4, zorder=2)
+    ax.set_yticks([])
+    ax.yaxis.set_minor_locator(mticker.NullLocator())
+    ax.set_xlabel('Frequency (Hz)')
+    if j == 0:
+        ax.set_ylabel('Power')
+
+save(fig, 'fig_bias.svg')

@@ -443,18 +443,13 @@ stages:
       md5: 1fa76db2d2fcfa90c4b3e347b38db8a5
       size: 127385
   plot_figures:
-    cmd: python scripts/run_notebook.py notebooks/figures.ipynb --export 
-      scripts/plot_figures.py
+    cmd: python scripts/plot_figures.py
     deps:
     - path: data
       hash: md5
       md5: 4ed94dd9f23792d131d8efc82ff917a0.dir
       size: 47498033
       nfiles: 10
-    - path: notebooks/figures.ipynb
-      hash: md5
-      md5: c39bc264bae5a337628bae42fb77804c
-      size: 53620
     - path: results/benchmark_main.csv.gz
       hash: md5
       md5: 6a995c5e4a6343d1751229ede4a469e4
@@ -483,10 +478,15 @@ stages:
       hash: md5
       md5: 0fcc47367ffb1d2073d1a4391cd8675e
       size: 209732
-    - path: scripts/run_notebook.py
+    - path: scripts/figures
       hash: md5
-      md5: 6c44993bd72c3ec3042e6706fe11ef8e
-      size: 3032
+      md5: 23c7fa88d474397b9137388a947ca3eb.dir
+      size: 47187
+      nfiles: 10
+    - path: scripts/plot_figures.py
+      hash: md5
+      md5: cdfae1bad0cd86d5f46b7d39e19d5d1a
+      size: 1305
     - path: tsmodes/datasets.py
       hash: md5
       md5: 3e8c16ee6329b85ce48d7e0832537ec4
@@ -514,37 +514,33 @@ stages:
     outs:
     - path: figures/figS_oscillation_grid.svg
       hash: md5
-      md5: 839da9b77b3278e89f8f431996241e17
-      size: 129067
+      md5: cff8cae9b0c64c47854eb8b8f9a09723
+      size: 107949
     - path: figures/figS_windows.svg
       hash: md5
-      md5: 247f465634c553900a930410537e6cc0
-      size: 88415
+      md5: 51fa354179025484fc35e765eef41b19
+      size: 88258
     - path: figures/fig_ar1.svg
       hash: md5
-      md5: 1da8f1e14be9335703ced33073f4d426
-      size: 101961
+      md5: 8e98e8bbbe3dc49d7665a8d640fcf45b
+      size: 95834
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: 1b57f63b41d2fca5dd96eb022b232f12
-      size: 240309
+      md5: f5e8047d58a84262ad4a88aa0f4e2591
+      size: 216539
     - path: figures/fig_bias.svg
       hash: md5
-      md5: fe5a1a919221a311b6e43e8374350393
-      size: 185942
+      md5: b53b9c6044d9f4d475a4209d8e308b8b
+      size: 165384
     - path: figures/fig_finite.svg
       hash: md5
-      md5: cbac4a90950c22c4a42ea306f5d2f5b4
-      size: 54598
+      md5: d117a575949558fa6690c891b5b705e9
+      size: 54334
     - path: figures/fig_modes.svg
       hash: md5
-      md5: ad6e71825fb5330771ce06df4750d808
-      size: 105975
+      md5: 5598f8b98ec9f36f020e682909c4e4eb
+      size: 99637
     - path: figures/fig_realdata.svg
       hash: md5
-      md5: b4afbf195a5e63af8fe105c69fafb87d
-      size: 314056
-    - path: scripts/plot_figures.py
-      hash: md5
-      md5: 574eddec94e969afcf87b3e7f2220cbe
-      size: 39691
+      md5: 6999af6a217beab59bbc72ea5c704b1b
+      size: 295178
