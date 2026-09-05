@@ -129,9 +129,8 @@ stages:
       - figures/fig_ar1.svg
       - figures/fig_bias.svg
       - figures/fig_modes.svg
-      - figures/fig_oscillations.svg
+      - figures/fig_benchmark.svg
       - figures/fig_finite.svg
       - figures/fig_realdata.svg
-      - figures/figS_benchmark.svg
       - figures/figS_oscillation_grid.svg
       - figures/figS_windows.svg

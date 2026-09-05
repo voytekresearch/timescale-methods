@@ -452,8 +452,8 @@ stages:
       nfiles: 10
     - path: notebooks/figures.ipynb
       hash: md5
-      md5: d02baf86ac8561319907076589149a6b
-      size: 58313
+      md5: 9ec9e90d9c769bbcdbe4f98dbd166756
+      size: 54674
     - path: results/benchmark_main.csv.gz
       hash: md5
       md5: 6cac8734c1405874d2d3e9e7ebb2a17c
@@ -504,46 +504,42 @@ stages:
       size: 34915
     - path: tsmodes/plotting.py
       hash: md5
-      md5: 3a76269f93b4fda1ca46a21242a0eb65
-      size: 3370
+      md5: 97b57ecdbda3c10228a8f2f822cf6df5
+      size: 3389
     - path: tsmodes/sims.py
       hash: md5
       md5: 087b29ed8901416c3db08f110abeb4f3
       size: 21742
     outs:
-    - path: figures/figS_benchmark.svg
-      hash: md5
-      md5: 1eb73059d88fe8b2260d3d614ff106ea
-      size: 286776
     - path: figures/figS_oscillation_grid.svg
       hash: md5
-      md5: 47c9dffea2665c40bb419ecc04ccd684
-      size: 127385
+      md5: f53b43b502fe9ea8cc6b360661bc01e0
+      size: 129117
     - path: figures/figS_windows.svg
       hash: md5
-      md5: a868b6d575a70fdc972e1e26a66d3d10
-      size: 89113
+      md5: 9229c6fc20db95f7a4b3322e0e98c330
+      size: 88465
     - path: figures/fig_ar1.svg
       hash: md5
-      md5: 700a53602d18d127919e6172477a82d0
-      size: 88735
+      md5: 796cac797d1580ebe2e2e31f2761d107
+      size: 88749
+    - path: figures/fig_benchmark.svg
+      hash: md5
+      md5: 4c73dbdebee6c494bd080cfe78a412f7
+      size: 242497
     - path: figures/fig_bias.svg
       hash: md5
-      md5: b36a37f4943219872eaad43e3f2edb12
-      size: 209630
+      md5: 796cb47e657286042f854f29c7e93db4
+      size: 197603
     - path: figures/fig_finite.svg
       hash: md5
-      md5: 4a21cfa332f85ff9fcb0750b640c280e
-      size: 68571
+      md5: c510ee1e8414df36668e069d89fa20a2
+      size: 54896
     - path: figures/fig_modes.svg
       hash: md5
-      md5: 9a9ec2c70c6e8cc3aba4f4ca014960db
-      size: 148789
-    - path: figures/fig_oscillations.svg
-      hash: md5
-      md5: fd5fe95592ff315f1fba4ed9b954cb15
-      size: 158987
+      md5: 8ccc10913ae48fedfc14d86ba21aa6b0
+      size: 139224
     - path: figures/fig_realdata.svg
       hash: md5
-      md5: 408195683a1c998147bd7a4a09eb63ce
-      size: 262401
+      md5: 660f8905d203be020764e33249493992
+      size: 295995

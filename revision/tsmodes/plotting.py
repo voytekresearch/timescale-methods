@@ -65,8 +65,8 @@ def use_style():
     })
 
 
-def panel_label(ax, letter, dx=-0.16, dy=1.06, **kwargs):
-    ax.text(dx, dy, letter, transform=ax.transAxes, fontsize=10,
+def panel_label(ax, letter, dx=-0.16, dy=1.06, fontsize=10, **kwargs):
+    ax.text(dx, dy, letter, transform=ax.transAxes, fontsize=fontsize,
             fontweight='bold', va='top', ha='left', **kwargs)
 
 
