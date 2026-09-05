@@ -328,6 +328,14 @@ def impulse_mode_components(phi, n, groups=None):
     return out
 
 
+def _mode_amplitudes(poles, sigma2=1.0):
+    """``A_j`` of :func:`acf_mode_components`: the weight of each pole's
+    geometric term in the autocovariance."""
+    c = pole_residues(poles)
+    return np.array([sigma2 * c[j] * np.sum(c / (1.0 - poles * poles[j]))
+                     for j in range(len(poles))])
+
+
 def acf_mode_components(phi, nlags, sigma2=1.0, groups=None, normalize=True):
     """Exact additive decomposition of the AR(p) ACF into per-mode terms.
 
@@ -347,9 +355,7 @@ def acf_mode_components(phi, nlags, sigma2=1.0, groups=None, normalize=True):
     phi = np.atleast_1d(np.asarray(phi, dtype=float))
     poles = ar_to_poles(phi)
     groups = group_poles(poles) if groups is None else groups
-    c = pole_residues(poles)
-    amp = np.array([sigma2 * c[j] * np.sum(c / (1.0 - poles * poles[j]))
-                    for j in range(len(poles))])
+    amp = _mode_amplitudes(poles, sigma2)
     k = np.arange(nlags + 1)
     terms = amp[:, None] * poles[:, None] ** k[None, :]
 
@@ -360,6 +366,38 @@ def acf_mode_components(phi, nlags, sigma2=1.0, groups=None, normalize=True):
             out[g] += np.real(terms[idx])
     if normalize:
         out = out / out.sum(axis=0)[0]
+    return out
+
+
+def psd_mode_components(phi, freqs, fs, sigma2=1.0, groups=None):
+    """Exact additive decomposition of the AR(p) spectrum into per-mode terms.
+
+    The autocovariance is ``sum_j A_j lam_j^|k|`` (:func:`acf_mode_components`)
+    and each term transforms to
+
+        S_j(w) = A_j (1 - lam_j^2) / (1 - 2 lam_j cos w + lam_j^2),
+
+    so the modes that add in the lag domain add here too: over all poles the
+    terms sum to ``sigma2 / |1 - sum_k phi_k e^{-iwk}|^2`` exactly, and a
+    conjugate pair sums to one real spectral bump.  This is the partial-fraction
+    form of the spectrum, as opposed to its factorization into poles, whose
+    factors multiply.
+
+    Returns
+    -------
+    components : 2d array, (n_modes, len(freqs))
+    """
+    phi = np.atleast_1d(np.asarray(phi, dtype=float))
+    poles = ar_to_poles(phi)
+    groups = group_poles(poles) if groups is None else groups
+    amp = _mode_amplitudes(poles, sigma2)
+    w = 2 * np.pi * np.asarray(freqs, dtype=float) / fs
+    out = np.zeros((len(groups), len(w)))
+    for g, grp in enumerate(groups):
+        for lam in grp:
+            j = int(np.argmin(np.abs(poles - lam)))
+            out[g] += np.real(amp[j] * (1.0 - poles[j] ** 2)
+                              / (1.0 - 2.0 * poles[j] * np.cos(w) + poles[j] ** 2))
     return out
 
 
@@ -864,6 +902,12 @@ class ARModes:
         return acf_mode_components(self.phi, nlags,
                                    groups=[m.poles for m in self.modes],
                                    normalize=normalize)
+
+    def psd_components(self, freqs=None):
+        """Per-mode additive contributions to the spectrum (they sum to it)."""
+        freqs = self.freqs if freqs is None else freqs
+        return psd_mode_components(self.phi, freqs, self.fs, sigma2=self.offset,
+                                   groups=[m.poles for m in self.modes])
 
     def variance_decomposition(self):
         return variance_decomposition(self.poles, groups=[m.poles for m in self.modes])

@@ -211,6 +211,7 @@ def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
                  corrs=corrs, f_range=f_range, nperseg=nperseg,
                  n_segments=n_segments, name=name)
     out.exclude_mask = keep
+    out.band_mask = band
     out.raw_corrs = _acf(sig, len(corrs) - 1)
     # Adjacent multitaper bins inside the resolution bandwidth 2*NW/T are
     # correlated; the spectral fits thin to that spacing.
@@ -251,6 +252,27 @@ def band_limited_acf(freqs, powers, nlags, keep, band, nperseg=None,
         acov = acov[: max(2, int(np.sum(lagwin > 0.2)))]
         acov = acov / lagwin[: len(acov)]
     return acov / acov[0]
+
+
+def spectrum_acov(signal, powers, nlags=None):
+    """Autocovariance implied by a spectrum on ``signal``'s frequency grid,
+    restricted to the band ``signal.corrs`` was derived from.
+
+    :func:`prepare` derives the autocorrelation from the spectrum inside the
+    analysis band, so a model fit to that spectrum is translated to the lag
+    domain the same way: its spectrum on the same grid, zero outside the same
+    band, inverse transformed.  The model's full-band autocorrelation would
+    instead carry its extrapolation outside the band, mostly the plateau below
+    the lower edge, and disagree with the data even where the fit is exact.
+    A model spectrum carries no Welch taper, so none is divided out.  The
+    result is left unnormalized so that additive parts of a spectrum (the mode
+    components) can be scaled by their total; ``powers`` may be 2d, one
+    spectrum per row.
+    """
+    nlags = len(signal.corrs) - 1 if nlags is None else int(nlags)
+    powers = np.array(powers, dtype=float)
+    powers[..., ~signal.band_mask] = 0.0
+    return np.fft.irfft(powers, axis=-1)[..., : nlags + 1]
 
 
 def _acf(sig, nlags):

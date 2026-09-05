@@ -80,6 +80,11 @@ DEFAULT_ANALYSIS = {
     'nw': 4.0,
     'nlags': N_LAGS,
 }
+# Per-recording departures from the defaults.  The MEG carries a sharp peak at
+# 100 Hz, an artefact rather than brain, so its fit band stops short of it.
+ANALYSIS_OVERRIDES = {
+    'human_meg_beta': {'f_range': (1.0, 95.0)},
+}
 LINE_HALF_WIDTH = 2.0
 
 
@@ -111,6 +116,7 @@ def load(key, data_dir=DATA_DIR, max_traces=None, max_seconds=None,
 
     analysis = dict(DEFAULT_ANALYSIS)
     analysis.update(meta.get('analysis', {}))
+    analysis.update(ANALYSIS_OVERRIDES.get(key, {}))
     analysis.update(overrides or {})
     analysis['f_range'] = tuple(analysis['f_range'])
 

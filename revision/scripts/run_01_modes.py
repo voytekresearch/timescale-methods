@@ -14,7 +14,7 @@ from tsmodes.modes import (ARModes, ar_impulse_response, ar_psd,
                            ar_to_poles, pole_residues, poles_to_ar,
                            psd_from_poles)
 from tsmodes.estimators import prepare, estimate
-from tsmodes.sims import sim_ar_process
+from tsmodes.sims import ARP_MODES, sim_ar_process
 
 ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / 'results'
@@ -34,13 +34,9 @@ FS = 500.0
 #
 # The relaxation knees sit at 1/(2 pi tau) = 0.80 and 8.0 Hz, an order of
 # magnitude apart and both well inside the band a 4 s Welch window resolves.
-TRUE_MODES = [
-    {'kind': 'relaxation', 'tau': 0.200, 'freq': 0.0},
-    {'kind': 'oscillatory', 'tau': 0.150, 'freq': 10.0},
-    {'kind': 'oscillatory', 'tau': 0.060, 'freq': 40.0},
-    {'kind': 'relaxation', 'tau': 0.020, 'freq': 0.0},
-    {'kind': 'relaxation', 'tau': 0.002, 'freq': 0.0},
-]
+# The same process as every other AR(p) simulation (tsmodes.sims.ARP_MODES).
+TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
+               'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]
 
 
 def build_poles(spec, fs):

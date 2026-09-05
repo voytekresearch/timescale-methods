@@ -5,24 +5,24 @@ stages:
     deps:
     - path: scripts/run_01_modes.py
       hash: md5
-      md5: 18e91c07b39627c69cf7e012427a7cb2
-      size: 10637
+      md5: 3fa7634400ddf165eb1ba32dd2c26f2a
+      size: 10567
     - path: tsmodes/__init__.py
       hash: md5
       md5: d41d8cd98f00b204e9800998ecf8427e
       size: 0
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     - path: tsmodes/sims.py
       hash: md5
-      md5: 087b29ed8901416c3db08f110abeb4f3
-      size: 21742
+      md5: 7355ed802e2cdf9a881a97b21dde2c46
+      size: 22136
     outs:
     - path: results/modes_checks.json
       hash: md5
@@ -61,33 +61,33 @@ stages:
       size: 6702
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     - path: tsmodes/sims.py
       hash: md5
-      md5: 087b29ed8901416c3db08f110abeb4f3
-      size: 21742
+      md5: 7355ed802e2cdf9a881a97b21dde2c46
+      size: 22136
     outs:
     - path: results/benchmark_main.csv.gz
       hash: md5
-      md5: 9780dc5e87685865c21452d751f00f67
-      size: 658947
+      md5: 6a995c5e4a6343d1751229ede4a469e4
+      size: 670756
     - path: results/benchmark_main_summary.csv
       hash: md5
-      md5: df8afef3bae537ae2cb0d244b68a354c
-      size: 7616
+      md5: ca55aa89318748fabb840d801e110fa8
+      size: 7628
     - path: results/benchmark_main_summary_integrated.csv
       hash: md5
-      md5: 034e929fef0b92bd1b910ba7deb41044
-      size: 7842
+      md5: beacdac49ffb8e2530be5dcc0e17937e
+      size: 7865
     - path: results/population_ar.csv
       hash: md5
-      md5: 7bc3b3219b5bf6f7c5307ecd1bb611f2
-      size: 25749
+      md5: 2a2560dafa35b43e8658600ec5123a57
+      size: 25715
   fit_oscillations:
     cmd: python scripts/run_03_oscillations.py --rerun
     deps:
@@ -105,16 +105,16 @@ stages:
       size: 6702
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     - path: tsmodes/sims.py
       hash: md5
-      md5: 087b29ed8901416c3db08f110abeb4f3
-      size: 21742
+      md5: 7355ed802e2cdf9a881a97b21dde2c46
+      size: 22136
     outs:
     - path: results/damped_grid.csv.gz
       hash: md5
@@ -145,20 +145,20 @@ stages:
       size: 6702
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/finite.py
       hash: md5
       md5: 221a37254437840446cc783fb281f23e
       size: 5589
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     - path: tsmodes/sims.py
       hash: md5
-      md5: 087b29ed8901416c3db08f110abeb4f3
-      size: 21742
+      md5: 7355ed802e2cdf9a881a97b21dde2c46
+      size: 22136
     outs:
     - path: results/finite_analytic.csv
       hash: md5
@@ -166,12 +166,12 @@ stages:
       size: 1148
     - path: results/finite_sampling.csv.gz
       hash: md5
-      md5: 1e86eef55a6e816ef4de265f6668b178
-      size: 2223799
+      md5: 8abadbde1a6ee54d30bffbe84ec5f906
+      size: 2237043
     - path: results/finite_summary.csv
       hash: md5
-      md5: e27941ab5cb3989571bedfe291e2846e
-      size: 65634
+      md5: 8aee4ba19af83efefe9d84187f60dbad
+      size: 65484
   fit_realdata:
     cmd: python scripts/run_05_real_data.py
     deps:
@@ -194,29 +194,29 @@ stages:
       size: 6702
     - path: tsmodes/datasets.py
       hash: md5
-      md5: bd5600df20a39f48a0c22a3c5085ff13
-      size: 5977
+      md5: 3e8c16ee6329b85ce48d7e0832537ec4
+      size: 6258
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     outs:
     - path: results/real_data_fits.csv
       hash: md5
-      md5: ed7468acef660659e3444f15eaea1984
-      size: 209788
+      md5: 0fcc47367ffb1d2073d1a4391cd8675e
+      size: 209732
     - path: results/real_data_modes.csv
       hash: md5
-      md5: 0258ee03c3040bc414868ff21f1f484d
-      size: 133454
+      md5: 3236fbfd753a65ccecf9a4269e44d17a
+      size: 130452
     - path: results/real_data_summary.csv
       hash: md5
-      md5: 9ff98495b2ac11e88b100eba1fe7f21f
-      size: 4571
+      md5: 1ff8f9beb43b56d9a66dbe443cf9c238
+      size: 4593
   fit_truncation:
     cmd: python scripts/run_06_empirical_truncation.py --rerun
     deps:
@@ -239,20 +239,20 @@ stages:
       size: 6702
     - path: tsmodes/datasets.py
       hash: md5
-      md5: bd5600df20a39f48a0c22a3c5085ff13
-      size: 5977
+      md5: 3e8c16ee6329b85ce48d7e0832537ec4
+      size: 6258
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/finite.py
       hash: md5
       md5: 221a37254437840446cc783fb281f23e
       size: 5589
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     outs:
     - path: results/empirical_stability_requirements.csv
       hash: md5
@@ -453,12 +453,12 @@ stages:
       nfiles: 10
     - path: notebooks/figures.ipynb
       hash: md5
-      md5: 3373de1bb9daf7755f662f688aa462a0
-      size: 52993
+      md5: fcc4f3d0f99996c4e40fc90b30d6ae30
+      size: 53827
     - path: results/benchmark_main.csv.gz
       hash: md5
-      md5: 9780dc5e87685865c21452d751f00f67
-      size: 658947
+      md5: 6a995c5e4a6343d1751229ede4a469e4
+      size: 670756
     - path: results/damped_grid.csv.gz
       hash: md5
       md5: 28a2ef8ab268113d1f66485a389af93b
@@ -469,8 +469,8 @@ stages:
       size: 61946
     - path: results/finite_sampling.csv.gz
       hash: md5
-      md5: 1e86eef55a6e816ef4de265f6668b178
-      size: 2223799
+      md5: 8abadbde1a6ee54d30bffbe84ec5f906
+      size: 2237043
     - path: results/modes_vs_coefficients_repeatability.csv
       hash: md5
       md5: 086b20b3717fb6e2bf814c5c5eb51138
@@ -481,70 +481,70 @@ stages:
       size: 473823
     - path: results/real_data_fits.csv
       hash: md5
-      md5: ed7468acef660659e3444f15eaea1984
-      size: 209788
+      md5: 0fcc47367ffb1d2073d1a4391cd8675e
+      size: 209732
     - path: scripts/run_notebook.py
       hash: md5
       md5: 6c44993bd72c3ec3042e6706fe11ef8e
       size: 3032
     - path: tsmodes/datasets.py
       hash: md5
-      md5: bd5600df20a39f48a0c22a3c5085ff13
-      size: 5977
+      md5: 3e8c16ee6329b85ce48d7e0832537ec4
+      size: 6258
     - path: tsmodes/estimators.py
       hash: md5
-      md5: 8d5b98ddc477d81e56f3761e3165eb44
-      size: 47291
+      md5: 114e517c30bbedef5657bddc26cfe9eb
+      size: 48431
     - path: tsmodes/finite.py
       hash: md5
       md5: 221a37254437840446cc783fb281f23e
       size: 5589
     - path: tsmodes/modes.py
       hash: md5
-      md5: c8c4b06ee91f152916b04ca7a9b99b19
-      size: 34915
+      md5: b88b48e568c3e060dc4213fd66b3b582
+      size: 36752
     - path: tsmodes/plotting.py
       hash: md5
       md5: 97b57ecdbda3c10228a8f2f822cf6df5
       size: 3389
     - path: tsmodes/sims.py
       hash: md5
-      md5: 087b29ed8901416c3db08f110abeb4f3
-      size: 21742
+      md5: 7355ed802e2cdf9a881a97b21dde2c46
+      size: 22136
     outs:
     - path: figures/figS_oscillation_grid.svg
       hash: md5
-      md5: 2876048cb3f677589d5c819174a07ca6
+      md5: 420a335bc8216d4205dafe55b68ed1b4
       size: 129117
     - path: figures/figS_windows.svg
       hash: md5
-      md5: 8e13a89697c2129710a1c6f545ae2f8a
+      md5: 55f4671029ec19c175ec0d6eb7093e3a
       size: 88465
     - path: figures/fig_ar1.svg
       hash: md5
-      md5: f87dd20c8817e4049953a3cc5e1ceabb
-      size: 88749
+      md5: 68b1c21bd0bac35632fab0e7d9b8ed42
+      size: 102011
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: b0aaec67b0f439bd1383e67255f83eb7
-      size: 241986
+      md5: d9547fcd74ddd564f0fb3af99a60c8ee
+      size: 240359
     - path: figures/fig_bias.svg
       hash: md5
-      md5: 2b9765660bbb6c66ab2c7445ed720ddc
+      md5: 5f3bda502e85f7c10dae995d9cccba2c
       size: 193974
     - path: figures/fig_finite.svg
       hash: md5
-      md5: 7115244aa82d2eab9e78b528ee9c1fad
-      size: 54896
+      md5: 360b1abd84ea414e2d60039e502ea3d8
+      size: 54648
     - path: figures/fig_modes.svg
       hash: md5
-      md5: 9deb9b3bee294f5690bcd1c9dc275f3a
+      md5: 85b0e4146a81dc16f83fa5829a3bb64f
       size: 106025
     - path: figures/fig_realdata.svg
       hash: md5
-      md5: 0222c3fe13eda7aeb754494639376829
-      size: 318532
+      md5: 4a18b77a08ef22808dc75f3a00ae9f2f
+      size: 314106
     - path: scripts/plot_figures.py
       hash: md5
-      md5: e96615d2ceaf6f4ccd68be698c17f285
-      size: 39335
+      md5: 63a5ec8732f0b0d0aecbe159ce5bdd2d
+      size: 40148

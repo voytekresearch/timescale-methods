@@ -455,6 +455,15 @@ class AR1PlusAR2(Process):
                 + (1 - w) * ar_acf(phi2, n)[lags.astype(int)])
 
 
+# The one higher-order AR(p) every simulation in the paper uses: the AR(7) of
+# the modes figure (its coefficients are PHI7 there).  Three relaxations, of
+# 200, 20 and 2 ms, and two rhythms, 10 Hz ringing for 150 ms and 40 Hz for
+# 60 ms.  The relaxation knees at 0.8 and 8 Hz are an order of magnitude apart
+# and both inside the band a 4 s Welch window resolves.
+ARP_MODES = ((0.200, 0.0), (0.150, 10.0), (0.060, 40.0),
+             (0.020, 0.0), (0.002, 0.0))
+
+
 @dataclass(kw_only=True)
 class ARpModes(Process):
     """A genuine high-order AR(p) built from a list of modes.
@@ -467,13 +476,12 @@ class ARpModes(Process):
     inside the family but of higher order than AR(1).
 
     ``modes`` is a list of ``(tau_seconds, freq_hz)``; a zero frequency gives a
-    real pole, a non-zero one a conjugate pair.  The default is the AR(8) used
-    in the modes figure, so the benchmark and that figure describe the same
-    process.
+    real pole, a non-zero one a conjugate pair.  The default is ``ARP_MODES``,
+    the AR(7) of the modes figure, so every AR(p) simulated in the paper is
+    the same process.
     """
 
-    modes: tuple = ((0.100, 0.0), (0.050, 10.0), (0.010, 40.0),
-                    (0.002, 0.0), (0.003, 180.0))
+    modes: tuple = ARP_MODES
 
     def __post_init__(self):
         self.name = 'arp_modes'
@@ -481,9 +489,9 @@ class ARpModes(Process):
         self.label = f'AR({order}), {len(self.modes)} modes'
         # The target is the true model's own aperiodic timescale, under the
         # same definition an estimator would apply to a fitted model, rather
-        # than the slowest relaxation by construction.  Those differ here: the
-        # 10 Hz mode rings only half a cycle, so it is non-rhythmic by that
-        # definition and more important than the 100 ms relaxation.  Defining
+        # than the slowest relaxation by construction.  The two can differ (a
+        # rhythm ringing less than a cycle is non-rhythmic by that definition);
+        # for the default modes they agree on the 200 ms relaxation.  Defining
         # the target any other way would score estimators against a quantity
         # they were not asked for.
         self.tau_true = np.nan   # set below, once the poles are known

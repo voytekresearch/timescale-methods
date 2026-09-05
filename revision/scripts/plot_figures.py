@@ -30,11 +30,11 @@ FIG.mkdir(exist_ok=True)
 
 from tsmodes import plotting as P
 from tsmodes import datasets as D
-from tsmodes.estimators import ESTIMATOR_LABELS, estimate, prepare
+from tsmodes.estimators import ESTIMATOR_LABELS, estimate, prepare, spectrum_acov
 from tsmodes.modes import (ARModes, ar_acf, ar_acf_fft, ar_psd, poles_to_ar,
                            psd_from_poles)
-from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped, ARpModes, PowerLaw,
-                          sim_ar_process)
+from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped, ARP_MODES, ARpModes,
+                          PowerLaw, sim_ar_process)
 from tsmodes.finite import phi_of_tau, tau_of_phi
 
 P.use_style()
@@ -61,29 +61,12 @@ RANK_COLORS = ['#D55E00', '#009E73', '#CC79A7']
 # The constructed AR(7) read mode by mode in fig_modes and used as the
 # model-mismatch column of fig_bias: two relaxations of comparable importance
 # an order of magnitude apart, two rhythms that ring for more than a cycle,
-# and one fast relaxation that does not matter.
-TRUE_MODES = [
-    {'kind': 'relaxation', 'tau': 0.200, 'freq': 0.0},
-    {'kind': 'oscillatory', 'tau': 0.150, 'freq': 10.0},
-    {'kind': 'oscillatory', 'tau': 0.060, 'freq': 40.0},
-    {'kind': 'relaxation', 'tau': 0.020, 'freq': 0.0},
-    {'kind': 'relaxation', 'tau': 0.002, 'freq': 0.0},
-]
-
-
-def build_poles(spec, fs):
-    poles = []
-    for m in spec:
-        r = np.exp(-1.0 / (m['tau'] * fs))
-        if m['kind'] == 'relaxation':
-            poles.append(r + 0j)
-        else:
-            theta = 2 * np.pi * m['freq'] / fs
-            poles += [r * np.exp(1j * theta), r * np.exp(-1j * theta)]
-    return np.array(poles)
-
-
-PHI7 = poles_to_ar(build_poles(TRUE_MODES, FS))
+# and one fast relaxation that does not matter.  It is the one AR(p) every
+# simulation in the paper uses (tsmodes.sims.ARP_MODES, the benchmark's
+# ARpModes process); PHI7 is its coefficients at FS.
+TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
+               'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]
+PHI7 = ARpModes().phi(FS)
 
 
 def proxy(**kw):
@@ -130,6 +113,12 @@ print('root:', ROOT)
 # notebook cell 3
 # ==========================================================================
 # ---- Fig. 1: fig_ar1 -------------------------------------------------------
+# A user-space TeX Live (install-tl into ~/texlive) is found even when the
+# shell that started the kernel does not have it on PATH.
+import os
+_TEX_BIN = Path.home() / 'texlive' / 'bin' / 'x86_64-linux'
+if _TEX_BIN.is_dir() and str(_TEX_BIN) not in os.environ.get('PATH', ''):
+    os.environ['PATH'] = f"{_TEX_BIN}{os.pathsep}{os.environ.get('PATH', '')}"
 HAVE_LATEX = shutil.which('latex') is not None and (
     shutil.which('dvipng') is not None or shutil.which('dvisvgm') is not None)
 if not HAVE_LATEX:
@@ -464,7 +453,7 @@ COLS = [
     # The same added rhythm as fig_bias: 20 Hz, a fifth of the aperiodic variance.
     (AR1PlusSine(tau=TAU, f_osc=20.0, snr=0.2), 'AR(1) + sine', bench[bench['process'] == 'ar1_sine'], True),
     (AR2Damped(tau=TAU, f_osc=10.0), 'AR(2) oscillator', bench[bench['process'] == 'ar2_damped'], True),
-    (ARpModes(), 'AR(8), 5 modes', bench[bench['process'] == 'arp_modes'], False),
+    (ARpModes(), ARpModes().label, bench[bench['process'] == 'arp_modes'], False),
     (AR1(tau=TAU), f'Finite sample\n({T_FINITE:g} s of AR(1))', finite, False),
 ]
 METHODS = [('arp_acf', 'ACF'), ('arp_psd', 'PSD')]
@@ -651,7 +640,7 @@ sim = pd.read_csv(RES / 'finite_sampling.csv.gz')
 durations = np.sort(sim['duration'].unique())
 ax = axes[2]
 grid = np.linspace(0, 2, 400)
-for tot, colour in zip([20, 100, 1000], ['#D55E00', '#E69F00', '#0072B2']):
+for tot, colour in zip([10, 100, 1000], ['#D55E00', '#E69F00', '#0072B2']):
     near = durations[np.argmin(np.abs(durations - TAU * tot))]
     vals = sim[(sim['process'] == 'ar1') & (sim['method'] == 'ar1_direct')
                & (sim['duration'] == near)]['tau'].to_numpy(float) / TAU
@@ -663,7 +652,7 @@ ax.set_xlabel(r'$\hat\tau\,/\,\tau$')
 ax.set_ylabel('Density')
 ax.set_title('Sampling distribution')
 ax.set_box_aspect(1)
-ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0, handlelength=1.6)
+ax.legend(loc='upper right', handlelength=1.6)
 P.panel_label(ax, 'c', dx=-0.30, fontsize=12)
 
 save(fig, 'fig_finite.svg')
@@ -724,12 +713,25 @@ for i, key in enumerate(keys):
     median_signal.powers, median_signal.corrs = med(powers_all), med(corrs_all)
     psd_data, acf_data = median_signal.powers[mask], median_signal.corrs
     fp = estimate(median_signal, 'arp_psd', robust=True)
-    psd_fit = ar_psd(fp.phi, signal.freqs[mask], signal.fs, fp.offset)
-    acf_fit = ar_acf_fft(fp.phi, nlags)      # analytic AR(p) autocorrelation
-    comps = fp.modes.acf_components(nlags)
+    psd_fit = ar_psd(fp.phi, signal.freqs, signal.fs, fp.offset)
+    # The data's autocorrelation is the inverse transform of its spectrum over
+    # the analysis band (prepare), so the fit is translated the same way: its
+    # spectrum on the same grid, over the same band.  The model's analytic
+    # full-band autocorrelation would instead carry its extrapolation below
+    # the band's lower edge, where most of a 1/f-like model's variance sits,
+    # and miss the data even where the fit is exact.  The components are the
+    # partial fractions of the fitted spectrum, transformed the same way; all
+    # of them together add up to the fit.
+    acov_fit = spectrum_acov(median_signal, psd_fit, nlags)
+    acf_fit = acov_fit / acov_fit[0]
+    comps = spectrum_acov(median_signal, fp.modes.psd_components(signal.freqs),
+                          nlags) / acov_fit[0]
     index = {id(m): j for j, m in enumerate(fp.modes.modes)}
-    mode_curves = [comps[index[id(m)]]
-                   for m in resolvable_modes(fp, median_signal)[:N_MODES_SHOWN]]
+    shown = resolvable_modes(fp, median_signal)[:N_MODES_SHOWN]
+    mode_curves = [comps[index[id(m)]] for m in shown]
+    # c and d show the same components: the ranks the fit to the median
+    # spectrum resolves, boxed over the traces that resolve them.
+    n_shown = len(shown)
     lags = np.arange(nlags + 1) / signal.fs
     taus = [t for t in (sub['tau'].median(), sub['tau_relaxation'].median())
             if np.isfinite(t) and t > 0]
@@ -741,7 +743,7 @@ for i, key in enumerate(keys):
     # -- a: spectrum -------------------------------------------------------
     ax = fig.add_subplot(gs[i, 0])
     ax.loglog(signal.freqs[mask], psd_data, color=DATA_COLOR, lw=1.1, zorder=1)
-    ax.loglog(signal.freqs[mask], psd_fit, color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, zorder=3)
+    ax.loglog(signal.freqs[mask], psd_fit[mask], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, zorder=3)
     ax.set_ylabel(data['panel_name'], labelpad=4)
     ax.set_yticks([])
     ax.yaxis.set_minor_locator(mticker.NullLocator())
@@ -777,7 +779,7 @@ for i, key in enumerate(keys):
     # -- d: the timescale of each component, over all traces -----------------
     ax = fig.add_subplot(gs[i, 3])
     drawn = []
-    for r in range(N_MODES_SHOWN):
+    for r in range(n_shown):
         vals = np.array([v for v in mode_taus[r] if np.isfinite(v) and v > 0])
         if not len(vals):
             continue
