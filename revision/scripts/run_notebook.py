@@ -1,6 +1,6 @@
 """Execute every code cell of a notebook, in order, without Jupyter.
 
-    python scripts/run_notebook.py notebooks/figures.ipynb
+    python scripts/run_notebook.py notebooks/figures.ipynb --export scripts/plot_figures.py
 
 The cells run in one shared namespace, exactly as they would in a kernel, with
 the working directory set to the notebook's own directory.  This is what the
@@ -23,10 +23,34 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
-def main(path):
+def export_script(nb, path, out):
+    """Write the notebook's code cells, in order, as one plain Python script.
+
+    The notebook stays the place to edit; this is the same code as a script,
+    regenerated on every run so the two cannot drift.
+    """
+    out = Path(out)
+    lines = ['"""Every figure of the paper, as a script.',
+             '',
+             f'GENERATED from {path.name} by scripts/run_notebook.py; edit the notebook,',
+             'not this file.  Run from revision/ with PYTHONPATH set to it.',
+             '"""', '']
+    for i, cell in enumerate(nb['cells']):
+        if cell['cell_type'] != 'code':
+            continue
+        lines += [f'# {"=" * 74}', f'# notebook cell {i}', f'# {"=" * 74}',
+                  ''.join(cell['source']).rstrip('\n'), '', '']
+    out.write_text('\n'.join(lines))
+    print(f'exported {out}', flush=True)
+
+
+def main(path, export=None):
     path = Path(path).resolve()
+    export = Path(export).resolve() if export else None     # before the chdir
     nb = json.loads(path.read_text())
     os.chdir(path.parent)
+    if export:
+        export_script(nb, path, export)
     namespace = {'__name__': '__main__'}
     for i, cell in enumerate(nb['cells']):
         if cell['cell_type'] != 'code':
@@ -41,4 +65,14 @@ def main(path):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'notebooks/figures.ipynb')
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('notebook', nargs='?', default='notebooks/figures.ipynb')
+    ap.add_argument('--export', help='also write the code cells as one script')
+    ap.add_argument('--export-only', action='store_true', help='export without running')
+    args = ap.parse_args()
+    if args.export_only:
+        nb = json.loads(Path(args.notebook).read_text())
+        export_script(nb, Path(args.notebook), args.export or 'scripts/plot_figures.py')
+    else:
+        main(args.notebook, export=args.export)

@@ -56,7 +56,9 @@ N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
 #                    at all, so there is nothing for an estimator to recover.
 PROCESSES = [
     AR1(tau=0.05),
-    AR1PlusSine(tau=0.05, f_osc=10.0, snr=1.0),
+    # The same added rhythm as fig_bias: a 20 Hz cosine carrying a fifth of
+    # the aperiodic variance.
+    AR1PlusSine(tau=0.05, f_osc=20.0, snr=0.2),
     AR2Damped(tau=0.05, f_osc=10.0),
     ARpModes(),
     PowerLaw(d=0.45),

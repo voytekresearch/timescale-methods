@@ -107,7 +107,7 @@ stages:
   # Every figure is drawn by one notebook, so it can be edited figure by
   # figure in Jupyter; this stage executes it headlessly.
   plot_figures:
-    cmd: python scripts/run_notebook.py notebooks/figures.ipynb
+    cmd: python scripts/run_notebook.py notebooks/figures.ipynb --export scripts/plot_figures.py
     deps:
       - notebooks/figures.ipynb
       - scripts/run_notebook.py
@@ -134,3 +134,5 @@ stages:
       - figures/fig_realdata.svg
       - figures/figS_oscillation_grid.svg
       - figures/figS_windows.svg
+      - scripts/plot_figures.py:
+          cache: false
