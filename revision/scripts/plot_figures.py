@@ -44,6 +44,9 @@ mpl.rcParams.update({
     'font.size': 10, 'axes.titlesize': 11, 'axes.labelsize': 10,
     'xtick.labelsize': 9, 'ytick.labelsize': 9, 'legend.fontsize': 9,
     'legend.frameon': False,
+    # Deterministic SVG ids, so a rerun writes byte-identical files and
+    # neither git nor DVC sees an unchanged figure as changed.
+    'svg.hashsalt': 'tsmodes',
 })
 FS = 500.0            # sampling rate of every simulation
 TAU = 0.05            # the constructed timescale of the AR(1) simulations, s
@@ -77,7 +80,7 @@ def proxy(**kw):
 def save(fig, name):
     """Write SVG and PNG into figures/, and leave the figure open so Jupyter
     shows it under the cell."""
-    fig.savefig(FIG / name, format='svg')
+    fig.savefig(FIG / name, format='svg', metadata={'Date': None})
     fig.savefig(FIG / name.replace('.svg', '.png'), format='png')
     print('wrote', FIG / name)
     return fig

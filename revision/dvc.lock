@@ -453,8 +453,8 @@ stages:
       nfiles: 10
     - path: notebooks/figures.ipynb
       hash: md5
-      md5: 8163e2a55c329578f5f78154c25798c1
-      size: 54467
+      md5: e629a1b92b4e646aae2fe3f66eabc920
+      size: 54685
     - path: results/benchmark_main.csv.gz
       hash: md5
       md5: 6a995c5e4a6343d1751229ede4a469e4
@@ -514,37 +514,37 @@ stages:
     outs:
     - path: figures/figS_oscillation_grid.svg
       hash: md5
-      md5: c477f9b44e85c3fbb8a724b1bb7fb558
-      size: 129117
+      md5: 839da9b77b3278e89f8f431996241e17
+      size: 129067
     - path: figures/figS_windows.svg
       hash: md5
-      md5: 93694a331189cd78950c60ec495a16c3
-      size: 88465
+      md5: 247f465634c553900a930410537e6cc0
+      size: 88415
     - path: figures/fig_ar1.svg
       hash: md5
-      md5: f8360f0258d44d03a0244850eeea76de
-      size: 102011
+      md5: 1da8f1e14be9335703ced33073f4d426
+      size: 101961
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: f474335d637f332067f1d14bfd39da8d
-      size: 240359
+      md5: 1b57f63b41d2fca5dd96eb022b232f12
+      size: 240309
     - path: figures/fig_bias.svg
       hash: md5
-      md5: 34ae356aeff5b53bf6cac0d390020f72
-      size: 193974
+      md5: ab24ab26571c56fa91227ee5d9614120
+      size: 193924
     - path: figures/fig_finite.svg
       hash: md5
-      md5: 5d9a9f0f9b699439c628a9d247e2b410
-      size: 54648
+      md5: cbac4a90950c22c4a42ea306f5d2f5b4
+      size: 54598
     - path: figures/fig_modes.svg
       hash: md5
-      md5: 27317792c27c49a01d2c57335e2d5436
-      size: 106025
+      md5: ad6e71825fb5330771ce06df4750d808
+      size: 105975
     - path: figures/fig_realdata.svg
       hash: md5
-      md5: 1f41ec824a714b984cfe397bd9e30c9e
-      size: 314106
+      md5: b4afbf195a5e63af8fe105c69fafb87d
+      size: 314056
     - path: scripts/plot_figures.py
       hash: md5
-      md5: e72776c00e4554209a18c1961db7a8a5
-      size: 40411
+      md5: ca3bd796ebda26b8724d4ce1d2743065
+      size: 40602
