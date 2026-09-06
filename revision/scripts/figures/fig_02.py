@@ -13,7 +13,13 @@ from fig_common import (
 
 # %%
 rng = np.random.default_rng(1)
-T_SHOW = 5.0                                   # seconds drawn in the signal row
+T_SHOW = 5.0                                   # seconds simulated for the signal row
+# Seconds drawn per column.  One second is enough to see the shape of the
+# AR(7) and the 10 Hz rhythm, which five seconds of a 10 Hz rhythm on a
+# panel an inch wide reduce to a solid band; the finite-sample column keeps
+# the five-second axis because its point is how little of it is filled, and
+# the dynamic column needs all five seconds for its windows.
+T_DRAW = [1.0, 1.0, 5.0, 5.0]
 NL = 150                                       # lags drawn in the ACF row
 ks = np.arange(NL + 1)
 lags = ks / FS
@@ -105,11 +111,13 @@ with plt.rc_context({'text.usetex': True}):
         ax = fig.add_subplot(gs[0, j])
         sig = signals[j]
         t = np.arange(len(sig)) / FS
-        ax.plot(t, sig / np.std(sig), color=DATA_COLOR, lw=0.4)
+        shown = t <= T_DRAW[j]
+        ax.plot(t[shown], sig[shown] / np.std(sig), color=DATA_COLOR, lw=0.4)
         if dynamic:
             for (a, b), wc in zip(WINDOWS, WIN_COLORS):
                 ax.axvspan(a, b, color=wc, alpha=0.28, lw=0)
-        ax.set_xlim(0, T_SHOW)
+        ax.set_xlim(0, T_DRAW[j])
+        ax.set_xticks([0, 0.5, 1] if T_DRAW[j] == 1.0 else [0, 2, 4])
         ax.set_ylim(-4, 4)
         ax.set_yticks([])
         ax.spines['left'].set_visible(False)

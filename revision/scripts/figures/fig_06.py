@@ -37,6 +37,10 @@ n = len(keys)
 with plt.rc_context({'text.usetex': True}):
     fig = plt.figure(figsize=(TEXT_WIDTH, min(TEXT_WIDTH * (1.3 * n + 1.2) / 8.4, 0.8 * TEXT_HEIGHT)))
     gs = fig.add_gridspec(n, 5, hspace=0.55, wspace=0.5, width_ratios=[1, 1, 1, 1, 0.6])
+    # Panel e sits closer to d than the grid's spacing allows, by this
+    # fraction of the figure width, now that its unit is in its title rather
+    # than in a y-label that collided with d.
+    E_SHIFT = 0.025
     med = lambda a: np.median(np.vstack(a), axis=0)
 
     for i, key in enumerate(keys):
@@ -103,6 +107,7 @@ with plt.rc_context({'text.usetex': True}):
         axa.set_ylabel(data['panel_name'].replace(' ', '\n'), labelpad=2, fontsize=6.5)
         axa.set_yticks([])
         axa.yaxis.set_minor_locator(mticker.NullLocator())
+        axa.xaxis.set_minor_locator(mticker.NullLocator())
         if first:
             axa.set_title('PSD fit')
             P.panel_label(axa, 'a', dx=-0.3, dy=1.45, fontsize=9)
@@ -120,6 +125,7 @@ with plt.rc_context({'text.usetex': True}):
             axp.loglog(f_band, centre(mode.psd(f_band)), color=RANK_COLORS[r], lw=1.3, zorder=2)
         axp.set_yticks([])
         axp.yaxis.set_minor_locator(mticker.NullLocator())
+        axp.xaxis.set_minor_locator(mticker.NullLocator())
         if first:
             axp.set_title('PSD\ncomponents')
             P.panel_label(axp, 'b', dx=-0.2, dy=1.45, fontsize=9)
@@ -131,6 +137,8 @@ with plt.rc_context({'text.usetex': True}):
         axb.plot(lags[keep], acf_data[keep], color=DATA_COLOR, lw=1.1, zorder=1)
         axb.plot(lags[keep], acf_fit[keep], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, zorder=3)
         axb.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
+        axb.xaxis.set_major_locator(mticker.MaxNLocator(2))
+        axb.set_yticks([0, 1])
         if first:
             axb.set_title('ACF')
             P.panel_label(axb, 'c', dx=-0.3, dy=1.45, fontsize=9)
@@ -151,15 +159,21 @@ with plt.rc_context({'text.usetex': True}):
 
         # -- e: the timescale of each component, over all traces -----------------
         ax = fig.add_subplot(gs[i, 4])
+        pos = ax.get_position()
+        ax.set_position([pos.x0 - E_SHIFT, pos.y0, pos.width, pos.height])
+        # Whiskers span the 10th to 90th percentile, and the axis is set from
+        # what is drawn -- a range set from every value, outliers included,
+        # left the lower half of some rows empty.
         drawn = []
         for r in range(n_shown):
             vals = np.array([v for v in mode_taus[r] if np.isfinite(v) and v > 0])
             if not len(vals):
                 continue
-            drawn.append(vals)
+            drawn.append(np.percentile(vals, [10, 90]))
             colour = RANK_COLORS[r]
-            bp = ax.boxplot([vals], positions=[r], widths=0.6, patch_artist=True,
-                            showfliers=False, medianprops=dict(color='k', lw=1.2),
+            bp = ax.boxplot([vals], positions=[r], widths=0.6, whis=(10, 90),
+                            patch_artist=True, showfliers=False,
+                            medianprops=dict(color='k', lw=1.2),
                             whiskerprops=dict(color=colour, lw=0.9),
                             capprops=dict(color=colour, lw=0.9))
             for box in bp['boxes']:
@@ -168,12 +182,11 @@ with plt.rc_context({'text.usetex': True}):
         ax.set_xlim(-0.7, N_MODES_SHOWN - 0.3)
         ax.set_xticks(np.arange(N_MODES_SHOWN))
         ax.set_xticklabels([f'{r + 1}' for r in range(N_MODES_SHOWN)] if last else [])
-        ax.set_ylabel('ms', labelpad=1)
         if drawn:
-            decade_ticks(ax, np.concatenate(drawn))
+            decade_ticks(ax, np.concatenate(drawn), pad=1.3)
         if first:
-            ax.set_title('Timescales')
-            P.panel_label(ax, 'e', dx=-0.6, dy=1.45, fontsize=9)
+            ax.set_title('Timescale\n(ms)')
+            P.panel_label(ax, 'e', dx=-0.45, dy=1.45, fontsize=9)
         if last:
             ax.set_xlabel('Component')
 

@@ -9,24 +9,28 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from fig_common import (
-    AR1, AR2_OSC, ARP, DATA_COLOR, FIT_COLOR, FIT_LW, FIT_STYLE, FS, P, RES,
-    TAU, TEXT_WIDTH, ar_acf_fft, ar_psd, estimate, prepare, proxy, save)
+    AR1, AR2_OSC, ARP, BENCH_TAU, DATA_COLOR, FIT_COLOR, FIT_LW, FIT_STYLE,
+    FS, P, RES, TEXT_WIDTH, ar_acf_fft, ar_psd, estimate, prepare, proxy, save)
 
 # %%
 DURATION, WELCH_WIN_S = 100.0, 4.0
-T_FINITE = 1.0
+T_FINITE = 20 * BENCH_TAU            # the finite sample: twenty timescales
 bench = pd.read_csv(RES / 'benchmark_main.csv.gz')
-finite = pd.read_csv(RES / 'finite_sampling.csv.gz')
-finite = finite[(finite['process'] == 'ar1') & np.isclose(finite['duration'], T_FINITE)]
+long = bench[np.isclose(bench['duration'], DURATION)]
+finite = bench[(bench['process'] == 'ar1') & np.isclose(bench['duration'], T_FINITE)]
 
-# (process, label, table, robust fit?).  The AR(2) oscillator is the rhythm
-# of fig_bias b; the AR(p) is the process of fig_modes, the AR(7) or, with
-# TSMODES_ARP=5, the AR(5) (both are in the benchmark table).
+# (process, label, table, robust fit?).  Every column has the same
+# constructed timescale, BENCH_TAU = 200 ms: the AR(1)'s tau, the AR(2)
+# oscillator's envelope decay (the rhythm of fig_bias b), the AR(7)'s
+# dominant relaxation (the process of fig_modes; with TSMODES_ARP=5 the
+# AR(5), whose target is 100 ms) and the finite sample's tau, so that row d
+# can share one axis.  The finite sample is simulated by the benchmark stage
+# too (run_02_benchmark, FINITE_DURATION).
 COLS = [
-    (AR1(tau=TAU), 'AR(1)', bench[bench['process'] == 'ar1'], False),
-    (AR2_OSC, 'AR(2)\noscillator', bench[bench['process'] == 'ar2_damped'], True),
-    (ARP, ARP.label.replace(', ', ',\n'), bench[bench['process'] == ARP.name], False),
-    (AR1(tau=TAU), 'Finite sample', finite, False),
+    (AR1(tau=BENCH_TAU), 'AR(1)', long[long['process'] == 'ar1'], False),
+    (AR2_OSC, 'AR(2) oscillator', long[long['process'] == 'ar2_damped'], True),
+    (ARP, ARP.label, long[long['process'] == ARP.name], False),
+    (AR1(tau=BENCH_TAU), 'Finite sample', finite, False),
 ]
 METHODS = [('arp_acf', 'ACF'), ('arp_psd', 'PSD')]
 OSCILLATORY_TRUTH = {'ar2_damped'}
@@ -48,8 +52,11 @@ with plt.rc_context({'text.usetex': True}):
         rng = np.random.default_rng(3)
         finite_col = j == n - 1
         seconds = T_FINITE if finite_col else DURATION
+        # The finite sample is analysed as in the finite-sampling stage: the
+        # Welch window and the autocorrelation are a quarter of the recording.
         signal = prepare(proc.simulate(seconds, FS, rng), FS,
-                        welch_win_s=0.5 if finite_col else WELCH_WIN_S)
+                        welch_win_s=seconds / 4 if finite_col else WELCH_WIN_S,
+                        nlags_s=seconds / 4 if finite_col else None)
         fit_psd = estimate(signal, 'arp_psd', robust=robust)
         fit_acf = estimate(signal, 'arp_acf', robust=robust)
 
@@ -67,8 +74,7 @@ with plt.rc_context({'text.usetex': True}):
         if j == 0:
             ax.set_ylabel('Signal')
             P.panel_label(ax, 'a', dx=-0.32, dy=1.35, fontsize=9)
-        if j == n // 2:
-            ax.set_xlabel('Time (s)')
+        ax.set_xlabel('Time (s)')
 
         # -- row b: the spectrum and its AR(p) fit -------------------------------
         ax = fig.add_subplot(gs[1, j])
@@ -83,38 +89,35 @@ with plt.rc_context({'text.usetex': True}):
         if j == 0:
             ax.set_ylabel('Power')
             ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Data'),
-                            proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
-                    loc='lower left', fontsize=6, handlelength=1.0, handletextpad=0.4,
-                    borderaxespad=0.2)
+                              proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
+                    loc='lower left', fontsize=6)
             P.panel_label(ax, 'b', dx=-0.32, dy=1.18, fontsize=9)
-        if j == n // 2:
-            ax.set_xlabel('Frequency (Hz)')
+        ax.set_xlabel('Frequency (Hz)')
 
         # -- row c: the autocorrelation and its AR(p) fit ------------------------
         ax = fig.add_subplot(gs[2, j])
-        nlags = min(len(signal.corrs) - 1, 150)
+        nlags = min(len(signal.corrs) - 1, 300)     # 0.6 s, three timescales
         lags = np.arange(nlags + 1) / FS
         ax.plot(lags, signal.corrs[:nlags + 1], color=DATA_COLOR, lw=1.0)
         ax.plot(lags, fit_acf.params['height'] * ar_acf_fft(fit_acf.phi, nlags)
                 + fit_acf.params['acf_offset'], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-        ax.set_xlim(None, 0.3)
+        ax.set_xlim(None, 0.5)
+        ax.set_xticks([0, 0.25, 0.5])
         ax.set_ylim(-1.05, 1.05)
         ax.set_yticks([0, 1])
         if j == 0:
             ax.set_ylabel('Autocorrelation')
             ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Data'),
                             proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
-                    loc='upper right', fontsize=6, handlelength=1.0, handletextpad=0.4,
-                    borderaxespad=0.2)
+                    loc='lower right', fontsize=6)
             P.panel_label(ax, 'c', dx=-0.32, dy=1.18, fontsize=9)
         else:
             ax.set_yticklabels([])
-        if j == n // 2:
-            ax.set_xlabel('Lag (s)')
+        ax.set_xlabel('Lag (s)')
 
-        # -- row d: what each AR(p) fit reports ----------------------------------
-        ax = fig.add_subplot(gs[3, j])
+        # -- row d: what each AR(p) fit reports, on one shared axis --------------
+        ax = fig.add_subplot(gs[3, j], sharey=tau_axes[0] if tau_axes else None)
         for i, (method, name) in enumerate(METHODS):
             vals = target(df[df['method'] == method], proc) * 1e3
             vals = vals[np.isfinite(vals) & (vals > 0)]
@@ -137,44 +140,28 @@ with plt.rc_context({'text.usetex': True}):
         ax.set_xlim(-0.7, 1.7)
         ax.set_xticks([0, 1])
         ax.set_xticklabels([name for _, name in METHODS])
+        ax.set_xlabel('Fit domain')
 
         if j == 0:
             ax.set_ylabel('Estimated $\\tau$ (ms)')
             ax.legend(handles=[proxy(color='k', ls='--', lw=1.1, label='true $\\tau$')],
-                    loc='upper right', fontsize=6, handlelength=1.8)
+                      loc='upper right', fontsize=6, handlelength=1.8)
             P.panel_label(ax, 'd', dx=-0.32, dy=1.14, fontsize=9)
         tau_axes.append(ax)      # every column keeps its own tick labels
 
-    # Each column keeps its own y-range, covering the 10-90% whiskers of its
-    # two boxes.  The constructed timescales differ (50, 150 and 200 ms) and
-    # the spreads differ more, so one shared axis would flatten the AR(1)
-    # boxes into lines; every column carries its own tick labels and its
-    # dashed truth for the same reason.  The finite-sample column runs from a
-    # few ms to a few hundred, and its range never goes below 5 ms -- the few
-    # fits that collapse to a sample or two are real, but they should not set
-    # the axis.
-    def _round_ticks(lo, hi):
-        """The round values inside a sub-decade range: the coarsest step that
-        still leaves at least two, at most four, ticks."""
-        for step in (5, 10, 20, 50, 100, 200, 500):
-            ticks = [t for t in range(step, 2000, step) if lo <= t <= hi]
-            if len(ticks) <= 4:
-                return ticks if len(ticks) >= 2 else [t for t in range(step // 2 or 1, 2000, step // 2 or 1) if lo <= t <= hi]
-        return ticks
-
-    for j, ax in enumerate(tau_axes):
-        vals = np.concatenate(col_vals[j])
-        finite_col = j == n - 1
-        pad, floor = (1.6, 5.0) if finite_col else (1.15, None)
-        lo, hi = np.min(vals) / pad, np.max(vals) * pad
-        lo = lo if floor is None else max(lo, floor)
-        ax.set_ylim(lo, hi)
-        if finite_col:
-            ax.yaxis.set_major_locator(mticker.LogLocator(numticks=5))
-        else:
-            # Under a decade a LogLocator returns almost nothing, so the
-            # round values inside the range are named outright.
-            ax.yaxis.set_major_locator(mticker.FixedLocator(_round_ticks(lo, hi)))
+    # One y-range for the whole row, since every column has the same
+    # constructed timescale: it covers the 10-90% whiskers of every box and
+    # never goes below 5 ms -- the few fits that collapse to a sample or two
+    # are real, but they should not set the axis.  Every column keeps its own
+    # tick labels.
+    vals = np.concatenate([v for cols in col_vals.values() for v in cols])
+    lo, hi = max(np.min(vals) / 1.5, 5.0), np.max(vals) * 1.5
+    tau_axes[0].set_ylim(lo, hi)
+    # Under a decade or two a LogLocator names almost nothing, so the round
+    # values inside the range are named outright.
+    ticks = [t for t in (5, 10, 20, 50, 100, 200, 500, 1000, 2000) if lo <= t <= hi]
+    for ax in tau_axes:
+        ax.yaxis.set_major_locator(mticker.FixedLocator(ticks))
         ax.yaxis.set_minor_locator(mticker.NullLocator())
         ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f'{v:g}'))
 

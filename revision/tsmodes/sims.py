@@ -472,9 +472,15 @@ ARP_MODES_7 = ((0.200, 0.0), (0.150, 10.0), (0.060, 40.0),
 ARP_MODES_5 = ((0.250, 0.0), (0.020, 50.0), (0.100, 5.0))
 ARP_VARIANTS = {'7': ARP_MODES_7, '5': ARP_MODES_5}
 ARP_MODES = ARP_MODES_7
+# Every column of the benchmark figure has the same constructed timescale:
+# the AR(1)'s tau, the AR(2) oscillator's envelope decay, the AR(7)'s
+# dominant relaxation, and the finite sample's tau, all 200 ms, so that the
+# estimates can share one axis.
+BENCH_TAU = 0.200
 # The AR(2) oscillator of the benchmark and of the oscillations column of
-# fig_bias, as (tau, f): a 10 Hz rhythm whose envelope decays in 150 ms.
-AR2_RHYTHM = (0.150, 10.0)
+# fig_bias, as (tau, f): a 10 Hz rhythm whose envelope decays in 200 ms, two
+# cycles, a peak forty times its low-frequency plateau.
+AR2_RHYTHM = (BENCH_TAU, 10.0)
 
 
 @dataclass(kw_only=True)

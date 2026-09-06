@@ -40,7 +40,7 @@ from tsmodes.estimators import ESTIMATOR_LABELS, estimate, prepare, spectrum_aco
 from tsmodes.modes import (ARModes, ar_acf, ar_acf_fft, ar_psd, poles_to_ar,
                            psd_from_poles)
 from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARP_MODES, ARP_VARIANTS,
-                          ARpModes, PowerLaw, arp_process, sim_ar_process)
+                          ARpModes, BENCH_TAU, PowerLaw, arp_process, sim_ar_process)
 from tsmodes.finite import phi_of_tau, tau_of_phi
 
 P.use_style()
@@ -63,6 +63,8 @@ mpl.rcParams.update({
 })
 FS = 500.0            # sampling rate of every simulation
 TAU = 0.05            # the constructed timescale of the AR(1) simulations, s
+# BENCH_TAU (0.2 s, tsmodes.sims) is the constructed timescale of every
+# column of fig_benchmark; the finite-sampling stage and fig_bias use TAU.
 
 # Colours shared by every figure.  Data is black and solid; an AR fit or the
 # expected AR(1) form is this blue and dashed; modes are coloured by importance
