@@ -455,13 +455,24 @@ class AR1PlusAR2(Process):
                 + (1 - w) * ar_acf(phi2, n)[lags.astype(int)])
 
 
-# The one higher-order AR(p) every simulation in the paper uses: the AR(7) of
-# the modes figure (its coefficients are PHI7 there).  Three relaxations, of
-# 200, 20 and 2 ms, and two rhythms, 10 Hz ringing for 150 ms and 40 Hz for
-# 60 ms.  The relaxation knees at 0.8 and 8 Hz are an order of magnitude apart
-# and both inside the band a 4 s Welch window resolves.
-ARP_MODES = ((0.200, 0.0), (0.150, 10.0), (0.060, 40.0),
-             (0.020, 0.0), (0.002, 0.0))
+# The one higher-order AR(p) every simulation in the paper uses: the AR(6) of
+# the modes figure (its coefficients are PHI_ARP there).  Two relaxations, of
+# 100 and 30 ms, and two rhythms: 10 Hz ringing for 150 ms (1.5 cycles) and
+# 15 Hz ringing for 400 ms (six cycles).  The relaxation knees at 1.6 and
+# 5.3 Hz are both inside the band a 4 s Welch window resolves.
+#
+# Why these four and not, say, rhythms an octave apart: in a pure AR(p) the
+# spectrum above a rhythm falls at least as f^-4, so a second rhythm an
+# octave higher carries a few percent of the variance at most and is
+# invisible in the autocorrelation however sharp it is made (a 40 Hz mode
+# ringing 2.4 cycles beside a 10 Hz one carried 2e-5).  Two rhythms both
+# visible in the autocorrelation need frequencies within about a factor of
+# 1.5 and a sustained upper rhythm; these carry 0.32 and 0.10 of the
+# variance, the 100 ms relaxation 0.69 and the 30 ms relaxation -0.10.
+ARP_MODES = ((0.100, 0.0), (0.150, 10.0), (0.400, 15.0), (0.030, 0.0))
+# The AR(2) oscillator of the benchmark and of the oscillations column of
+# fig_bias: the AR(6)'s 10 Hz mode on its own, as (tau, f).
+AR2_RHYTHM = ARP_MODES[1]
 
 
 @dataclass(kw_only=True)
@@ -477,7 +488,7 @@ class ARpModes(Process):
 
     ``modes`` is a list of ``(tau_seconds, freq_hz)``; a zero frequency gives a
     real pole, a non-zero one a conjugate pair.  The default is ``ARP_MODES``,
-    the AR(7) of the modes figure, so every AR(p) simulated in the paper is
+    the AR(6) of the modes figure, so every AR(p) simulated in the paper is
     the same process.
     """
 
@@ -491,7 +502,7 @@ class ARpModes(Process):
         # same definition an estimator would apply to a fitted model, rather
         # than the slowest relaxation by construction.  The two can differ (a
         # rhythm ringing less than a cycle is non-rhythmic by that definition);
-        # for the default modes they agree on the 200 ms relaxation.  Defining
+        # for the default modes they agree on the 100 ms relaxation.  Defining
         # the target any other way would score estimators against a quantity
         # they were not asked for.
         self.tau_true = np.nan   # set below, once the poles are known

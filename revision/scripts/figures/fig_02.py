@@ -8,8 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from fig_common import (
-    ARModes, DATA_COLOR, FS, P, PHI7, TAU, TEXT_WIDTH, phi_of_tau, save,
-    sim_ar_process)
+    AR2_OSC, ARModes, ARP, DATA_COLOR, FS, P, PHI_ARP, TAU, TEXT_WIDTH,
+    phi_of_tau, save, sim_ar_process)
 
 # %%
 rng = np.random.default_rng(1)
@@ -40,24 +40,22 @@ def ar1_acf(tau, n=N_ACF):
     return phi_of_tau(tau, FS) ** np.arange(n + 1)
 
 
-# a) model mismatch: the AR(7) of fig_modes, the same model object and the
+# a) model mismatch: the AR(6) of fig_modes, the same model object and the
 #    same exact spectrum as its panel b.
-model7 = ARModes.from_phi(PHI7, FS, offset=1.0, freqs=np.linspace(0, FS / 2, 1025))
+model_arp = ARModes.from_phi(PHI_ARP, FS, offset=1.0, freqs=np.linspace(0, FS / 2, 1025))
 FREQS_A = np.logspace(np.log10(0.25), np.log10(FS / 2), 500)
-acf_a = model7.acf(NL)
-psd_a = model7.psd(FREQS_A)
-sig_a = sim_ar_process(PHI7, int(T_SHOW * FS), rng)
+acf_a = model_arp.acf(NL)
+psd_a = model_arp.psd(FREQS_A)
+sig_a = sim_ar_process(PHI_ARP, int(T_SHOW * FS), rng)
+LABEL_A = ARP.label.split(',')[0]                  # 'AR(6)'
 
-# b) oscillations, as in new_figures.ipynb: an AR(1) plus a cosine carrying a
-#    fifth of the aperiodic variance.
-OSC_AMP, F_OSC = 0.2, 20.0
-acf_b_ar1 = ar1_acf(TAU)
-acf_b = (acf_b_ar1 + OSC_AMP * np.cos(2 * np.pi * F_OSC * np.arange(N_ACF + 1) / FS)) / (1 + OSC_AMP)
+# b) oscillations: the AR(2) stochastic oscillator of the benchmark, the 10 Hz
+#    mode of the AR(6) in (a) on its own: a rhythm whose envelope decays in
+#    150 ms, 1.5 cycles.  Its exact autocorrelation is a damped cosine and its
+#    spectrum a peak twenty times its low-frequency plateau.
+acf_b = AR2_OSC.acf(np.arange(N_ACF + 1), FS)
 f_b, psd_b = acf_to_psd(acf_b, FS)
-t_b = np.arange(int(T_SHOW * FS)) / FS
-sig_b_ap = sim_ar_process(np.array([phi_of_tau(TAU, FS)]), len(t_b), rng)
-sig_b_ap = (sig_b_ap - sig_b_ap.mean()) / sig_b_ap.std()
-sig_b = sig_b_ap + np.sqrt(2 * OSC_AMP) * np.cos(2 * np.pi * F_OSC * t_b)
+sig_b = AR2_OSC.simulate(T_SHOW, FS, rng)
 
 # c) finite samples: one second of an AR(1), observed rather than theoretical.
 T_FINITE = 1.0
@@ -84,70 +82,74 @@ for tw, wc in zip(win_tau, WIN_COLORS):
     f_w, psd_w = acf_to_psd(acf_w, FS)
     win_curves.append((acf_w[:NL + 1], f_w, psd_w, wc, f'$\\tau$ = {tw * 1e3:.0f} ms'))
 
-fig = plt.figure(figsize=(TEXT_WIDTH, TEXT_WIDTH * 6.2 / 8.4))
-gs = fig.add_gridspec(3, 4, hspace=0.62, wspace=0.38, height_ratios=[0.7, 1.0, 1.0])
-titles = ['Model\nmismatch', 'Oscillations', 'Finite\nsamples', 'Dynamic\ntimescales']
-signals = [sig_a, sig_b, sig_c, sig_d]
-for j in range(4):
-    dynamic = j == 3
+with plt.rc_context({'text.usetex': True}):
+    fig = plt.figure(figsize=(TEXT_WIDTH, TEXT_WIDTH * 6.2 / 8.4))
+    gs = fig.add_gridspec(3, 4, hspace=0.62, wspace=0.38, height_ratios=[0.7, 1.0, 1.0])
+    titles = ['Model\nmismatch', 'Oscillations\n', 'Finite\nsamples', 'Dynamic\ntimescales']
+    signals = [sig_a, sig_b, sig_c, sig_d]
+    abcd = ["a", "b", "c", "d"]
 
-    # -- row 1: the signal ---------------------------------------------------
-    ax = fig.add_subplot(gs[0, j])
-    sig = signals[j]
-    t = np.arange(len(sig)) / FS
-    ax.plot(t, sig / np.std(sig), color=DATA_COLOR, lw=0.4)
-    if dynamic:
-        for (a, b), wc in zip(WINDOWS, WIN_COLORS):
-            ax.axvspan(a, b, color=wc, alpha=0.28, lw=0)
-    ax.set_xlim(0, T_SHOW)
-    ax.set_ylim(-4, 4)
-    ax.set_yticks([])
-    ax.spines['left'].set_visible(False)
-    ax.set_title(titles[j])
-    ax.set_xlabel('Time (s)')
-    if j == 0:
-        ax.set_ylabel('Signal')
-    P.panel_label(ax, 'abcd'[j], dx=-0.22, dy=1.45, fontsize=9)
+    for j in range(4):
+        dynamic = j == 3
 
-    # -- row 2: the autocorrelation ------------------------------------------
-    ax = fig.add_subplot(gs[1, j])
-    if j == 0:
-        ax.plot(lags, acf_a, color=DATA_COLOR, lw=1.4, label='AR(7)', zorder=2)
-    elif j == 1:
-        ax.plot(lags, acf_b[:NL + 1], color=DATA_COLOR, lw=1.4, label='AR(1) + osc.', zorder=2)
-    elif j == 2:
-        ax.plot(lags, acf_c[:NL + 1], color=DATA_COLOR, lw=1.4, label='observed, 1 s', zorder=2)
-    else:
-        for acf_w, _, _, wc, label in win_curves:
-            ax.plot(lags, acf_w, color=wc, lw=1.4, label=label, zorder=2)
-    ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-    ax.set_ylim(-0.45, 1.05)
-    ax.set_yticks([0, 1])
-    ax.set_xlabel('Lag (s)')
-    if j == 0:
-        ax.set_ylabel('Autocorrelation')
-    if dynamic:      # four entries: below the curves, which never go negative
-        ax.legend(loc='lower center', ncol=2, fontsize=5.5, handlelength=1.0,
-                  handletextpad=0.4, columnspacing=0.6, labelspacing=0.2,
-                  borderaxespad=0.1)
-    else:
-        ax.legend(loc='upper right', fontsize=6, handlelength=1.0, borderaxespad=0.0, labelspacing=0.25)
+        # -- row 1: the signal ---------------------------------------------------
+        ax = fig.add_subplot(gs[0, j])
+        sig = signals[j]
+        t = np.arange(len(sig)) / FS
+        ax.plot(t, sig / np.std(sig), color=DATA_COLOR, lw=0.4)
+        if dynamic:
+            for (a, b), wc in zip(WINDOWS, WIN_COLORS):
+                ax.axvspan(a, b, color=wc, alpha=0.28, lw=0)
+        ax.set_xlim(0, T_SHOW)
+        ax.set_ylim(-4, 4)
+        ax.set_yticks([])
+        ax.spines['left'].set_visible(False)
+        ax.set_title(titles[j])
+        ax.set_xlabel('Time (s)')
+        if j == 0:
+            ax.set_ylabel('Signal')
 
-    # -- row 3: the power spectrum -------------------------------------------
-    ax = fig.add_subplot(gs[2, j])
-    if j == 0:
-        ax.loglog(FREQS_A, psd_a, color=DATA_COLOR, lw=1.2, zorder=2)
-    elif j == 1:
-        ax.loglog(f_b, psd_b, color=DATA_COLOR, lw=1.2, zorder=2)
-    elif j == 2:
-        ax.loglog(f_c, psd_c, color=DATA_COLOR, lw=1.2, zorder=2)
-    else:
-        for _, f_w, psd_w, wc, _ in win_curves:
-            ax.loglog(f_w, psd_w, color=wc, lw=1.4, zorder=2)
-    ax.set_yticks([])
-    ax.yaxis.set_minor_locator(mticker.NullLocator())
-    ax.set_xlabel('Frequency (Hz)')
-    if j == 0:
-        ax.set_ylabel('Power')
+        P.panel_label(ax, abcd[j], dx=-0.22, dy=1.55, fontsize=9)
 
-save(fig, 'fig_bias.svg')
+        # -- row 2: the autocorrelation ------------------------------------------
+        ax = fig.add_subplot(gs[1, j])
+        if j == 0:
+            ax.plot(lags, acf_a, color=DATA_COLOR, lw=1.4, label=LABEL_A, zorder=2)
+        elif j == 1:
+            ax.plot(lags, acf_b[:NL + 1], color=DATA_COLOR, lw=1.4, label='AR(2)', zorder=2)
+        elif j == 2:
+            ax.plot(lags, acf_c[:NL + 1], color=DATA_COLOR, lw=1.4, label='Observed', zorder=2)
+        else:
+            for acf_w, _, _, wc, label in win_curves:
+                ax.plot(lags, acf_w, color=wc, lw=1.4, label=label, zorder=2)
+        ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
+        ax.set_ylim(-0.8, 1.05)      # the AR(2)'s first trough reaches -0.7
+        ax.set_yticks([0, 1])
+        ax.set_xlabel('Lag (s)')
+        if j == 0:
+            ax.set_ylabel('Autocorrelation')
+        if dynamic:      # four entries: below the curves, which never go negative
+            ax.legend(loc='lower right', ncol=1, fontsize=4.25, handlelength=1.0,
+                    handletextpad=0.2, columnspacing=0.6, labelspacing=0.2,
+                    borderaxespad=0.1)
+        else:
+            ax.legend(loc='upper right', fontsize=6, handlelength=1.0, borderaxespad=0.0, labelspacing=0.25)
+
+        # -- row 3: the power spectrum -------------------------------------------
+        ax = fig.add_subplot(gs[2, j])
+        if j == 0:
+            ax.loglog(FREQS_A, psd_a, color=DATA_COLOR, lw=1.2, zorder=2)
+        elif j == 1:
+            ax.loglog(f_b, psd_b, color=DATA_COLOR, lw=1.2, zorder=2)
+        elif j == 2:
+            ax.loglog(f_c, psd_c, color=DATA_COLOR, lw=1.2, zorder=2)
+        else:
+            for _, f_w, psd_w, wc, _ in win_curves:
+                ax.loglog(f_w, psd_w, color=wc, lw=1.4, zorder=2)
+        ax.set_yticks([])
+        ax.yaxis.set_minor_locator(mticker.NullLocator())
+        ax.set_xlabel('Frequency (Hz)')
+        if j == 0:
+            ax.set_ylabel('Power')
+
+    save(fig, 'fig_bias.svg')

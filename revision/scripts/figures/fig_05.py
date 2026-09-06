@@ -38,8 +38,8 @@ def ci_panel(ax, n, letter):
         lo.append((ph - half).mean())
         hi.append((ph + half).mean())
     ax.fill_between(PHIS, lo, hi, color=P.LIGHT, alpha=0.6, lw=0, label='95% CI')
-    ax.plot(PHIS, PHIS, color='k', ls=':', lw=1.2, label='true')
-    ax.plot(PHIS, mean_hat, color=FIT_COLOR, lw=1.8, label=r'mean $\hat\varphi$')
+    ax.plot(PHIS, mean_hat, color=FIT_COLOR, lw=1.8, label=r'Mean $\hat\varphi$')
+    ax.plot(PHIS, PHIS, color='k', ls=':', lw=1.2, label='True')
     ax.set_xlabel(r'True $\varphi$')
     ax.set_ylabel(r'Estimated $\varphi$')
     ax.set_title(f'n = {n} samples')
@@ -49,32 +49,33 @@ def ci_panel(ax, n, letter):
     P.panel_label(ax, letter, dx=-0.30, fontsize=9)
 
 
-fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, TEXT_WIDTH * 3.0 / 8.4), gridspec_kw=dict(wspace=0.5))
-ci_panel(axes[0], 100, 'a')
-axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.28), ncol=3,
-               handlelength=1.6, columnspacing=1.2)
-ci_panel(axes[1], 1000, 'b')
+with plt.rc_context({'text.usetex': True}):
+    fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, TEXT_WIDTH * 3.0 / 8.4), gridspec_kw=dict(wspace=0.5))
+    ci_panel(axes[0], 100, 'a')
+    axes[0].legend(loc='lower right', fontsize=5)
 
-# (c) the sampling density of tau-hat at three recording lengths ------------
-sim = pd.read_csv(RES / 'finite_sampling.csv.gz')
-durations = np.sort(sim['duration'].unique())
-ax = axes[2]
-grid = np.linspace(0, 2, 400)
-for tot, colour in zip([10, 100, 1000], ['#D55E00', '#E69F00', '#0072B2']):
-    near = durations[np.argmin(np.abs(durations - TAU * tot))]
-    vals = sim[(sim['process'] == 'ar1') & (sim['method'] == 'ar1_direct')
-               & (sim['duration'] == near)]['tau'].to_numpy(float) / TAU
-    vals = vals[np.isfinite(vals)]
-    ax.plot(grid, gaussian_kde(vals)(grid), color=colour, lw=1.6, label=rf'$T = {tot}\tau$')
-ax.axvline(1.0, color='k', ls='--', lw=1.1)
-ax.set_xlim(-0.1, 2.1)
-ax.set_xlabel(r'$\hat\tau\,/\,\tau$')
-ax.set_ylabel('Density')
-ax.set_title('Sampling distribution')
-ax.set_box_aspect(1)
-# Compact and flush with the right edge: the panel is 1.3 in wide at print
-# size and the T = 1000 tau peak stands at its centre.
-ax.legend(loc='upper right', fontsize=5, handlelength=0.8, handletextpad=0.3, borderaxespad=0.0)
-P.panel_label(ax, 'c', dx=-0.30, fontsize=9)
+    ci_panel(axes[1], 1000, 'b')
+    axes[1].legend(loc='lower right', fontsize=5)
 
-save(fig, 'fig_finite.svg')
+    # (c) the sampling density of tau-hat at three recording lengths ------------
+    sim = pd.read_csv(RES / 'finite_sampling.csv.gz')
+    durations = np.sort(sim['duration'].unique())
+    ax = axes[2]
+    grid = np.linspace(0, 2, 400)
+    for tot, colour in zip([10, 100, 1000], ['#D55E00', '#E69F00', '#0072B2']):
+        near = durations[np.argmin(np.abs(durations - TAU * tot))]
+        vals = sim[(sim['process'] == 'ar1') & (sim['method'] == 'ar1_direct')
+                & (sim['duration'] == near)]['tau'].to_numpy(float) / TAU
+        vals = vals[np.isfinite(vals)]
+        ax.plot(grid, gaussian_kde(vals)(grid), color=colour, lw=1.6, label=rf'$T = {tot}\tau$')
+    ax.axvline(1.0, color='k', ls='--', lw=1.1)
+    ax.set_xlim(-0.1, 2.1)
+    ax.set_xlabel(r'$\hat\tau\,/\,\tau$')
+    ax.set_ylabel('Density')
+    ax.set_title('Sampling distribution')
+    ax.set_box_aspect(1)
+    # Compact and flush with the right edge: the panel is 1.3 in wide at print
+    # size and the T = 1000 tau peak stands at its centre.
+    ax.legend(loc='upper left', fontsize=4)
+
+    save(fig, 'fig_finite.svg')

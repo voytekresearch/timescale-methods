@@ -20,8 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / 'results'
 FS = 500.0
 
-# A ground-truth AR(7): two relaxations that both matter, two rhythms that
-# ring for more than a cycle, and one fast relaxation that does not matter.
+# A ground-truth AR(6): two relaxations that both matter and two rhythms that
+# ring for more than a cycle, every one of them visible in the spectrum and in
+# the autocorrelation (why exactly these four: tsmodes.sims.ARP_MODES).
 #
 # Two dominant relaxations are the point.  A single timescale cannot describe
 # this process however it is estimated, so it is the case where reading the
@@ -29,11 +30,10 @@ FS = 500.0
 #
 # Both rhythms have f*tau > 1, so tau is unambiguously the envelope decay and
 # cannot be misread as the period: the 10 Hz mode has a 100 ms period and a
-# 150 ms envelope.  Both stay inside the range seen in the real recordings,
-# where the largest in-band f*tau is 1.93.
+# 150 ms envelope; the 15 Hz mode is sustained, ringing six cycles.
 #
-# The relaxation knees sit at 1/(2 pi tau) = 0.80 and 8.0 Hz, an order of
-# magnitude apart and both well inside the band a 4 s Welch window resolves.
+# The relaxation knees sit at 1/(2 pi tau) = 1.6 and 5.3 Hz, both well inside
+# the band a 4 s Welch window resolves.
 # The same process as every other AR(p) simulation (tsmodes.sims.ARP_MODES).
 TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
                'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]
@@ -144,9 +144,9 @@ def coefficient_vs_mode_sweep(fs, freqs_hz=None):
     freqs_hz = np.linspace(4, 60, 40) if freqs_hz is None else freqs_hz
     rows = []
     for f_osc in freqs_hz:
-        spec = [dict(TRUE_MODES[0]), {'kind': 'oscillatory', 'tau': 0.05,
-                                      'freq': float(f_osc)},
-                dict(TRUE_MODES[2])]
+        # The constructed relaxations plus one rhythm whose frequency is swept.
+        spec = ([dict(m) for m in TRUE_MODES if m['kind'] == 'relaxation']
+                + [{'kind': 'oscillatory', 'tau': 0.05, 'freq': float(f_osc)}])
         phi = poles_to_ar(build_poles(spec, fs))
         model = ARModes.from_phi(phi, fs)
         osc = [m for m in model.modes if m.kind == 'oscillatory']
@@ -183,7 +183,7 @@ def match_modes(fitted, truth_poles):
 def repeatability(phi_true, fs, n_reps=200, duration=60.0):
     """Across-realization recovery of each constructed mode.
 
-    Each of the five modes has a known ``tau``, so every one of them can be
+    Each of the constructed modes has a known ``tau``, so every one of them can be
     scored; there is no ground truth for a coefficient read as if it were an
     AR(1), which is why only modes appear here.
     """

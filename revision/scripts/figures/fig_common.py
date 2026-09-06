@@ -1,5 +1,5 @@
 """Everything the figure scripts share: paths, the print-size style, colours,
-the constructed AR(7) and a few helpers.
+the constructed AR(6) and a few helpers.
 
 Each ``fig_*.py`` imports what it needs from here and can be run on its own,
 from any directory::
@@ -33,7 +33,7 @@ from tsmodes import datasets as D
 from tsmodes.estimators import ESTIMATOR_LABELS, estimate, prepare, spectrum_acov
 from tsmodes.modes import (ARModes, ar_acf, ar_acf_fft, ar_psd, poles_to_ar,
                            psd_from_poles)
-from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped, ARP_MODES, ARpModes,
+from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARP_MODES, ARpModes,
                           PowerLaw, sim_ar_process)
 from tsmodes.finite import phi_of_tau, tau_of_phi
 
@@ -68,15 +68,18 @@ FIT_STYLE = (0, (4, 2))
 FIT_LW = 1.6
 RANK_COLORS = ['#D55E00', '#009E73', '#CC79A7']
 
-# The constructed AR(7) read mode by mode in fig_modes and used as the
+# The constructed AR(6) read mode by mode in fig_modes and used as the
 # model-mismatch column of fig_bias: two relaxations of comparable importance
-# an order of magnitude apart, two rhythms that ring for more than a cycle,
-# and one fast relaxation that does not matter.  It is the one AR(p) every
-# simulation in the paper uses (tsmodes.sims.ARP_MODES, the benchmark's
-# ARpModes process); PHI7 is its coefficients at FS.
+# and two rhythms that ring for more than a cycle, all four visible in the
+# spectrum and in the autocorrelation.  It is the one AR(p) every simulation
+# in the paper uses (tsmodes.sims.ARP_MODES, the benchmark's ARpModes
+# process); PHI_ARP is its coefficients at FS.  The AR(2) oscillator of
+# fig_bias and the benchmark is its 10 Hz mode on its own (AR2_RHYTHM).
 TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
                'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]
-PHI7 = ARpModes().phi(FS)
+ARP = ARpModes()
+PHI_ARP = ARP.phi(FS)
+AR2_OSC = AR2Damped(tau=AR2_RHYTHM[0], f_osc=AR2_RHYTHM[1])
 
 
 def proxy(**kw):

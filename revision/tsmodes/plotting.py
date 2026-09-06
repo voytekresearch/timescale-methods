@@ -66,6 +66,10 @@ def use_style():
 
 
 def panel_label(ax, letter, dx=-0.16, dy=1.06, fontsize=10, **kwargs):
+    # usetex ignores fontweight -- LaTeX takes the weight from the markup --
+    # so under usetex the letter has to carry its own \textbf.
+    if mpl.rcParams['text.usetex']:
+        letter = r'\textbf{%s}' % letter
     ax.text(dx, dy, letter, transform=ax.transAxes, fontsize=fontsize,
             fontweight='bold', va='top', ha='left', **kwargs)
 

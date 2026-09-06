@@ -37,11 +37,16 @@ def referenced():
 def drawn_by():
     """Map each figure name to the script that writes it."""
     out = {}
-    for script in sorted((ROOT / 'scripts').glob('*.py')):
+    # One script per figure in scripts/figures/, each ending in
+    # ``save(fig, 'name.svg')`` (fig_common.save); plus any older script that
+    # still saves through the plotting module.
+    scripts = sorted((ROOT / 'scripts').glob('*.py')) + sorted((ROOT / 'scripts' / 'figures').glob('*.py'))
+    for script in scripts:
         if script.name == 'sync_overleaf.py':
             continue
-        for name in re.findall(r"P\.save\(fig, FIG / '([^']+)'\)",
-                               script.read_text()):
+        text = script.read_text()
+        for name in (re.findall(r"P\.save\(fig, FIG / '([^']+)'\)", text)
+                     + re.findall(r"\bsave\(fig, '([^']+)'\)", text)):
             out[name] = script
     return out
 
