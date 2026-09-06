@@ -52,11 +52,10 @@ with plt.rc_context({'text.usetex': True}):
         rng = np.random.default_rng(3)
         finite_col = j == n - 1
         seconds = T_FINITE if finite_col else DURATION
-        # The finite sample is analysed as in the finite-sampling stage: the
-        # Welch window and the autocorrelation are a quarter of the recording.
-        signal = prepare(proc.simulate(seconds, FS, rng), FS,
-                        welch_win_s=seconds / 4 if finite_col else WELCH_WIN_S,
-                        nlags_s=seconds / 4 if finite_col else None)
+        # The finite sample is analysed exactly as the long recordings (same
+        # Welch window, same lags), so the duration is the only difference;
+        # see FINITE_DURATION in run_02_benchmark for why not the quarter rule.
+        signal = prepare(proc.simulate(seconds, FS, rng), FS, welch_win_s=WELCH_WIN_S)
         fit_psd = estimate(signal, 'arp_psd', robust=robust)
         fit_acf = estimate(signal, 'arp_acf', robust=robust)
 

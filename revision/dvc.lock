@@ -49,8 +49,8 @@ stages:
     deps:
     - path: scripts/run_02_benchmark.py
       hash: md5
-      md5: ebcd4089efe7e998ef04e059a566c7c0
-      size: 8115
+      md5: 14de24dff6d4cd9ad1037d02ae1d8b4b
+      size: 8582
     - path: tsmodes/__init__.py
       hash: md5
       md5: d41d8cd98f00b204e9800998ecf8427e
@@ -74,20 +74,20 @@ stages:
     outs:
     - path: results/benchmark_main.csv.gz
       hash: md5
-      md5: 89ea85e8a57492129d03b6760886250c
-      size: 784299
+      md5: 0d62a7b11abfd980a65ac39780e53af6
+      size: 781997
     - path: results/benchmark_main_summary.csv
       hash: md5
-      md5: d2cbfdb89c1929f5e3f1bddfc171d635
-      size: 9243
+      md5: 8605a3f980181cdc611ac8046ba4e850
+      size: 9254
     - path: results/benchmark_main_summary_integrated.csv
       hash: md5
-      md5: 69a4f923eb78b4ce671e550ebc2dd093
-      size: 9470
+      md5: 269ed6751924d944c55663d93daf0ad8
+      size: 9481
     - path: results/population_ar.csv
       hash: md5
-      md5: 3738ba59589383cb9f0693b7d5900c11
-      size: 25639
+      md5: 81bbb3ba6fe647ff6a1dde0b44000e1b
+      size: 25620
   fit_oscillations:
     cmd: python scripts/run_03_oscillations.py --rerun
     deps:
@@ -452,8 +452,8 @@ stages:
       nfiles: 10
     - path: results/benchmark_main.csv.gz
       hash: md5
-      md5: 89ea85e8a57492129d03b6760886250c
-      size: 784299
+      md5: 0d62a7b11abfd980a65ac39780e53af6
+      size: 781997
     - path: results/damped_grid.csv.gz
       hash: md5
       md5: fe0f386d473c4b23e38d312e8f02c5a2
@@ -480,8 +480,8 @@ stages:
       size: 578922
     - path: scripts/figures
       hash: md5
-      md5: a0bb6556c00cb0c6bbcc89ead93198be.dir
-      size: 57581
+      md5: 962ac2384fb7c7e38b469e981d675761.dir
+      size: 57534
       nfiles: 11
     - path: scripts/plot_figures.py
       hash: md5
@@ -526,8 +526,8 @@ stages:
       size: 70686
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: 9c991bd982cb65540048f8c6c571ce2a
-      size: 199342
+      md5: 13be38cc5094b65cca71f23481a0578c
+      size: 203232
     - path: figures/fig_bias.svg
       hash: md5
       md5: 91dbd2b6f266564ce8fe70053f71d986

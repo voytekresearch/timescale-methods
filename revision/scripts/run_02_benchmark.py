@@ -39,9 +39,17 @@ DURATION = 100.0
 N_REPS = 200
 WELCH_WIN_S = 4.0
 # The finite-sample column of the main figure: the same AR(1), recorded for
-# twenty timescales, with the analysis window a quarter of the recording as
-# in run_04_finite (prep_for).  Kept here so that the figure's every column
-# comes from one table and one constructed timescale.
+# twenty timescales and analysed with the same settings as the long
+# recordings, so that the duration is the only thing that changes.  The
+# quarter-of-the-recording rule of run_04_finite was used here before, and on
+# four seconds it is a different analysis, not a shorter one: 1 s Welch
+# segments put the first frequency bin at 1 Hz, above the 0.8 Hz knee of a
+# 200 ms process, so the spectral fits ran to the 20 s search bound in a
+# quarter of the repetitions; and 1 s of lags from 1 s segments reaches half
+# the segment, where dividing out the Hann taper amplifies the lag-domain
+# noise fivefold and the ACF fell below -0.7 in half the repetitions.  Kept
+# here so that the figure's every column comes from one table and one
+# constructed timescale.
 FINITE_DURATION = 20 * BENCH_TAU
 N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
 
@@ -162,8 +170,7 @@ def main():
         print(f'  ar1, {FINITE_DURATION:g} s (finite sample)', flush=True)
         rows.extend(run_condition(AR1(tau=BENCH_TAU), fs=FS, duration=FINITE_DURATION,
                                   n_reps=N_REPS, seed=13, n_jobs=N_JOBS,
-                                  prep_kwargs={'welch_win_s': FINITE_DURATION / 4,
-                                               'nlags_s': FINITE_DURATION / 4}))
+                                  prep_kwargs={'welch_win_s': WELCH_WIN_S}))
         df = pd.DataFrame(rows)
         df.to_csv(cache, index=False, compression='gzip')
     df = add_target_column(df)
