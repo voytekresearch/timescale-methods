@@ -6,11 +6,10 @@ Run on its own from any directory: python scripts/figures/fig_02.py
 import matplotlib.ticker as mticker
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
 
 from fig_common import (
-    AR2_OSC, ARModes, ARP, DATA_COLOR, FIT_COLOR, FIT_LW, FIT_STYLE, FS, P,
-    PHI_ARP, TAU, TEXT_WIDTH, phi_of_tau, save, sim_ar_process)
+    AR2_OSC, ARModes, ARP, DATA_COLOR, FS, P, PHI_ARP, TAU, TEXT_WIDTH,
+    phi_of_tau, save, sim_ar_process)
 
 # %%
 rng = np.random.default_rng(1)
@@ -55,19 +54,6 @@ acf_a = model_arp.acf(NL)
 psd_a = model_arp.psd(FREQS_A)
 sig_a = sim_ar_process(PHI_ARP, int(T_SHOW * FS), rng)
 LABEL_A = ARP.label.split(',')[0]                  # 'AR(7)' or 'AR(5)'
-# The bias itself: the best single exponential through the autocorrelation
-# and the best single Lorentzian through the spectrum, which is what an
-# AR(1) fit in either domain returns.  Neither follows the curve, and they
-# do not even agree with each other.
-tau_acf_a = curve_fit(lambda t, tau: np.exp(-t / tau), lags, acf_a, p0=[0.1])[0][0]
-ar1_acf_a = np.exp(-lags / tau_acf_a)
-(lp_a, fk_a), _ = curve_fit(lambda f, lp, fk: lp - np.log10(1 + (f / fk) ** 2),
-                            FREQS_A, np.log10(psd_a), p0=[np.log10(psd_a[0]), 1.0],
-                            bounds=([-np.inf, 1e-3], [np.inf, 1e3]))
-ar1_psd_a = 10 ** (lp_a - np.log10(1 + (FREQS_A / fk_a) ** 2))
-print(f'AR(1) fits to the {LABEL_A}: tau = {tau_acf_a * 1e3:.0f} ms from the ACF, '
-      f'{1e3 / (2 * np.pi * fk_a):.0f} ms from the PSD')
-
 # b) oscillations: the AR(2) stochastic oscillator of the benchmark, a 10 Hz
 #    rhythm whose envelope decays in 150 ms, 1.5 cycles.  Its exact
 #    autocorrelation is a damped cosine and its spectrum a peak twenty times
@@ -145,8 +131,6 @@ with plt.rc_context({'text.usetex': True}):
         ax = fig.add_subplot(gs[1, j])
         if j == 0:
             ax.plot(lags, acf_a, color=DATA_COLOR, lw=1.4, label=LABEL_A, zorder=2)
-            ax.plot(lags, ar1_acf_a, color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE,
-                    label='AR(1) fit', zorder=3)
         elif j == 1:
             ax.plot(lags, acf_b[:NL + 1], color=DATA_COLOR, lw=1.4, label='AR(2)', zorder=2)
         elif j == 2:
@@ -171,7 +155,6 @@ with plt.rc_context({'text.usetex': True}):
         ax = fig.add_subplot(gs[2, j])
         if j == 0:
             ax.loglog(FREQS_A, psd_a, color=DATA_COLOR, lw=1.2, zorder=2)
-            ax.loglog(FREQS_A, ar1_psd_a, color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, zorder=3)
         elif j == 1:
             ax.loglog(f_b, psd_b, color=DATA_COLOR, lw=1.2, zorder=2)
         elif j == 2:
