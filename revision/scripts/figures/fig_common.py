@@ -1,5 +1,5 @@
 """Everything the figure scripts share: paths, the print-size style, colours,
-the constructed AR(6) and a few helpers.
+the constructed AR(5) and a few helpers.
 
 Each ``fig_*.py`` imports what it needs from here and can be run on its own,
 from any directory::
@@ -68,13 +68,13 @@ FIT_STYLE = (0, (4, 2))
 FIT_LW = 1.6
 RANK_COLORS = ['#D55E00', '#009E73', '#CC79A7']
 
-# The constructed AR(6) read mode by mode in fig_modes and used as the
-# model-mismatch column of fig_bias: two relaxations of comparable importance
-# and two rhythms that ring for more than a cycle, all four visible in the
-# spectrum and in the autocorrelation.  It is the one AR(p) every simulation
-# in the paper uses (tsmodes.sims.ARP_MODES, the benchmark's ARpModes
-# process); PHI_ARP is its coefficients at FS.  The AR(2) oscillator of
-# fig_bias and the benchmark is its 10 Hz mode on its own (AR2_RHYTHM).
+# The constructed AR(5) read mode by mode in fig_modes and used as the
+# model-mismatch column of fig_bias: a 250 ms relaxation, a 5 Hz mode ringing
+# half a cycle and a 50 Hz rhythm ringing one cycle.  It is the one AR(p)
+# every simulation in the paper uses (tsmodes.sims.ARP_MODES, the benchmark's
+# ARpModes process); PHI_ARP is its coefficients at FS.  The AR(2) oscillator
+# of fig_bias and the benchmark is AR2_RHYTHM, a 10 Hz rhythm ringing 1.5
+# cycles.
 TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
                'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]
 ARP = ARpModes()

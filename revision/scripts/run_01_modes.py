@@ -20,20 +20,16 @@ ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / 'results'
 FS = 500.0
 
-# A ground-truth AR(6): two relaxations that both matter and two rhythms that
-# ring for more than a cycle, every one of them visible in the spectrum and in
-# the autocorrelation (why exactly these four: tsmodes.sims.ARP_MODES).
+# A ground-truth AR(5): a 250 ms relaxation, a 5 Hz mode ringing half a cycle
+# (a damped relaxation by the paper's rule) and a 50 Hz rhythm ringing one
+# cycle (tsmodes.sims.ARP_MODES).
 #
-# Two dominant relaxations are the point.  A single timescale cannot describe
+# Two non-rhythmic modes are the point.  A single timescale cannot describe
 # this process however it is estimated, so it is the case where reading the
 # model as modes is not a refinement but the only way to get an answer.
 #
-# Both rhythms have f*tau > 1, so tau is unambiguously the envelope decay and
-# cannot be misread as the period: the 10 Hz mode has a 100 ms period and a
-# 150 ms envelope; the 15 Hz mode is sustained, ringing six cycles.
-#
-# The relaxation knees sit at 1/(2 pi tau) = 1.6 and 5.3 Hz, both well inside
-# the band a 4 s Welch window resolves.
+# The relaxation knee sits at 1/(2 pi tau) = 0.64 Hz, inside the band a 4 s
+# Welch window resolves.
 # The same process as every other AR(p) simulation (tsmodes.sims.ARP_MODES).
 TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
                'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]

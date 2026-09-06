@@ -20,8 +20,7 @@ finite = pd.read_csv(RES / 'finite_sampling.csv.gz')
 finite = finite[(finite['process'] == 'ar1') & np.isclose(finite['duration'], T_FINITE)]
 
 # (process, label, table, robust fit?).  The AR(2) oscillator is the rhythm
-# of fig_bias b and the 10 Hz mode of the AR(6) on its own; the AR(6) is the
-# process of fig_modes.
+# of fig_bias b; the AR(5) is the process of fig_modes.
 COLS = [
     (AR1(tau=TAU), 'AR(1)', bench[bench['process'] == 'ar1'], False),
     (AR2_OSC, 'AR(2)\noscillator', bench[bench['process'] == 'ar2_damped'], True),

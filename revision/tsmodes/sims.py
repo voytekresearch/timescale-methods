@@ -455,24 +455,21 @@ class AR1PlusAR2(Process):
                 + (1 - w) * ar_acf(phi2, n)[lags.astype(int)])
 
 
-# The one higher-order AR(p) every simulation in the paper uses: the AR(6) of
-# the modes figure (its coefficients are PHI_ARP there).  Two relaxations, of
-# 100 and 30 ms, and two rhythms: 10 Hz ringing for 150 ms (1.5 cycles) and
-# 15 Hz ringing for 400 ms (six cycles).  The relaxation knees at 1.6 and
-# 5.3 Hz are both inside the band a 4 s Welch window resolves.
+# The one higher-order AR(p) every simulation in the paper uses: the AR(5) of
+# the modes figure (its coefficients are PHI_ARP there).  A 250 ms relaxation,
+# a 5 Hz mode whose envelope decays in 100 ms (half a cycle, so a damped
+# relaxation by the paper's rule rather than a rhythm) and a 50 Hz rhythm
+# ringing for 20 ms (one cycle).  The relaxation knee at 0.64 Hz is inside the
+# band a 4 s Welch window resolves.
 #
-# Why these four and not, say, rhythms an octave apart: in a pure AR(p) the
-# spectrum above a rhythm falls at least as f^-4, so a second rhythm an
-# octave higher carries a few percent of the variance at most and is
-# invisible in the autocorrelation however sharp it is made (a 40 Hz mode
-# ringing 2.4 cycles beside a 10 Hz one carried 2e-5).  Two rhythms both
-# visible in the autocorrelation need frequencies within about a factor of
-# 1.5 and a sustained upper rhythm; these carry 0.32 and 0.10 of the
-# variance, the 100 ms relaxation 0.69 and the 30 ms relaxation -0.10.
-ARP_MODES = ((0.100, 0.0), (0.150, 10.0), (0.400, 15.0), (0.030, 0.0))
+# Under the rule an estimator is asked to apply -- the most important
+# non-rhythmic mode -- the process's own timescale is the 5 Hz mode's 100 ms
+# envelope, which outranks the 250 ms relaxation in spectral importance
+# (0.46 against 0.24); that is what ``tau_true`` reports.
+ARP_MODES = ((0.250, 0.0), (0.020, 50.0), (0.100, 5.0))
 # The AR(2) oscillator of the benchmark and of the oscillations column of
-# fig_bias: the AR(6)'s 10 Hz mode on its own, as (tau, f).
-AR2_RHYTHM = ARP_MODES[1]
+# fig_bias, as (tau, f): a 10 Hz rhythm whose envelope decays in 150 ms.
+AR2_RHYTHM = (0.150, 10.0)
 
 
 @dataclass(kw_only=True)
@@ -488,7 +485,7 @@ class ARpModes(Process):
 
     ``modes`` is a list of ``(tau_seconds, freq_hz)``; a zero frequency gives a
     real pole, a non-zero one a conjugate pair.  The default is ``ARP_MODES``,
-    the AR(6) of the modes figure, so every AR(p) simulated in the paper is
+    the AR(5) of the modes figure, so every AR(p) simulated in the paper is
     the same process.
     """
 
@@ -502,7 +499,8 @@ class ARpModes(Process):
         # same definition an estimator would apply to a fitted model, rather
         # than the slowest relaxation by construction.  The two can differ (a
         # rhythm ringing less than a cycle is non-rhythmic by that definition);
-        # for the default modes they agree on the 100 ms relaxation.  Defining
+        # for the default modes they disagree: the rule picks the 5 Hz mode's
+        # 100 ms envelope over the 250 ms relaxation.  Defining
         # the target any other way would score estimators against a quantity
         # they were not asked for.
         self.tau_true = np.nan   # set below, once the poles are known

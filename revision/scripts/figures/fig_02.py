@@ -40,19 +40,19 @@ def ar1_acf(tau, n=N_ACF):
     return phi_of_tau(tau, FS) ** np.arange(n + 1)
 
 
-# a) model mismatch: the AR(6) of fig_modes, the same model object and the
+# a) model mismatch: the AR(5) of fig_modes, the same model object and the
 #    same exact spectrum as its panel b.
 model_arp = ARModes.from_phi(PHI_ARP, FS, offset=1.0, freqs=np.linspace(0, FS / 2, 1025))
 FREQS_A = np.logspace(np.log10(0.25), np.log10(FS / 2), 500)
 acf_a = model_arp.acf(NL)
 psd_a = model_arp.psd(FREQS_A)
 sig_a = sim_ar_process(PHI_ARP, int(T_SHOW * FS), rng)
-LABEL_A = ARP.label.split(',')[0]                  # 'AR(6)'
+LABEL_A = ARP.label.split(',')[0]                  # 'AR(5)'
 
-# b) oscillations: the AR(2) stochastic oscillator of the benchmark, the 10 Hz
-#    mode of the AR(6) in (a) on its own: a rhythm whose envelope decays in
-#    150 ms, 1.5 cycles.  Its exact autocorrelation is a damped cosine and its
-#    spectrum a peak twenty times its low-frequency plateau.
+# b) oscillations: the AR(2) stochastic oscillator of the benchmark, a 10 Hz
+#    rhythm whose envelope decays in 150 ms, 1.5 cycles.  Its exact
+#    autocorrelation is a damped cosine and its spectrum a peak twenty times
+#    its low-frequency plateau.
 acf_b = AR2_OSC.acf(np.arange(N_ACF + 1), FS)
 f_b, psd_b = acf_to_psd(acf_b, FS)
 sig_b = AR2_OSC.simulate(T_SHOW, FS, rng)
