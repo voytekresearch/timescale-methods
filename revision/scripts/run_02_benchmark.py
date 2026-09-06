@@ -1,7 +1,8 @@
 """Stage 2a: the core simulation benchmark.
 
-Four generative processes with closed-form spectra are estimated with all six
-timescale estimators at a long recording duration, so that everything seen here
+Five generative processes with closed-form spectra (the four of the main
+figure and the alternative AR(5)) are estimated with all six timescale
+estimators at a long recording duration, so that everything seen here
 is model mismatch rather than finite-sample noise.  A population (Yule-Walker
 on the true ACF) analysis quantifies how much AR structure each process needs
 in the limit of infinite data.
@@ -28,7 +29,7 @@ import pandas as pd
 from tsmodes.benchmark import run_condition, summarize
 from tsmodes.estimators import population_ar, is_divergence
 from tsmodes.modes import ARModes, ar_psd
-from tsmodes.sims import AR1, AR2_RHYTHM, AR2Damped, ARpModes, PowerLaw
+from tsmodes.sims import AR1, AR2_RHYTHM, AR2Damped, ARpModes, PowerLaw, arp_process
 
 ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / 'results'
@@ -50,17 +51,21 @@ N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
 #                    fig_bias.
 #   AR(p)            inside the model family but above first order.  Separates
 #                    model mismatch from mere order mismatch, which every
-#                    other failing process confounds.  Same AR(5) as the
-#                    modes figure, so the two describe one process.
+#                    other failing process confounds.  Same AR(7) as the
+#                    modes figure, so the two describe one process.  The
+#                    alternative AR(5) (tsmodes.sims.ARP_MODES_5) is simulated
+#                    alongside so the figures can draw either; it is not in
+#                    the main figure.
 #   power law        outside the family and with no characteristic timescale
 #                    at all, so there is nothing for an estimator to recover.
 PROCESSES = [
     AR1(tau=0.05),
     AR2Damped(tau=AR2_RHYTHM[0], f_osc=AR2_RHYTHM[1]),
     ARpModes(),
+    arp_process('5'),
     PowerLaw(d=0.45),
 ]
-SHORT_LABELS = ['AR(1)', 'AR(2) oscillator', ARpModes().label, 'Power law']
+SHORT_LABELS = ['AR(1)', 'AR(2) oscillator', ARpModes().label, arp_process('5').label, 'Power law']
 MAIN_PROCESSES = ['ar1', 'ar2_damped', 'arp_modes', 'power_law']
 MAX_ORDER = 30
 YLIM = (-3.1, 1.7)     # log10 seconds, for panel c; wide enough that

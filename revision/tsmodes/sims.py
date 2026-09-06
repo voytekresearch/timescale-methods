@@ -455,18 +455,23 @@ class AR1PlusAR2(Process):
                 + (1 - w) * ar_acf(phi2, n)[lags.astype(int)])
 
 
-# The one higher-order AR(p) every simulation in the paper uses: the AR(5) of
-# the modes figure (its coefficients are PHI_ARP there).  A 250 ms relaxation,
-# a 5 Hz mode whose envelope decays in 100 ms (half a cycle, so a damped
-# relaxation by the paper's rule rather than a rhythm) and a 50 Hz rhythm
-# ringing for 20 ms (one cycle).  The relaxation knee at 0.64 Hz is inside the
-# band a 4 s Welch window resolves.
-#
-# Under the rule an estimator is asked to apply -- the most important
-# non-rhythmic mode -- the process's own timescale is the 5 Hz mode's 100 ms
-# envelope, which outranks the 250 ms relaxation in spectral importance
-# (0.46 against 0.24); that is what ``tau_true`` reports.
-ARP_MODES = ((0.250, 0.0), (0.020, 50.0), (0.100, 5.0))
+# The higher-order AR(p) every simulation in the paper uses is ARP_MODES, the
+# AR(7) of the modes figure (its coefficients are PHI_ARP there): three
+# relaxations, of 200, 20 and 2 ms, and two rhythms, 10 Hz ringing for 150 ms
+# and 40 Hz for 60 ms.  The relaxation knees at 0.8 and 8 Hz are an order of
+# magnitude apart and both inside the band a 4 s Welch window resolves.
+ARP_MODES_7 = ((0.200, 0.0), (0.150, 10.0), (0.060, 40.0),
+               (0.020, 0.0), (0.002, 0.0))
+# The alternative, an AR(5): a 250 ms relaxation, a 5 Hz mode whose envelope
+# decays in 100 ms (half a cycle, so a damped relaxation by the paper's rule
+# rather than a rhythm) and a 50 Hz rhythm ringing for 20 ms.  Under the rule
+# an estimator is asked to apply -- the most important non-rhythmic mode --
+# its own timescale is the 5 Hz mode's 100 ms envelope, which outranks the
+# 250 ms relaxation in spectral importance.  The benchmark simulates it
+# alongside the AR(7), and the figure scripts draw either (TSMODES_ARP=5).
+ARP_MODES_5 = ((0.250, 0.0), (0.020, 50.0), (0.100, 5.0))
+ARP_VARIANTS = {'7': ARP_MODES_7, '5': ARP_MODES_5}
+ARP_MODES = ARP_MODES_7
 # The AR(2) oscillator of the benchmark and of the oscillations column of
 # fig_bias, as (tau, f): a 10 Hz rhythm whose envelope decays in 150 ms.
 AR2_RHYTHM = (0.150, 10.0)
@@ -485,21 +490,24 @@ class ARpModes(Process):
 
     ``modes`` is a list of ``(tau_seconds, freq_hz)``; a zero frequency gives a
     real pole, a non-zero one a conjugate pair.  The default is ``ARP_MODES``,
-    the AR(5) of the modes figure, so every AR(p) simulated in the paper is
-    the same process.
+    the AR(7) of the modes figure, so every AR(p) simulated in the paper is
+    the same process.  ``variant`` names an alternative in the result tables
+    (``'5'`` gives ``arp_modes_5``); ``arp_process('5')`` builds one.
     """
 
     modes: tuple = ARP_MODES
+    variant: str = None
 
     def __post_init__(self):
-        self.name = 'arp_modes'
+        self.name = 'arp_modes' if self.variant is None else f'arp_modes_{self.variant}'
         order = sum(1 if f == 0 else 2 for _, f in self.modes)
         self.label = f'AR({order}), {len(self.modes)} modes'
         # The target is the true model's own aperiodic timescale, under the
         # same definition an estimator would apply to a fitted model, rather
         # than the slowest relaxation by construction.  The two can differ (a
         # rhythm ringing less than a cycle is non-rhythmic by that definition);
-        # for the default modes they disagree: the rule picks the 5 Hz mode's
+        # for the default modes they agree on the 200 ms relaxation, and for
+        # the AR(5) variant they disagree: the rule picks the 5 Hz mode's
         # 100 ms envelope over the 250 ms relaxation.  Defining
         # the target any other way would score estimators against a quantity
         # they were not asked for.
@@ -535,6 +543,15 @@ class ARpModes(Process):
     def acf(self, lags, fs):
         lags = np.atleast_1d(np.asarray(lags))
         return ar_acf(self.phi(fs), int(np.max(lags)))[lags.astype(int)]
+
+
+def arp_process(choice='7'):
+    """The constructed AR(p) by variant: ``'7'`` is the paper's AR(7) (the
+    default ``ARpModes()``), ``'5'`` the alternative AR(5)."""
+    choice = str(choice)
+    if choice == '7':
+        return ARpModes()
+    return ARpModes(modes=ARP_VARIANTS[choice], variant=choice)
 
 
 @dataclass(kw_only=True)

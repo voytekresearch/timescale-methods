@@ -5,7 +5,8 @@
 
 Each figure is its own script (fig_01.py ... fig_06.py, fig_s1.py, fig_s2.py)
 that can be run or edited on its own; the shared style, colours and helpers
-live in scripts/figures/fig_common.py.  This runner is what the DVC
+live in scripts/figures/fig_common.py.  TSMODES_ARP=5 in the environment
+draws the alternative AR(5) in place of the paper's AR(7) (fig_common).  This runner is what the DVC
 ``plot_figures`` stage executes, so figures/ always holds what the scripts
 draw.
 """

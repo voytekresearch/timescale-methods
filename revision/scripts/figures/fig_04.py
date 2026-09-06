@@ -20,11 +20,12 @@ finite = pd.read_csv(RES / 'finite_sampling.csv.gz')
 finite = finite[(finite['process'] == 'ar1') & np.isclose(finite['duration'], T_FINITE)]
 
 # (process, label, table, robust fit?).  The AR(2) oscillator is the rhythm
-# of fig_bias b; the AR(5) is the process of fig_modes.
+# of fig_bias b; the AR(p) is the process of fig_modes, the AR(7) or, with
+# TSMODES_ARP=5, the AR(5) (both are in the benchmark table).
 COLS = [
     (AR1(tau=TAU), 'AR(1)', bench[bench['process'] == 'ar1'], False),
     (AR2_OSC, 'AR(2)\noscillator', bench[bench['process'] == 'ar2_damped'], True),
-    (ARP, ARP.label.replace(', ', ',\n'), bench[bench['process'] == 'arp_modes'], False),
+    (ARP, ARP.label.replace(', ', ',\n'), bench[bench['process'] == ARP.name], False),
     (AR1(tau=TAU), 'Finite sample', finite, False),
 ]
 METHODS = [('arp_acf', 'ACF'), ('arp_psd', 'PSD')]
@@ -97,8 +98,8 @@ with plt.rc_context({'text.usetex': True}):
         ax.plot(lags, fit_acf.params['height'] * ar_acf_fft(fit_acf.phi, nlags)
                 + fit_acf.params['acf_offset'], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-        ax.set_xlim(0, 0.3)
-        ax.set_ylim(-0.6, 1.05)
+        ax.set_xlim(None, 0.3)
+        ax.set_ylim(-1.05, 1.05)
         ax.set_yticks([0, 1])
         if j == 0:
             ax.set_ylabel('Autocorrelation')
@@ -145,7 +146,7 @@ with plt.rc_context({'text.usetex': True}):
         tau_axes.append(ax)      # every column keeps its own tick labels
 
     # Each column keeps its own y-range, covering the 10-90% whiskers of its
-    # two boxes.  The constructed timescales differ (50, 150 and 100 ms) and
+    # two boxes.  The constructed timescales differ (50, 150 and 200 ms) and
     # the spreads differ more, so one shared axis would flatten the AR(1)
     # boxes into lines; every column carries its own tick labels and its
     # dashed truth for the same reason.  The finite-sample column runs from a

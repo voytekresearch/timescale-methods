@@ -40,14 +40,14 @@ def ar1_acf(tau, n=N_ACF):
     return phi_of_tau(tau, FS) ** np.arange(n + 1)
 
 
-# a) model mismatch: the AR(5) of fig_modes, the same model object and the
+# a) model mismatch: the AR(p) of fig_modes, the same model object and the
 #    same exact spectrum as its panel b.
 model_arp = ARModes.from_phi(PHI_ARP, FS, offset=1.0, freqs=np.linspace(0, FS / 2, 1025))
 FREQS_A = np.logspace(np.log10(0.25), np.log10(FS / 2), 500)
 acf_a = model_arp.acf(NL)
 psd_a = model_arp.psd(FREQS_A)
 sig_a = sim_ar_process(PHI_ARP, int(T_SHOW * FS), rng)
-LABEL_A = ARP.label.split(',')[0]                  # 'AR(5)'
+LABEL_A = ARP.label.split(',')[0]                  # 'AR(7)' or 'AR(5)'
 
 # b) oscillations: the AR(2) stochastic oscillator of the benchmark, a 10 Hz
 #    rhythm whose envelope decays in 150 ms, 1.5 cycles.  Its exact
@@ -65,11 +65,20 @@ acf_c = sample_acf(sig_c, len(sig_c) - 1)
 f_c, psd_c = acf_to_psd(acf_c, FS)
 
 # d) dynamic timescales: an AR(1) whose coefficient rises over the recording,
-#    with evenly spaced windows and the theoretical AR(1) of each window
+#    with evenly spaced windows and the theoretical AR(1) of each window.
+#    The innovation is scaled by sqrt(1 - phi^2) so the process keeps unit
+#    variance as the timescale changes: with a fixed innovation the variance
+#    of an AR(1) grows as 1 / (1 - phi^2), seventeen-fold from 10 to 200 ms,
+#    and the slow end of the recording swamped the fast end once the trace
+#    was scaled to fit, hiding the change in timescale that the panel is
+#    about.  Only the timescale changes here, not the amplitude.  The
+#    timescale rises geometrically rather than linearly, so the recording
+#    spends as long at the fast end, where the texture of the trace changes
+#    most per millisecond of tau, as at the slow end.
 n_d = int(T_SHOW * FS)
-tau_t = np.linspace(0.010, 0.200, n_d)             # 10 ms -> 200 ms
+tau_t = np.geomspace(0.010, 0.200, n_d)            # 10 ms -> 200 ms
 phi_t = phi_of_tau(tau_t, FS)
-eps = rng.normal(size=n_d)
+eps = rng.normal(size=n_d) * np.sqrt(1.0 - phi_t ** 2)
 sig_d = np.zeros(n_d)
 for i in range(1, n_d):
     sig_d[i] = phi_t[i] * sig_d[i - 1] + eps[i]

@@ -1,5 +1,5 @@
 """Everything the figure scripts share: paths, the print-size style, colours,
-the constructed AR(5) and a few helpers.
+the constructed AR(p) and a few helpers.
 
 Each ``fig_*.py`` imports what it needs from here and can be run on its own,
 from any directory::
@@ -7,6 +7,12 @@ from any directory::
     python scripts/figures/fig_03.py
 
 ``plot_figures.py`` runs them all in order (the DVC ``plot_figures`` stage).
+
+The constructed AR(p) drawn by fig_bias, fig_modes and fig_benchmark is the
+paper's AR(7) unless ``TSMODES_ARP=5`` is set in the environment, which
+draws the alternative AR(5) instead (both are simulated by the benchmark)::
+
+    TSMODES_ARP=5 python scripts/plot_figures.py 2 3 4
 """
 # %%
 import os, sys, json, shutil, copy
@@ -33,8 +39,8 @@ from tsmodes import datasets as D
 from tsmodes.estimators import ESTIMATOR_LABELS, estimate, prepare, spectrum_acov
 from tsmodes.modes import (ARModes, ar_acf, ar_acf_fft, ar_psd, poles_to_ar,
                            psd_from_poles)
-from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARP_MODES, ARpModes,
-                          PowerLaw, sim_ar_process)
+from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARP_MODES, ARP_VARIANTS,
+                          ARpModes, PowerLaw, arp_process, sim_ar_process)
 from tsmodes.finite import phi_of_tau, tau_of_phi
 
 P.use_style()
@@ -68,16 +74,20 @@ FIT_STYLE = (0, (4, 2))
 FIT_LW = 1.6
 RANK_COLORS = ['#D55E00', '#009E73', '#CC79A7']
 
-# The constructed AR(5) read mode by mode in fig_modes and used as the
-# model-mismatch column of fig_bias: a 250 ms relaxation, a 5 Hz mode ringing
-# half a cycle and a 50 Hz rhythm ringing one cycle.  It is the one AR(p)
-# every simulation in the paper uses (tsmodes.sims.ARP_MODES, the benchmark's
-# ARpModes process); PHI_ARP is its coefficients at FS.  The AR(2) oscillator
-# of fig_bias and the benchmark is AR2_RHYTHM, a 10 Hz rhythm ringing 1.5
-# cycles.
+# The constructed AR(p) read mode by mode in fig_modes and used as the
+# model-mismatch column of fig_bias and the AR(p) column of fig_benchmark.
+# By default the paper's AR(7) (tsmodes.sims.ARP_MODES: two relaxations of
+# comparable importance an order of magnitude apart, two rhythms that ring
+# for more than a cycle, one fast relaxation that does not matter); with
+# TSMODES_ARP=5 the alternative AR(5) (ARP_MODES_5).  PHI_ARP is its
+# coefficients at FS.  The AR(2) oscillator of fig_bias and the benchmark is
+# AR2_RHYTHM, a 10 Hz rhythm ringing 1.5 cycles.
+ARP_CHOICE = os.environ.get('TSMODES_ARP', '7')
+if ARP_CHOICE not in ARP_VARIANTS:
+    raise SystemExit(f'TSMODES_ARP must be one of {sorted(ARP_VARIANTS)}, not {ARP_CHOICE!r}')
+ARP = arp_process(ARP_CHOICE)
 TRUE_MODES = [{'kind': 'relaxation' if freq == 0 else 'oscillatory',
-               'tau': tau, 'freq': freq} for tau, freq in ARP_MODES]
-ARP = ARpModes()
+               'tau': tau, 'freq': freq} for tau, freq in ARP.modes]
 PHI_ARP = ARP.phi(FS)
 AR2_OSC = AR2Damped(tau=AR2_RHYTHM[0], f_osc=AR2_RHYTHM[1])
 
