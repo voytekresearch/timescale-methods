@@ -141,7 +141,7 @@ def multitaper_psd(sig, fs, nw=4.0, n_tapers=None):
 
 
 def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
-            name='', detrend='constant', exclude_bands=(), welch_overlap=0.5,
+            name='', detrend=False, exclude_bands=(), welch_overlap=0.5,
             method='welch', nw=4.0):
     """Compute the PSD and ACF used by every estimator.
 
@@ -156,10 +156,22 @@ def prepare(sig, fs, welch_win_s=2.0, nlags_s=None, nlags=None, f_range=None,
     nlags_s : float, optional
         ACF lag range in seconds.  By default a fixed budget of ``N_LAGS``
         lags is used, which keeps the cost of ACF-domain fitting constant and
-        spans many timescales at any sampling rate.
+        spans many timescales at any sampling rate.  A longer range was
+        tried and rejected: on the AR(7) benchmark one second of lags at
+        500 Hz widened the lag-domain estimate (taper-corrected tail lags are
+        noisy) without moving its median.
     f_range : tuple, optional
         Frequency range used for spectral fitting.  Defaults to
         ``(1 / welch_segment_seconds, fs / 2)``.
+    detrend : False or str
+        Per-segment detrending passed to Welch's method.  The signal is
+        mean-centered as a whole, and removing the mean of every segment on
+        top of that acts as a high-pass at the segment's resolution: it takes
+        power out of the lowest bins, where a slow relaxation's knee sits.
+        On the AR(7) benchmark (200 ms relaxation, 4 s segments, 100 s) the
+        spectral AR(p) fit returned a median of 183 ms with per-segment
+        detrending and 197 ms without, the same as Burg's method, so the
+        default is no per-segment detrending.
     exclude_bands : sequence of (lo, hi)
         Frequency bands (e.g. line noise) removed before spectral fitting.
     """
@@ -797,6 +809,18 @@ def fit_ar_acf(lags, corrs, fs, order, guess=None, k_bound=K_BOUND,
             float(params[-2]), float(params[-1]), success)
 
 
+def acf_effective_n(lags, corrs):
+    """Effective number of independent lags for lag-domain order selection:
+    the number of lags divided by the 1/e lag.  Looser counts were tried on
+    the benchmark (dividing by the square root of the 1/e lag, by a quarter
+    of it, or counting every lag) and all of them over-fit even a plain
+    AR(1), returning orders of 4 to 10 and timescales a quarter of the
+    truth in a third of the repetitions."""
+    below = np.where(np.abs(corrs) < np.exp(-1.0))[0]
+    lag_e = float(lags[below[0]]) if len(below) else float(lags[-1])
+    return max(6, int(round((len(lags) - 1) / max(lag_e, 1.0))))
+
+
 def select_order_acf(lags, corrs, fs, orders, criterion='bic', **kwargs):
     """AR order selection in the ACF domain, mirroring :func:`select_order_psd`.
 
@@ -809,9 +833,7 @@ def select_order_acf(lags, corrs, fs, orders, criterion='bic', **kwargs):
     and a timescale of 13 ms against a truth of 50.  Dividing by the 1/e lag
     is the crudest defensible correction and is enough to stop it.
     """
-    below = np.where(np.abs(corrs) < np.exp(-1.0))[0]
-    lag_e = float(lags[below[0]]) if len(below) else float(lags[-1])
-    n = max(6, int(round((len(lags) - 1) / max(lag_e, 1.0))))
+    n = acf_effective_n(lags, corrs)
     scores, fits, tried = [], [], []
     previous = None
     since_best = 0
@@ -925,17 +947,17 @@ def est_ar1_acf(signal, robust=False, **kwargs):
 
 
 def est_arp_acf(signal, orders=None, criterion='bic', order=None,
-                max_lags=N_LAGS, robust=False, **kwargs):
+                max_lags=None, robust=False, **kwargs):
     """AR(p) autocorrelation form fit robustly to the ACF, order by BIC.
 
-    The fit uses at most ``max_lags`` lags.  Beyond a few multiples of the
-    slowest mode the autocorrelation carries no further information about the
-    model, and the transform length needed to evaluate an AR(p) autocorrelation
-    grows with the longest lag requested.
+    The fit uses every lag ``prepare`` produced unless ``max_lags`` caps it.
+    A fixed cap of 250 lags used to sit here, which silently discarded any
+    longer lag range asked for at preparation and, at 500 Hz, fit a 200 ms
+    relaxation from half a second of lags.
     """
     kwargs.setdefault('loss', loss_settings(robust, 'acf')[0])
     kwargs.setdefault('f_scale', loss_settings(robust, 'acf')[1])
-    keep = min(len(signal.lags), max_lags + 1)
+    keep = len(signal.lags) if max_lags is None else min(len(signal.lags), max_lags + 1)
     lags, corrs = signal.lags[:keep], signal.corrs[:keep]
     if order is None:
         top = int(np.clip(len(lags) // 20, 2, 20))

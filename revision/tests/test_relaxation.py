@@ -12,7 +12,7 @@ import pytest
 
 from tsmodes.estimators import (estimate, fit_ar_acf, fit_ar_psd, prepare,
                                 psd_fit_points)
-from tsmodes.modes import ARModes, ar_to_poles, poles_to_ar
+from tsmodes.modes import ARModes, ar_to_poles, group_poles, poles_to_ar
 from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped, PowerLaw,
                           sim_ar_process)
 
@@ -34,8 +34,11 @@ def _signal(proc, seed=0, duration=200.0):
 
 
 def _n_relaxation(phi):
-    poles = ar_to_poles(phi)
-    return sum(1 for p in poles if abs(p.imag) < 1e-8 and p.real > 0)
+    # Use the library's own grouping: a repeated real pole comes back from
+    # root finding as a conjugate pair with a tiny imaginary part, which is
+    # still a relaxation mode to report.
+    return sum(1 for grp in group_poles(ar_to_poles(phi))
+               if len(grp) == 1 and grp[0].real > 0)
 
 
 # ---------------------------------------------------------------------------

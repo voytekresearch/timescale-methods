@@ -134,8 +134,7 @@ with plt.rc_context({'text.usetex': True}):
                 box.set(facecolor=colour, alpha=0.6, lw=0.7, edgecolor=colour)
         truth = proc.tau_true * 1e3
         if np.isfinite(truth):
-            ax.axhline(truth, color=P.MODE_COLORS['oscillatory'] if proc.name in OSCILLATORY_TRUTH else 'k',
-                    ls='--', lw=1.1)
+            ax.axhline(truth, color='k', ls='--', lw=1.1)
         ax.set_yscale('log')
         ax.set_xlim(-0.7, 1.7)
         ax.set_xticks([0, 1])
@@ -144,7 +143,7 @@ with plt.rc_context({'text.usetex': True}):
 
         if j == 0:
             ax.set_ylabel('Estimated $\\tau$ (ms)')
-            ax.legend(handles=[proxy(color='k', ls='--', lw=1.1, label='true $\\tau$')],
+            ax.legend(handles=[proxy(color='k', ls='--', lw=1.1, label='True $\\tau$')],
                       loc='upper right', fontsize=6, handlelength=1.8)
             P.panel_label(ax, 'd', dx=-0.32, dy=1.14, fontsize=9)
         tau_axes.append(ax)      # every column keeps its own tick labels
@@ -158,8 +157,12 @@ with plt.rc_context({'text.usetex': True}):
     lo, hi = max(np.min(vals) / 1.5, 5.0), np.max(vals) * 1.5
     tau_axes[0].set_ylim(lo, hi)
     # Under a decade or two a LogLocator names almost nothing, so the round
-    # values inside the range are named outright.
-    ticks = [t for t in (5, 10, 20, 50, 100, 200, 500, 1000, 2000) if lo <= t <= hi]
+    # values inside the range are named outright.  Once the range spans more
+    # than about three decades (the finite-sample column's spectral fits reach
+    # the 20 s bound of the search range) only the decades are named, or the
+    # labels overlap.
+    steps = (1, 2, 5) if np.log10(hi / lo) < 3.0 else (1,)
+    ticks = [m * 10 ** k for k in range(0, 6) for m in steps if lo <= m * 10 ** k <= hi]
     for ax in tau_axes:
         ax.yaxis.set_major_locator(mticker.FixedLocator(ticks))
         ax.yaxis.set_minor_locator(mticker.NullLocator())

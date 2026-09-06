@@ -86,8 +86,16 @@ def poles_to_ar(poles):
     return np.real(phi)
 
 
-def group_poles(poles, tol=1e-8):
+def group_poles(poles, tol=1e-6):
     """Group poles into real poles and complex-conjugate pairs.
+
+    A pole whose imaginary part is below ``tol`` (relative to its modulus) is
+    real.  The tolerance is loose on purpose: a fitted model can put two real
+    poles at the same radius, and root finding splits a repeated root into a
+    conjugate pair with an imaginary part of order the square root of the
+    coefficient round-off (about 5e-7 for a sixth-order model with poles near
+    the unit circle).  An angle of 1e-6 rad is a period of hours at any
+    sampling rate used here, so nothing that could be a rhythm is lost.
 
     Returns
     -------
@@ -764,6 +772,16 @@ class ARModes:
         # pair ringing 0.57 of a cycle.  Preferring the real pole reported the
         # throwaway.
         cand = [m for m in finite if m.n_cycles < 1.0]
+        # A conjugate pair ringing less than a cycle at the frequency of a
+        # rhythmic pair is the other half of that rhythm, not a relaxation.
+        # A lag-domain fit to the AR(7) benchmark splits its 10 Hz rhythm into
+        # pairs at 10.0 Hz (1.25 cycles) and 10.2 Hz (0.57 cycles), and the
+        # second, being more important than the 200 ms real pole, was reported
+        # as a 56 ms relaxation in a quarter of the repetitions.  A pair within
+        # half an octave of a rhythmic pair is therefore not a candidate.
+        rhythmic = [m.freq for m in finite if m.kind == 'oscillatory' and m.n_cycles >= 1.0]
+        cand = [m for m in cand if m.kind != 'oscillatory'
+                or not any(abs(np.log2(m.freq / f)) < 0.5 for f in rhythmic if f > 0)]
         if not cand:
             # Every mode is a genuine rhythm, so the model has no aperiodic
             # timescale and we say so.  Substituting a rhythm's envelope here
