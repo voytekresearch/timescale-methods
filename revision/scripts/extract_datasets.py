@@ -31,13 +31,17 @@ HC3_EEG = EIG / 'data' / 'hc-3' / 'pin01-11-04' / '11-05_0-06-51' / '11-05_0-06-
 OUT = Path(__file__).resolve().parents[1] / 'data'
 
 MAX_SECONDS = 480.0
-MAX_TRACES = 8
+# Traces per recording: channels, units or participants, whichever the
+# recording offers.  More traces per recording, and more participants where
+# the source has them, so that the spread across traces in fig_realdata e is
+# a statement about a population rather than about eight channels.
+MAX_TRACES = 24
 
 ABIDE_ROOT = ('https://s3.amazonaws.com/fcp-indi/data/Projects/ABIDE_Initiative'
               '/Outputs/cpac/nofilt_noglobal/rois_ho')
 # UM_1 has the longest resting runs in ABIDE (296 volumes at TR = 2 s).
-ABIDE_SUBJECTS = ['UM_1_0050327', 'UM_1_0050329', 'UM_1_0050330',
-                  'UM_1_0050331', 'UM_1_0050332', 'UM_1_0050333']
+# Twenty participants, two precuneus traces each.
+ABIDE_SUBJECTS = [f'UM_1_00{i}' for i in range(50272, 50292)]
 
 
 def download_to_cache(url, out_path):
@@ -73,9 +77,29 @@ def crop(data, fs, max_seconds=MAX_SECONDS, max_traces=MAX_TRACES):
 
 # ---------------------------------------------------------------------------
 
-def extract_lemon(subject='sub-032302',
+LEMON_SUBJECTS = ('sub-032301', 'sub-032302', 'sub-032303', 'sub-032304',
+                  'sub-032309')
+
+
+def extract_lemon(subjects=LEMON_SUBJECTS,
                   channels=('O1', 'Oz', 'O2', 'POz'), marker='S210',
-                  max_blocks=3):
+                  max_blocks=1):
+    """EEG: the longest eyes-closed block of every cached LEMON participant,
+    four posterior channels each, cropped to a common length."""
+    blocks = [_lemon_subject(s, channels, marker, max_blocks) for s in subjects]
+    fs = blocks[0][1]
+    length = min(X.shape[1] for X, _ in blocks)
+    X = np.concatenate([X[:, :length] for X, _ in blocks], axis=0)
+    save('human_lemon_alpha', X, fs, {
+        'species': 'human', 'modality': 'scalp EEG', 'region': 'posterior',
+        'state': 'eyes-closed rest', 'band_hz': [8, 13], 'line_noise_hz': 50,
+        'subject': list(subjects), 'channels': list(channels),
+        'source': 'MPI-LEMON raw resting EEG (10.15387/fcp_indi.mpi_lemon)',
+        'trace_definition': 'posterior channel x participant, longest eyes-closed block',
+        'label': 'Human EEG (LEMON): posterior alpha'})
+
+
+def _lemon_subject(subject, channels, marker, max_blocks):
     import mne
     archive = DATA_ROOT / 'lemon' / f'{subject}.tar.gz'
     extract_dir = archive.with_suffix('').with_suffix('')
@@ -120,14 +144,7 @@ def extract_lemon(subject='sub-032302',
     for beg, _ in segments:
         i0 = int(beg * fs)
         traces.append(raw.get_data(start=i0, stop=i0 + length))
-    X = np.concatenate(traces, axis=0)
-    save('human_lemon_alpha', X, fs, {
-        'species': 'human', 'modality': 'scalp EEG', 'region': 'posterior',
-        'state': 'eyes-closed rest', 'band_hz': [8, 13], 'line_noise_hz': 50,
-        'subject': subject, 'channels': list(channels),
-        'source': 'MPI-LEMON raw resting EEG (10.15387/fcp_indi.mpi_lemon)',
-        'trace_definition': 'eyes-closed block x posterior channel',
-        'label': 'Human EEG (LEMON): posterior alpha'})
+    return np.concatenate(traces, axis=0), fs
 
 
 def extract_cole(condition='B'):
@@ -175,7 +192,7 @@ def extract_ssvep(subject='01', channel='Oz', trial_type='stim/12hz'):
         'label': 'Human EEG: 12 Hz SSVEP'})
 
 
-def extract_macaque(channels=range(16, 24)):
+def extract_macaque(channels=range(16, 16 + MAX_TRACES)):
     from scipy.io import loadmat
     zp = DATA_ROOT / 'neurotycho' / '20100805S1_Visual-Grating_K2_mat_ECoG128-Eye.zip'
     with zipfile.ZipFile(zp) as zf:
@@ -212,7 +229,7 @@ def extract_rat_septum(channels=range(0, 8)):
         'label': 'Rat LFP: medial septal theta'})
 
 
-def extract_hc3(channels=range(0, 8)):
+def extract_hc3(channels=range(0, MAX_TRACES)):
     root = ET.parse(HC3_EEG.with_suffix('.xml')).getroot()
     n_channels = int(root.findtext('./acquisitionSystem/nChannels'))
     fs = float(root.findtext('./fieldPotentials/lfpSamplingRate'))
@@ -231,7 +248,7 @@ def extract_hc3(channels=range(0, 8)):
 
 
 def extract_neuropixels(probe_description='probeA', region='VISam',
-                        max_channels=8):
+                        max_channels=MAX_TRACES):
     import pandas as pd
     from allensdk.brain_observatory.ecephys.ecephys_project_cache import \
         EcephysProjectCache

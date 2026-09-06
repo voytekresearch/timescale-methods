@@ -177,8 +177,8 @@ stages:
     deps:
     - path: data
       hash: md5
-      md5: 4ed94dd9f23792d131d8efc82ff917a0.dir
-      size: 47498033
+      md5: 7e37323c2f0db252c948b5886c88cc11.dir
+      size: 119550945
       nfiles: 10
     - path: scripts/run_05_real_data.py
       hash: md5
@@ -207,23 +207,23 @@ stages:
     outs:
     - path: results/real_data_fits.csv
       hash: md5
-      md5: 0fcc47367ffb1d2073d1a4391cd8675e
-      size: 209732
+      md5: a23efe1b6d63fbd6c832a35e60fb3bdd
+      size: 579051
     - path: results/real_data_modes.csv
       hash: md5
-      md5: 3236fbfd753a65ccecf9a4269e44d17a
-      size: 130452
+      md5: 525046a3cef609d528ec7776e449b4ae
+      size: 355205
     - path: results/real_data_summary.csv
       hash: md5
-      md5: 1ff8f9beb43b56d9a66dbe443cf9c238
-      size: 4593
+      md5: 1d0525a32f4291951e1889c41974de19
+      size: 4775
   fit_truncation:
     cmd: python scripts/run_06_empirical_truncation.py --rerun
     deps:
     - path: data
       hash: md5
-      md5: 4ed94dd9f23792d131d8efc82ff917a0.dir
-      size: 47498033
+      md5: 7e37323c2f0db252c948b5886c88cc11.dir
+      size: 119550945
       nfiles: 10
     - path: scripts/run_06_empirical_truncation.py
       hash: md5
@@ -256,16 +256,16 @@ stages:
     outs:
     - path: results/empirical_stability_requirements.csv
       hash: md5
-      md5: 3f2bd8ab7280f4e24cd12540709143c1
-      size: 5640
+      md5: f33fa70191fb121f7d59e51bebad0462
+      size: 5624
     - path: results/empirical_truncation.csv.gz
       hash: md5
-      md5: 4f5fac2a44f021fb88627f3a1b2dabcc
-      size: 907826
+      md5: 9ff4f4e81ba4ba74b2d694982eb16be1
+      size: 940950
     - path: results/empirical_truncation_summary.csv
       hash: md5
-      md5: e6498d6d2b063b9a29107fb553b5b03e
-      size: 61946
+      md5: cfe5c9e4ce7fda67d87e49a17f9e94f8
+      size: 62179
   plot_modes:
     cmd: python scripts/run_01_modes.py --figures-only
     deps:
@@ -447,8 +447,8 @@ stages:
     deps:
     - path: data
       hash: md5
-      md5: 4ed94dd9f23792d131d8efc82ff917a0.dir
-      size: 47498033
+      md5: 7e37323c2f0db252c948b5886c88cc11.dir
+      size: 119550945
       nfiles: 10
     - path: results/benchmark_main.csv.gz
       hash: md5
@@ -460,8 +460,8 @@ stages:
       size: 173060
     - path: results/empirical_truncation_summary.csv
       hash: md5
-      md5: e6498d6d2b063b9a29107fb553b5b03e
-      size: 61946
+      md5: cfe5c9e4ce7fda67d87e49a17f9e94f8
+      size: 62179
     - path: results/finite_sampling.csv.gz
       hash: md5
       md5: 9d2101aacf346b8e6496e18d2e47448a
@@ -476,8 +476,8 @@ stages:
       size: 473823
     - path: results/real_data_fits.csv
       hash: md5
-      md5: 0fcc47367ffb1d2073d1a4391cd8675e
-      size: 209732
+      md5: a23efe1b6d63fbd6c832a35e60fb3bdd
+      size: 579051
     - path: scripts/figures
       hash: md5
       md5: 6bf1287f784f62b32deee24ac1c9ae1d.dir
@@ -518,8 +518,8 @@ stages:
       size: 108667
     - path: figures/figS_windows.svg
       hash: md5
-      md5: 2709faa6e95f61b91ad828003b6cec7e
-      size: 88305
+      md5: f4d75131a7635a60995b6c6ae2f1b339
+      size: 88706
     - path: figures/fig_ar1.svg
       hash: md5
       md5: 60b038e3db1e40316bb5ab2a5daf32ee
@@ -542,5 +542,5 @@ stages:
       size: 97931
     - path: figures/fig_realdata.svg
       hash: md5
-      md5: 3d4e874c61a703652ae3d5667370f113
-      size: 312332
+      md5: 08937f9d5ece6b0a7fb4a8f124c06132
+      size: 309081
