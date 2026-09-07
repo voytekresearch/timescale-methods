@@ -1,0 +1,20 @@
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Windowing.} For the AR($p$) spectral estimate: the window duration, in units of the estimated timescale, beyond which the median estimate stays within 20\% of its value in the longest window, and the median estimate in the shortest window relative to the longest. The remaining columns give, for each estimator, the spread of estimates across the longest windows divided by the AR(1) sampling bound of eq. \ref{eq:finite} at that duration.}
+\label{tab:s_windows}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Recording & $T/\hat\tau$ to 20\% & Shortest/longest & AR(1), time & AR(1), ACF & AR(1), PSD & AR($p$), ACF & AR($p$), PSD \\
+\midrule
+Human fMRI & 42 & 0.84 & 6 & 7 & 6 & 7 & 5 \\
+Human EEG & 563 & 0.29 & 4 & 23 & 22 & 20 & 12 \\
+Human MEG & 2316 & 0.47 & 16 & 44 & 34 & 22 & 19 \\
+Human ECoG & 320 & 0.44 & 5 & 17 & 10 & 15 & 8 \\
+Macaque ECoG & 534 & 0.60 & 17 & 18 & 23 & 33 & 30 \\
+Mouse LFP & 1750 & 0.29 & 5 & 6 & 5 & 8 & 8 \\
+Mouse spikes & 136 & 0.13 & 24 & 11 & 15 & 7 & 14 \\
+Rat LFP & 1784 & 0.28 & 19 & 20 & 18 & 11 & 18 \\
+\bottomrule
+\end{tabular}
+\end{table}

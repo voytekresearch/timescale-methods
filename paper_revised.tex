@@ -231,25 +231,27 @@ One major limitation is that our simulations are stationary, while non-stationar
 
 \subsection{Estimators}
 
-Four estimators were compared: AR(1)-PSD, AR($p$)-PSD, AR(1)-ACF, and AR($p$)-ACF. They differ in the domain in which they are fit and in model order, while sharing all other steps. Two time-domain estimators, a least-squares regression of $x_t$ on $x_{t-1}$ for AR(1) and Burg's method \cite{burg_maximum_1975} for AR($p$), were run alongside them and are reported in the Supplement. Each estimator uses the same mean-centered signal and Welch PSD \cite{welch_use_1967}, so differences between estimators cannot be attributed to preprocessing. In the autocorrelation domain, the model is $A\,\rho_p(k) + B$, where $\rho_p$ is the exact AR($p$) autocorrelation, $A$ accounts for a white-noise floor at lag zero, and $B$ is a constant offset. For $p=1$, this reduces to the exponential-plus-offset model used in prior work \cite{murray_hierarchy_2014}. In the spectral domain, the model is eq. \ref{eq:arp_psd} with a free scale and is fit to $\log_{10}$ power, following spectral parameterization methods \cite{donoghue_parameterizing_2020}.
+Four estimators were compared: AR(1)-PSD, AR($p$)-PSD, AR(1)-ACF, and AR($p$)-ACF. They differ in the domain in which they are fit and in model order, while sharing all other steps. Two time-domain estimators, a least-squares regression of $x_t$ on $x_{t-1}$ for AR(1) and Burg's method \cite{burg_maximum_1975} for AR($p$), were run alongside them and are reported in \tabpanel{tab:s_benchmark}. Each estimator uses the same mean-centered signal and Welch PSD \cite{welch_use_1967}, so differences between estimators cannot be attributed to preprocessing. In the autocorrelation domain, the model is $A\,\rho_p(k) + B$, where $\rho_p$ is the exact AR($p$) autocorrelation, $A$ accounts for a white-noise floor at lag zero, and $B$ is a constant offset. For $p=1$, this reduces to the exponential-plus-offset model used in prior work \cite{murray_hierarchy_2014}. In the spectral domain, the model is eq. \ref{eq:arp_psd} with a free scale and is fit to $\log_{10}$ power, following spectral parameterization methods \cite{donoghue_parameterizing_2020}.
 
 \subsection{Autocorrelation}
 
-Every estimator was fit to the same data. The PSD is the Welch estimate over the analysis band, and the ACF is the inverse Fourier transform of that PSD. This rule was applied to every signal, simulated or recorded: for the simulations the band is the full range of the Welch estimate, and for the recordings it is the fit band given under Preprocessing. The raw sample autocorrelation was not used, because it contains what the spectral fit excludes, drift below the band and line noise within it, so the two domains would be fit to different signals. Frequency bins excluded as line noise were filled by log-linear interpolation between neighboring bins rather than set to zero, so that the notches do not ring in the lag domain.
+Every estimator was fit to the same data. The PSD is the Welch estimate over the analysis band, and the ACF is the inverse Fourier transform of that PSD. This rule was applied to every signal, simulated or recorded: for the simulations the band is the full range of the Welch estimate, and for the recordings it is the fit band. The raw sample autocorrelation was not used, because it contains what the spectral fit excludes, drift below the band and line noise within it, so the two domains would be fit to different signals. Frequency bins excluded as line noise were filled by log-linear interpolation between neighboring bins rather than set to zero, so that the notches do not ring in the lag domain.
 
 Welch's method tapers each segment with a Hann window, so the ACF obtained from it is the true ACF multiplied by the autocorrelation of the taper, which falls from one at lag zero to 0.66 at a quarter of the segment length. The ACF was divided by this factor, and lags at which the factor is below 0.2 were discarded. Fitted models were converted to the lag domain in the same way: the model spectrum was evaluated on the same frequency grid, restricted to the same band, and inverse transformed (\figpanel{fig:realdata}{c}). The ACF components in \figpanel{fig:realdata}{d} were obtained by converting the spectrum of each mode separately, so the components sum to the model's ACF.
 
-\subsection{Robust Regression}
+\subsection{Optimization}
 
-Robust (soft-L1) regression was used only in the spectral domain and only when the signal contained a rhythm: in simulation, for the AR(2) oscillator and the added sinusoid; and in the recordings, for every dataset. A sustained sinusoid occupies a few spectral bins, so it can be down-weighted as an outlier in the PSD rather than modeled. A broadband rhythm is not an outlier, and the AR(2) oscillator was recovered under this loss (Results). In the ACF, a rhythm affects every lag, so down-weighting large residuals removes the fit rather than the rhythm, and the lag-domain fits used ordinary least squares.
+Both the autocorrelation and spectral fits were optimized over reflection coefficients rather than AR coefficients. This was performed to ensure a stationary model, all parameters are of order one, and the fit cannot enter regions where mode timescales are undefined. The lag-domain fit was started from several initial models and the lowest-cost solution kept, because its objective is non-convex when a rhythm is present from harmonics. The spectral fit was started from a Yule-Walker estimate.
+
+The spectral fits used a soft-L1 loss, which down-weights frequency bins that the model misses by a wide margin. This loss is a holdover from fitting AR(1) models in the presence of oscillations, where the peak has to be treated as an outlier. It is not needed here, because the AR($p$) model fits the rhythm rather than avoiding it, and the AR(2) oscillator was recovered with the loss in place (\tabpanel{tab:s_benchmark}). It was kept as a safeguard against narrow residual peaks, such as line-noise harmonics that the exclusion bands do not fully cover. In the ACF, a rhythm affects every lag rather than a few points, so the lag-domain fits used ordinary least squares.
 
 \subsection{Constraints}
 
-Both the autocorrelation and spectral fits were optimized over reflection coefficients rather than AR coefficients. This was performed to ensure a stationary model, all parameters are of order one, and the fit cannot enter regions where mode timescales are undefined. The lag-domain fit was started from several initial models and the lowest-cost solution kept, because its objective is non-convex when a rhythm is present; the spectral fit was started from a Yule-Walker estimate.
+Two constraints were applied because the fitted model is used to read off a timescale.
 
-Two additional constraints were applied because the model is used to measure a timescale. First, the model must contain a relaxation mode. A converged AR($p$) fit can place every pole in a conjugate pair, leaving no relaxation timescale to report. We therefore factored one real pole out of the characteristic polynomial, $A(z^{-1}) = (1 - a z^{-1})A_{\mathrm{rest}}(z^{-1})$ with $0 < a < 1$, and parameterized the remainder using reflection coefficients. This constraint costs one order and is applied at every order, so BIC selects order three for an AR(2) oscillator.
+First, every model must contain at least one real pole. A fit can otherwise place all of its poles in conjugate pairs, which may describe the data well but leaves no relaxation time to report. One real pole was therefore factored out of the characteristic polynomial, $A(z^{-1}) = (1 - a z^{-1})A_{\mathrm{rest}}(z^{-1})$ with $0 < a < 1$, and the remainder was parameterized by reflection coefficients. This costs one order, so BIC selects order three for an AR(2) oscillator (\tabpanel{tab:s_benchmark}).
 
-Second, the reported aperiodic timescale is the most important mode among those that decay before completing one cycle, $f\tau < 1$. A real pole has $f = 0$ and always qualifies. A conjugate pair qualifies when its envelope decays faster than its period, unless its frequency lies within half an octave of a rhythmic pair with $f\tau \ge 1$: a fit can describe one rhythm with a sharp pair and a broad pair at the same frequency, and the broad pair then sets the bandwidth of the rhythm rather than an aperiodic decay. The required real pole is often not the reported mode. In the mouse LFP, for example, the fit to the median spectrum placed the required real pole at 0.6 ms with negligible importance, and the aperiodic structure was a 71 ms conjugate pair at 6 Hz with $f\tau = 0.44$. Across the six field-potential recordings, the reported mode was such a pair in 128 of 136 traces.
+Second, when a fit is summarized by a single aperiodic timescale, as in the AR(7) column of \figpanel{fig:benchmark}{}, one mode has to be chosen. Modes were divided into rhythms and decays by whether the envelope outlasts one cycle. A mode with $f\tau \geq 1$ is a rhythm. A mode with $f\tau < 1$ is a decay; this includes every real pole, for which $f = 0$, and any conjugate pair that dies out within one period. The aperiodic timescale is the most important decay. A pair within half an octave of a rhythm was not eligible, because a fit sometimes describes one rhythm with two pairs, a sharp one for the peak and a broad one for its skirts, and the broad pair belongs to the rhythm. The required real pole is not necessarily the chosen mode. For the recordings, \figpanel{fig:realdata}{} reports the modes individually, ranked by importance; the aperiodic mode under this rule is given in \tabpanel{tab:s_modes}, and in the field-potential recordings it was usually a broad conjugate pair rather than the real pole.
 
 \subsection{Model Order}
 
@@ -267,23 +269,23 @@ The factorization applies to the transfer function and does not decompose the si
 \begin{align}
 \gamma(k) = \sum_j A_j \lambda_j^{\,k}, \label{eq:acfmodes}
 \end{align}
-so after grouping conjugate terms, the autocorrelation of any AR($p$) process is a sum of exponential decays and damped cosines, one per mode. The product and sum forms are the factored and partial-fraction representations of the same rational function. The weights $A_j$ are determined by the poles and are not fitted separately. Unit tests check that the mode components sum back to the model's spectrum and ACF to within one part in $10^7$.
+so after grouping conjugate terms, the autocorrelation of any AR($p$) process is a sum of exponential decays and damped cosines, one per mode. The product and sum forms are the factored and partial-fraction representations of the same rational function. The weights $A_j$ are determined by the poles and are not fitted separately.
 
 \subsection{Mode Importance}
 
-Let $g_k(f)$ denote the log of the $k$th pole factor in eq. \ref{eq:factor}. The model log spectrum is $\log \sigma^2 - \sum_k g_k(f)$, so each mode adds its own term to the log spectrum. Deleting mode $k$ and refitting the overall scale therefore leaves a residual equal to $g_k(f)$ minus its mean over the fit band. We define the importance of a mode as the root-mean-square of this residual in $\log_{10}$ power, $\mathrm{sd}_f[g_k]/\ln 10$. Importance measures how much the log spectrum changes when the mode is removed; it is not a share of variance. The 40 Hz mode in \figpanel{fig:modes}{}, for example, ranks second in importance but carries $2 \times 10^{-5}$ of the variance.
+The pole factors multiply in the PSD (eq. \ref{eq:factor}), so on a logarithmic power axis each mode contributes its own additive term, $g_k(f)$, the log power of its factor (for a conjugate pair, of both factors together). Removing a mode from the model changes the log spectrum by $g_k(f)$, up to an overall scale. The importance of a mode was defined as the standard deviation of $g_k(f)$ across the fit band, in $\log_{10}$ power: the amount by which the shape of the model spectrum changes when that mode is removed. Modes were ranked by importance, and the three most important modes of each trace are the ones shown in \figpanel{fig:realdata}{}. Importance describes the shape of the spectrum, not a share of the variance. The 40 Hz mode in \figpanel{fig:modes}{}, for example, ranks second although it contributes almost nothing to the variance.
 
-The dominant modes are the smallest subset that reproduces the fitted log spectrum with $R^2 \ge 0.99$. Because the modes add in log power, the error of any subset is a quadratic form in the dropped modes, so every subset was evaluated exactly (models with more than 14 modes were searched greedily). The count depends on the cutoff: at $R^2 \ge 0.90$ the field-potential recordings needed 1 to 6 modes, at $0.95$ 6 to 11, and at $0.99$ 7 to 11 (medians across traces). We report the strictest cutoff. The three modes shown in \figpanel{fig:realdata}{} are the three most important resolvable modes of each trace.
+The number of modes a fit needs was measured as the smallest set of modes that reproduces the fitted log spectrum with $R^2 \geq 0.99$, found by searching over subsets. The count at three cutoffs is given in \tabpanel{tab:s_modes}.
 
-For the recordings, a mode was reported only if the analysis band could resolve its timescale. A mode with a timescale longer than $1/(2\pi f_{\mathrm{lo}})$, where $f_{\mathrm{lo}}$ is the lower edge of the fit band, has its knee below the band, so its timescale is extrapolated beyond the data. These near-unit-root poles report timescales longer than the recording and have high importance because removing them changes the lowest frequencies. This criterion removed 8\% of fitted spectral modes. An oscillatory mode was counted as detected only if its frequency fell within the fit band.
+For the recordings, a mode was reported only if the fit band could resolve its timescale. A mode with $\tau > 1/(2\pi f_{\mathrm{lo}})$, where $f_{\mathrm{lo}}$ is the lower edge of the band, has its knee below the band, so its timescale is an extrapolation rather than a measurement. The fraction of modes dropped by this rule is given in \tabpanel{tab:s_modes}. An oscillatory mode was counted as detected only if its frequency fell within the fit band.
 
 \subsection{Simulations}
 
-Five processes were simulated in the benchmark, each with a closed-form PSD and ACF, at 500 Hz for 100 s with 200 repetitions: an AR(1) process, an AR(2) oscillator, an AR(7) process, an alternative AR(5) process, and a power-law process. The AR(1), AR(2) and AR(7) processes were constructed with a 200 ms timescale so that the columns of \figpanel{fig:benchmark}{} share one axis. AR(1) with $\tau = 200$ ms served as the positive control. The AR(2) oscillator has poles at $|\lambda| e^{\pm i\theta}$, with $|\lambda| = e^{-1/(\tau f_s)}$ and $\theta = 2\pi f_0/f_s$, where $f_0 = 10$ Hz and $\tau = 200$ ms, corresponding to two cycles. The AR($p$) process is the AR(7) process shown in \figpanel{fig:modes}{}, with relaxations at 200, 20 and 2 ms and oscillations at 10 Hz (150 ms envelope) and 40 Hz (60 ms envelope). Its two slow relaxations have comparable importance and differ by an order of magnitude, while its oscillations persist for more than one cycle, making the 200 ms relaxation the most important non-rhythmic mode.
+Four processes were simulated in the benchmark, each with a closed-form PSD and ACF, at 500 Hz for 100 s with 200 repetitions: an AR(1) process, an AR(2) oscillator, an AR(7) process, and a power-law process (\tabpanel{tab:s_benchmark}). The three autoregressive processes were constructed with a 200 ms timescale so that the columns of \figpanel{fig:benchmark}{} share one axis. AR(1) with $\tau = 200$ ms served as the positive control. The AR(2) oscillator has poles at $|\lambda| e^{\pm i\theta}$, with $|\lambda| = e^{-1/(\tau f_s)}$ and $\theta = 2\pi f_0/f_s$, where $f_0 = 10$ Hz and $\tau = 200$ ms, corresponding to two cycles. The AR($p$) process is the AR(7) process shown in \figpanel{fig:modes}{}, with relaxations at 200, 20 and 2 ms and oscillations at 10 Hz (150 ms envelope) and 40 Hz (60 ms envelope). Its two slow relaxations have comparable importance and differ by an order of magnitude, while its oscillations persist for more than one cycle, making the 200 ms relaxation the most important non-rhythmic mode.
 
-The finite-sample column in \figpanel{fig:benchmark}{} uses the AR(1) process simulated for four seconds and analyzed with the same 4 s Welch window and 0.5 s of lags as the 100 s recordings, so that the duration is the only difference. The alternative AR(5), with a 250 ms relaxation, a 5 Hz mode with $f\tau = 0.5$, and a 50 Hz oscillation, was simulated alongside the AR(7) and can replace it in every figure. The power-law process is fractionally differenced noise with $d = 0.45$ \cite{granger_introduction_1980, hosking_fractional_1981}, whose ACF decays as a power law rather than exponentially, so no AR model of finite order reproduces it; it has no timescale to construct and is reported in the Supplement.
+The finite-sample column in \figpanel{fig:benchmark}{} uses the AR(1) process simulated for four seconds and analyzed with the same 4 s Welch window and 0.5 s of lags as the 100 s recordings, so that the duration is the only difference. The power-law process is fractionally differenced noise with $d = 0.45$ \cite{granger_introduction_1980, hosking_fractional_1981}, whose ACF decays as a power law rather than exponentially, so no AR model of finite order reproduces it; it has no timescale to construct.
 
-Two parameter sweeps extend the benchmark. The damped-oscillator sweep varied the AR(2) oscillator across envelope decays of 20, 50 and 150 ms and frequencies of 5, 10, 20 and 40 Hz. The added-sinusoid sweep added $A\cos(2\pi f_0 t + \phi)$ with random phase to an AR(1) process with $\tau = 50$ ms, across six frequencies from 4 to 40 Hz and six power ratios from one eighth to four. Both sweeps used 20 repetitions per condition. For processes that are not AR(1), the target timescale is defined by applying the same rule as the estimator to the true poles: the relaxation time for AR(1), the envelope decay for the AR(2) oscillator, and the most important non-rhythmic mode for the AR(7). All theoretical spectra and autocorrelations were verified against long simulations.
+The damped-oscillator sweep repeated the AR(2) comparison across envelope decays of 20, 50 and 150 ms and frequencies of 5, 10, 20 and 40 Hz, with 20 repetitions per condition (\tabpanel{tab:s_damped}). For processes that are not AR(1), the target timescale is defined by applying the same rule as the estimator to the true poles: the relaxation time for AR(1), the envelope decay for the AR(2) oscillator, and the most important non-rhythmic mode for the AR(7). All theoretical spectra and autocorrelations were verified against long simulations.
 
 \subsection{Finite Samples}
 
@@ -300,11 +302,11 @@ Both quantities depend on the recording only through $T/\tau$, and both were ver
 
 \subsection{Datasets}
 
-Eight publicly available recordings were selected to span species, recording modality, and oscillatory regime. \textit{fMRI}: ABIDE resting-state BOLD \cite{di_martino_autism_2014}, using twenty participants from the UM site, preprocessed with C-PAC without temporal filtering, TR 2 s, and left and right precuneus. The unfiltered pipeline was used because the standard 0.01--0.1 Hz band-pass removes most of the spectrum used to estimate a timescale. A single region was used rather than averaging across regions because regions differ in the property being measured. \textit{MEG}: the FieldTrip cortico-muscular coherence recording \cite{schoffelen_neuronal_2005, oostenveld_fieldtrip_2011}, using the 24 magnetometers with the strongest relative beta (15--30 Hz) power, recorded during isometric contraction. \textit{EEG}: MPI-LEMON eyes-closed rest \cite{babayan_mind_2019}, using four posterior channels from each of five participants. \textit{ECoG}: primary motor cortex from 23 participants with Parkinson disease before DBS \cite{cole_nonsinusoidal_2017}, and 24 channels from macaque visual cortex during a grating task \cite{nagasaka_multidimensional_2011}. \textit{LFP}: the 21 VISam channels of a mouse Neuropixels probe during natural movie viewing \cite{siegle_survey_2021}, and 24 channels from rat hippocampal CA1/CA3 \cite{mizuseki_theta_2009, mizuseki_hc3_2013}. \textit{Spiking}: spike counts from the 24 most active well-isolated VISp units in the same Neuropixels session \cite{siegle_survey_2021}, binned at 50 ms over the same 300 s natural movie.
+Eight publicly available recordings were selected to span species, recording modality, and oscillatory regime. \textit{fMRI}: ABIDE resting-state BOLD \cite{di_martino_autism_2014}, using twenty participants from the UM site, preprocessed with C-PAC without temporal filtering, TR 2 s, and left and right precuneus. The unfiltered pipeline was used because the standard 0.01--0.1 Hz band-pass removes most of the spectrum used to estimate a timescale. A single region was used rather than averaging across regions because regions differ in the property being measured. \textit{MEG}: the FieldTrip cortico-muscular coherence recording \cite{schoffelen_neuronal_2005, oostenveld_fieldtrip_2011}, using the 24 magnetometers with the strongest relative beta (15--30 Hz) power, recorded during isometric contraction. \textit{EEG}: MPI-LEMON eyes-closed rest \cite{babayan_mind_2019}, using four posterior channels from each of five participants. \textit{ECoG}: primary motor cortex from 23 participants with Parkinson disease before DBS \cite{cole_nonsinusoidal_2017}, and 24 channels from macaque visual cortex during a grating task \cite{nagasaka_multidimensional_2011}. \textit{LFP}: the 21 VISam channels of a mouse Neuropixels probe during natural movie viewing \cite{siegle_survey_2021}, and 24 channels from rat hippocampal CA1/CA3 \cite{mizuseki_theta_2009, mizuseki_hc3_2013}. \textit{Spiking}: spike counts from the 24 most active, well-isolated VISp units in the same Neuropixels session \cite{siegle_survey_2021}, binned at 50 ms over the same 300 s natural movie.
 
 \subsection{Preprocessing}
 
-Electrophysiological recordings were resampled to 250 Hz and fit over 1--100 Hz, with line-noise fundamentals and harmonics ($\pm 2$ Hz) excluded from spectral fits. The MEG recording was fit over 1--95 Hz because of an artifactual peak at 100 Hz. PSDs were computed using Welch's method with 4 s Hann-tapered windows and 50\% overlap, without detrending within segments: removing the mean of each segment acts as a high-pass filter at the segment's resolution, and on the AR(7) benchmark it lowered the spectral AR($p$) estimate of the 200 ms relaxation to 183 ms. For fMRI, sampled every 2 s, the window was 128 s and the fit band was 0.01--0.24 Hz. For spike counts, binned at 50 ms, the window was 60 s and the fit band was 0.05--2 Hz rather than the available 0.05--8 Hz. A spike train contributes a flat Poisson floor to the PSD that the AR spectral model cannot represent, and above approximately 1.5 Hz the binned-count spectrum is within a factor of 1.5 of that floor. When fit over the full band, the AR(1) model left 99\% of the spike-count log spectrum unexplained; restricting the band reduced this to 52\%. No other filtering, artifact rejection, or oscillation removal was applied. Halving or doubling the spectral window changed the median AR($p$) spectral timescale by less than 5\% in mouse LFP and rat LFP; by 6--18\% in motor ECoG, MEG, macaque ECoG, fMRI and spike counts; and by approximately 50\% in EEG, which has the shortest traces at 60 s.
+Electrophysiological recordings were resampled to 250 Hz and fit over 1--100 Hz, with line-noise fundamentals and harmonics ($\pm 2$ Hz) excluded from spectral fits. The MEG recording was fit over 1--95 Hz because of an artifactual peak at 100 Hz. PSDs were computed using Welch's method with 4 s Hann-tapered windows and 50\% overlap, without detrending within segments: removing the mean of each segment acts as a high-pass filter at the segment's resolution, and on the AR(7) benchmark it lowered the spectral AR($p$) estimate of the 200 ms relaxation to 183 ms. For fMRI, sampled every 2 s, the window was 128 s and the fit band was 0.01--0.24 Hz. For spike counts, binned at 50 ms, the window was 60 s and the fit band was 0.05--2 Hz rather than the available 0.05--8 Hz. A spike train contributes a flat Poisson floor to the PSD that the AR spectral model cannot represent, and above approximately 1.5 Hz the binned-count spectrum sits on that floor; over the full band the AR(1) model explains almost none of the spike-count spectrum (\tabpanel{tab:s_recordings}). No other filtering, artifact rejection, or oscillation removal was applied. The settings for each recording, and the sensitivity of its AR($p$) spectral timescale to halving or doubling the Welch window, are given in \tabpanel{tab:s_recordings}; the sensitivity is largest in EEG, which has the shortest traces at 60 s.
 
 \subsection{Windowing}
 
@@ -312,7 +314,7 @@ Each recording was divided into non-overlapping windows of increasing duration, 
 
 \subsection{Thresholds}
 
-Three thresholds are used in the text. The $200\tau$ floor follows from eq. \ref{eq:finite}: at this duration, the relative standard error of a single estimate is 10\%. The 1.5-fold threshold for disagreement between estimators follows from the same equation. Two independent estimates at $T = 200\tau$ each have a 10\% standard error, so their ratio exceeds 1.5 in less than 1\% of cases from sampling alone. In the AR(1) simulations at $T = 500\tau$, the AR($p$) fits to the ACF and PSD disagreed by more than 1.5-fold in 4.5\% of repetitions, while the AR(1) fits never did. Below $200\tau$, this threshold does not apply: at $T = 20\tau$, sampling alone caused the two AR($p$) fits to disagree by more than 1.5-fold in 57\% of repetitions. The $f\tau < 1$ criterion for a non-rhythmic mode is a definition: a mode that decays before completing one cycle is treated as a damped relaxation rather than an oscillation.
+Three thresholds were used. The $200\tau$ floor follows from eq. \ref{eq:finite}: at this duration, the relative standard error of a single estimate is 10\%. The 1.5-fold threshold for disagreement between estimators follows from the same equation. Two independent estimates at $T = 200\tau$ each have a 10\% standard error, so their ratio exceeds 1.5 in less than 1\% of cases from sampling alone. How often sampling alone produces such a disagreement between the ACF and PSD fits is given in \tabpanel{tab:s_disagree}: rarely at $T = 500\tau$, and in most repetitions at $T = 20\tau$, where the threshold does not apply. The $f\tau < 1$ criterion for a non-rhythmic mode is a definition: a mode that decays before completing one cycle is treated as a damped relaxation rather than an oscillation.
 
 \subsection{Code Availability}
 
@@ -344,19 +346,176 @@ normalized so that its integral equals the process variance, matching Welch's me
 
 \subsubsection*{Benchmark}
 
-For the AR(2) oscillator, the three AR(1) estimators returned 10, 140 and 251 ms for the 200 ms envelope decay, whereas all three AR($p$) estimators recovered it to within 1.1\% and recovered the frequency to within 0.01 Hz. Across the damped-oscillator sweep, the AR($p$) spectral fit remained within 3\% of the envelope decay and the AR($p$) ACF fit within 7\%, whereas the AR(1) estimates were off by factors between 0.016 and 133, depending on both decay and frequency. For the AR(7) process, the three AR($p$) estimators returned 190 to 196 ms for the 200 ms relaxation, whereas the three AR(1) estimators spanned a factor of 111: 180 ms from the ACF fit, 1.57 s from lagged regression, and 20 s, the upper bound of the search range, from the spectral fit. The power-law process produced estimates from 4 to 92 ms, a twenty-fold range, with each estimate stable across repetitions. For this process, the AR(1) ACF estimate also grew in proportion to the recording duration, from 34 ms at 0.5 s to 12 s at 200 s, whereas for the AR(1) process it stayed near the true 50 ms at every duration.
+\tabpanel{tab:s_benchmark} lists every estimator on every benchmark process, including the two time-domain estimators. The time-domain estimators behave like their spectral counterparts: the AR(1) regression fails on the AR(7) and the power law as the other AR(1) fits do, and Burg's method recovers the AR(2) and AR(7) timescales as the spectral AR($p$) fit does. The unexplained variance tracks the estimation error. The AR(1) model leaves between a quarter and two thirds of the log spectrum of each non-AR(1) process unexplained, and the AR($p$) model brings this below 5\% for every process, with the power law, which no finite AR order reproduces, selecting the top of the order grid. Models fit in the spectral domain describe the autocorrelation nearly as well as models fit to it, whereas models fit in the lag domain describe the spectrum poorly. Both domains use the same model, reparameterization, order selection and band, so this difference is a property of the domains, not of the optimization.
 
-The unexplained variance increased with estimation error. The AR(1) spectral fit left 0.7\% of the log spectrum unexplained for the AR(1) process, 27\% for the AR(2) oscillator, 67\% for the AR(7), and 27\% for the power law. The AR($p$) fit reduced these values to between 0.03\% and 4.2\%. BIC selected $p=1$ for AR(1), $p=3$ for the oscillator (its true order plus the required real pole), $p=8$ for the AR(7), and the top of the search range for the power law. When the exact autocorrelation of each process was fit, the mismatch vanished at the correct order for the autoregressive processes, while for the power law it decreased with order without reaching zero.
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Simulation benchmark.} Six estimators on the four benchmark processes and on four seconds of the AR(1) process, 200 repetitions each. The estimate is the timescale each estimator reports: $\tau$ for the AR(1) estimators, the envelope decay of the oscillator and the most important non-rhythmic mode of the AR(7) for the AR($p$) estimators. The true value is 200 ms for every autoregressive process; the power law has none. Order is the median BIC selection. Unexplained variance is the fraction of the $\log_{10}$ spectrum, or of the autocorrelation, that the fitted model leaves unexplained, median across repetitions.}
+\label{tab:s_benchmark}
+\begin{tabular}{llrrrrr}
+\toprule
+Process & Estimator & $\hat\tau$ (ms) & 10--90\% (ms) & Order & Unexpl.\ PSD (\%) & Unexpl.\ ACF (\%) \\
+\midrule
+AR(1), 100 s & AR(1), time & 198 & 183--214 & 1 & 0.7 & 0.1 \\
+ & AR(1), ACF & 199 & 168--239 & 1 & 0.7 & 0.05 \\
+ & AR(1), PSD & 201 & 184--216 & 1 & 0.7 & 0.1 \\
+ & AR($p$), time & 198 & 183--213 & 1 & 0.7 & 0.1 \\
+ & AR($p$), ACF & 198 & 161--238 & 1 & 0.7 & 0.05 \\
+ & AR($p$), PSD & 201 & 184--216 & 1 & 0.7 & 0.1 \\
+\midrule
+AR(2) oscillator & AR(1), time & 251 & 249--253 & 1 & 26.7 & 99.8 \\
+ & AR(1), ACF & 10.2 & 10.1--10.3 & 1 & 38.5 & 79.5 \\
+ & AR(1), PSD & 140 & 133--148 & 1 & 26.8 & 99.5 \\
+ & AR($p$), time & 201 & 189--212 & 2 & 0.2 & 0.3 \\
+ & AR($p$), ACF & 202 & 179--228 & 3 & 15.1 & 0.08 \\
+ & AR($p$), PSD & 200 & 188--212 & 3 & 0.2 & 0.3 \\
+\midrule
+AR(7) & AR(1), time & 1565 & 1436--1705 & 1 & 67.2 & 10.7 \\
+ & AR(1), ACF & 180 & 151--215 & 1 & 67.5 & 2.8 \\
+ & AR(1), PSD & 20000$^\dagger$ & 20000$^\dagger$ & 1 & 67.2 & 12.8 \\
+ & AR($p$), time & 195 & 177--219 & 8 & 0.03 & 0.2 \\
+ & AR($p$), ACF & 190 & 94--244 & 4 & 11.3 & 0.05 \\
+ & AR($p$), PSD & 196 & 176--218 & 8 & 0.03 & 0.2 \\
+\midrule
+Power law & AR(1), time & 6.32 & 5.76--7.19 & 1 & 36.2 & 58.4 \\
+ & AR(1), ACF & 91 & 74--112 & 1 & 124 & 5.3 \\
+ & AR(1), PSD & 4.38 & 4.26--4.49 & 1 & 26.7 & 66.6 \\
+ & AR($p$), time & 13.8 & 13.0--14.6 & 20 & 4.5 & 4.2 \\
+ & AR($p$), ACF & 91 & 74--112 & 1 & 124 & 5.3 \\
+ & AR($p$), PSD & 12.9 & 12.0--13.8 & 20 & 4.2 & 6.5 \\
+\midrule
+AR(1), 4 s & AR(1), time & 169 & 109--259 & 1 & 35.2 & 6.3 \\
+ & AR(1), ACF & 181 & 65--384 & 1 & 35.3 & 4.0 \\
+ & AR(1), PSD & 181 & 94--406 & 1 & 35.2 & 5.9 \\
+ & AR($p$), time & 167 & 110--253 & 1 & 35.2 & 6.3 \\
+ & AR($p$), ACF & 189 & 85--419 & 2 & 92.3 & 1.2 \\
+ & AR($p$), PSD & 181 & 93--406 & 1 & 35.1 & 5.7 \\
+\bottomrule
+\end{tabular}
+\begin{flushleft}\footnotesize $^\dagger$ Upper bound of the search range.\end{flushleft}
+\end{table}
 
-The fitting domain also affected the resulting model. Across the AR(2), AR(7) and power-law processes, spectral fits described the autocorrelation nearly as well as autocorrelation fits, leaving 0.2\% to 6.5\% unexplained. In contrast, autocorrelation fits described the spectrum poorly, leaving 15\% unexplained for the oscillator, 11\% for the AR(7), and more than the total spectral variance for the power law. Both domains used the same model, reparameterization, order selection, and analysis band, so this difference is not an optimization artifact. Models estimated in the spectral domain described the signal well in both domains, whereas models estimated in the lag domain did not.
+\subsubsection*{Damped Oscillators}
+
+\tabpanel{tab:s_damped} gives the damped-oscillator sweep. Across all twelve combinations of envelope decay and frequency, the AR($p$) estimators stay within 7\% of the true envelope decay, whereas the AR(1) estimators are off by factors that depend on both the decay and the frequency.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Damped-oscillator sweep.} Median estimate divided by the true envelope decay for AR(2) oscillators with envelope decays of 20, 50 and 150 ms and frequencies of 5 to 40 Hz, 20 repetitions of 100 s per condition. The AR($p$) estimators report the envelope decay of the fitted oscillatory mode; the AR(1) estimators report their single timescale.}
+\label{tab:s_damped}
+\begin{tabular}{rrrrrrrr}
+\toprule
+$\tau$ (ms) & $f$ (Hz) & AR(1), time & AR(1), ACF & AR(1), PSD & AR($p$), time & AR($p$), ACF & AR($p$), PSD \\
+\midrule
+20 & 5 & 14.29 & 1.27 & 9.27 & 1.00 & 1.07 & 0.99 \\
+20 & 10 & 7.69 & 0.70 & 4.66 & 1.00 & 1.01 & 0.98 \\
+20 & 20 & 2.69 & 0.30 & 1.56 & 1.00 & 1.01 & 1.00 \\
+20 & 40 & 0.73 & 0.14 & 0.43 & 1.00 & 0.99 & 1.00 \\
+50 & 5 & 14.37 & 0.57 & 32.36 & 0.99 & 1.04 & 0.99 \\
+50 & 10 & 4.58 & 0.24 & 2.83 & 1.00 & 1.00 & 0.99 \\
+50 & 20 & 1.22 & 0.11 & 0.70 & 1.00 & 1.02 & 1.00 \\
+50 & 40 & 0.30 & 0.05 & 0.18 & 1.00 & 0.98 & 0.99 \\
+150 & 5 & 6.44 & 0.15 & 133.33 & 1.00 & 1.02 & 1.00 \\
+150 & 10 & 1.66 & 0.07 & 1.04 & 1.00 & 1.01 & 0.98 \\
+150 & 20 & 0.42 & 0.03 & 0.24 & 1.00 & 1.03 & 1.00 \\
+150 & 40 & 0.10 & 0.02 & 0.06 & 1.00 & 1.03 & 0.98 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Recordings}
+
+\tabpanel{tab:s_recordings} gives the analysis settings and the AR(1) and AR($p$) spectral fits for each recording, and \tabpanel{tab:s_modes} the modes of the AR($p$) fits: how many modes each trace has, how many are needed to reproduce the fitted spectrum, and which mode is reported as the aperiodic timescale.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Recordings: analysis settings and spectral fits.} Traces per recording and their duration after cropping, the fit band, the Welch window, and the median across traces of the AR(1) spectral timescale, the timescale of the most important mode of the AR($p$) spectral fit, the BIC order, and the fraction of the $\log_{10}$ spectrum each model leaves unexplained. The last two columns give the median AR($p$) timescale with the Welch window halved or doubled, relative to the value at the window used.}
+\label{tab:s_recordings}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrrrrrr}
+\toprule
+Recording & Traces & T (s) & Band (Hz) & Welch (s) & AR(1) $\hat\tau$ (ms) & AR($p$) mode $\hat\tau$ (ms) & Order & Unexpl.\ AR(1) (\%) & Unexpl.\ AR($p$) (\%) & Window $\times\tfrac12$ & Window $\times 2$ \\
+\midrule
+Human fMRI & 40 & 592 & 0.01--0.24 & 128 & 2858 & 3401 & 1 & 22.1 & 20.4 & 0.82 & 1.09 \\
+Human EEG & 20 & 60 & 1--100 & 4 & 48 & 61 & 20 & 14.6 & 1.5 & 1.49 & 1.55 \\
+Human MEG & 24 & 480 & 1--95 & 4 & 24 & 26 & 13 & 9.3 & 0.6 & 0.94 & 1.11 \\
+Human ECoG & 23 & 30 & 1--100 & 4 & 10.1 & 51 & 20 & 40.9 & 3.2 & 1.10 & 1.01 \\
+Macaque ECoG & 24 & 480 & 1--100 & 4 & 38 & 34 & 14 & 10.7 & 0.2 & 0.85 & 0.86 \\
+Mouse LFP & 21 & 480 & 1--100 & 4 & 15.9 & 70 & 20 & 11.2 & 0.7 & 1.00 & 1.01 \\
+Mouse spikes & 24 & 300 & 0.05--2 & 60 & 198 & 422 & 3 & 51.9 & 38.0 & 1.06 & 0.91 \\
+Rat LFP & 24 & 480 & 1--100 & 4 & 26 & 82 & 20 & 4.9 & 1.5 & 1.04 & 0.97 \\
+\bottomrule
+\end{tabular}}
+\begin{flushleft}\footnotesize Over the full 0.05--8 Hz band available for the spike counts, the AR(1) fit leaves 99\% of the log spectrum unexplained.\end{flushleft}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Recordings: modes of the AR($p$) spectral fit.} Resolvable modes per trace (median and range), the number of modes needed to reproduce the fitted log spectrum at three cutoffs (median across traces), the fraction of fitted modes dropped because the fit band cannot resolve their timescale, and the aperiodic mode selected by the rule in Methods (the most important mode with $f\tau < 1$): the number of traces in which it is a conjugate pair rather than a real pole, and its median timescale and frequency.}
+\label{tab:s_modes}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Recording & Modes/trace & $R^2 \ge 0.90$ & $R^2 \ge 0.95$ & $R^2 \ge 0.99$ & Dropped (\%) & Aperiodic mode a pair & Aperiodic $\hat\tau$ (ms) & Aperiodic $f$ (Hz) \\
+\midrule
+Human fMRI & 1 (1--3) & 1 & 1 & 1 & 2 & 0/40 & 3401 & 0.0 \\
+Human EEG & 10 (7--11) & 2 & 10 & 11 & 8 & 20/20 & 34 & 10.9 \\
+Human MEG & 7 (2--10) & 3 & 7 & 7 & 4 & 22/24 & 26 & 14.9 \\
+Human ECoG & 10 (2--10) & 5 & 10 & 10 & 9 & 20/23 & 40 & 12.1 \\
+Macaque ECoG & 7 (4--11) & 1 & 6 & 7 & 6 & 20/24 & 34 & 15.2 \\
+Mouse LFP & 10 (3--10) & 6 & 10 & 10 & 9 & 20/21 & 70 & 6.2 \\
+Mouse spikes & 2 (1--4) & 2 & 2 & 2 & 19 & 0/24 & 422 & 0.0 \\
+Rat LFP & 10 (7--10) & 1 & 11 & 11 & 10 & 24/24 & 82 & 9.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsubsection*{Windowing}
 
-In units of the estimated timescale, the median AR($p$) spectral estimate converged to within 20\% of its longest-window value once windows exceeded 40 to 2300 timescales, depending on the recording, with a median of approximately 550. In the shortest windows, the median estimate ranged from 13\% to 84\% of the longest-window value. In the longest windows, every estimator exceeded the sampling bound from eq. \ref{eq:finite} in all eight recordings, by a median factor of 11 to 17 and by as much as 44.
+\tabpanel{tab:s_windows} summarizes the windowing analysis. In units of the estimated timescale, the AR($p$) spectral estimate settles to within 20\% of its longest-window value only after tens to thousands of timescales, depending on the recording, and in the shortest windows it is a fraction of that value. In the longest windows, the spread of estimates across windows exceeds the AR(1) sampling bound of eq. \ref{eq:finite} in every recording and for every estimator, by about an order of magnitude.
 
-\subsubsection*{Integrated Timescale}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Windowing.} For the AR($p$) spectral estimate: the window duration, in units of the estimated timescale, beyond which the median estimate stays within 20\% of its value in the longest window, and the median estimate in the shortest window relative to the longest. The remaining columns give, for each estimator, the spread of estimates across the longest windows divided by the AR(1) sampling bound of eq. \ref{eq:finite} at that duration.}
+\label{tab:s_windows}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Recording & $T/\hat\tau$ to 20\% & Shortest/longest & AR(1), time & AR(1), ACF & AR(1), PSD & AR($p$), ACF & AR($p$), PSD \\
+\midrule
+Human fMRI & 42 & 0.84 & 6 & 7 & 6 & 7 & 5 \\
+Human EEG & 563 & 0.29 & 4 & 23 & 22 & 20 & 12 \\
+Human MEG & 2316 & 0.47 & 16 & 44 & 34 & 22 & 19 \\
+Human ECoG & 320 & 0.44 & 5 & 17 & 10 & 15 & 8 \\
+Macaque ECoG & 534 & 0.60 & 17 & 18 & 23 & 33 & 30 \\
+Mouse LFP & 1750 & 0.29 & 5 & 6 & 5 & 8 & 8 \\
+Mouse spikes & 136 & 0.13 & 24 & 11 & 15 & 7 & 14 \\
+Rat LFP & 1784 & 0.28 & 19 & 20 & 18 & 11 & 18 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-As a model-free reference, we use $\tau_{\mathrm{int}} = \int_0^\infty \rho(t)\,dt$ \cite{sokal_monte_1997, priestley_spectral_1981}, evaluated using the trapezoid convention so that a sampled exponential returns its continuous-time $\tau$ rather than $\tau + 1/(2f_s)$. Equivalently, $\tau_{\mathrm{int}} = S(0)/(4\gamma(0))$. It equals $\tau$ for an AR(1) process, is the variance-weighted mean of component timescales for a sum of independent AR(1) processes, and diverges for a long-memory process. It differs from the envelope decay of an oscillator because the negative lobes of a damped cosine cancel much of the integral. For the AR(2) oscillator in the benchmark, $\tau_{\mathrm{int}} = 2.5$ ms while the envelope decay is 200 ms. Thus, for an oscillatory process, the integrated timescale and envelope decay measure different properties of the signal.
+\subsubsection*{Sampling Disagreement}
+
+\tabpanel{tab:s_disagree} gives how often the ACF and PSD fits of the same model differ by more than 1.5-fold on the AR(1) process from sampling alone, at 500 and at 20 timescales of data.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{\textbf{Disagreement between fit domains from sampling alone.} Percentage of 200 repetitions of the 200 ms AR(1) process in which the ACF and PSD fits of the same model differ by more than 1.5-fold.}
+\label{tab:s_disagree}
+\begin{tabular}{lrr}
+\toprule
+Duration & AR(1) fits (\%) & AR($p$) fits (\%) \\
+\midrule
+100 s ($T = 500\tau$) & 0.0 & 4.5 \\
+4 s ($T = 20\tau$) & 55.5 & 57.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \clearpage
 
