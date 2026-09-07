@@ -1,9 +1,5 @@
-\begin{table}[H]
-\centering
-\footnotesize
-\caption{\textbf{Recordings: analysis settings and spectral fits.} Traces per recording and their duration after cropping, the fit band, the Welch window, and the median across traces of the AR(1) spectral timescale, the timescale of the most important mode of the AR($p$) spectral fit, the BIC order, and the fraction of the $\log_{10}$ spectrum each model leaves unexplained. The last two columns give the median AR($p$) timescale with the Welch window halved or doubled, relative to the value at the window used.}
-\label{tab:s_recordings}
-\resizebox{\textwidth}{!}{%
+\begin{sidewaystable}[h]
+\caption{\textbf{Recordings: analysis settings and spectral fits.} Traces per recording and their duration after cropping, the fit band, the Welch window, and the median across traces of the AR(1) spectral timescale, the timescale of the most important mode of the AR($p$) spectral fit, the BIC order, and the fraction of the $\log_{10}$ spectrum each model leaves unexplained. The last two columns give the median AR($p$) timescale with the Welch window halved or doubled, relative to the value at the window used.}\label{tab:s_recordings}
 \begin{tabular}{lrrrrrrrrrrr}
 \toprule
 Recording & Traces & T (s) & Band (Hz) & Welch (s) & AR(1) $\hat\tau$ (ms) & AR($p$) mode $\hat\tau$ (ms) & Order & Unexpl.\ AR(1) (\%) & Unexpl.\ AR($p$) (\%) & Window $\times\tfrac12$ & Window $\times 2$ \\
@@ -17,6 +13,6 @@ Mouse LFP & 21 & 480 & 1--100 & 4 & 15.9 & 70 & 20 & 11.2 & 0.7 & 1.00 & 1.01 \\
 Mouse spikes & 24 & 300 & 0.05--2 & 60 & 198 & 422 & 3 & 51.9 & 38.0 & 1.06 & 0.91 \\
 Rat LFP & 24 & 480 & 1--100 & 4 & 26 & 82 & 20 & 4.9 & 1.5 & 1.04 & 0.97 \\
 \bottomrule
-\end{tabular}}
-\begin{flushleft}\footnotesize Over the full 0.05--8 Hz band available for the spike counts, the AR(1) fit leaves 99\% of the log spectrum unexplained.\end{flushleft}
-\end{table}
+\end{tabular}
+\footnotetext{Over the full 0.05--8 Hz band available for the spike counts, the AR(1) fit leaves 99\% of the log spectrum unexplained.}
+\end{sidewaystable}

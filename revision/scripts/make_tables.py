@@ -69,19 +69,26 @@ def pct(x, digits=1):
     return f'{x:.{digits}f}'
 
 
-def table(label, caption, header, rows, align, note=None, size='footnotesize', resize=False):
-    lines = ['\\begin{table}[H]', '\\centering', f'\\{size}',
-             f'\\caption{{{caption}}}', f'\\label{{{label}}}']
-    if resize:
-        lines.append('\\resizebox{\\textwidth}{!}{%')
-    lines += [f'\\begin{{tabular}}{{{align}}}', '\\toprule',
-              ' & '.join(header) + ' \\\\', '\\midrule']
+def table(label, caption, header, rows, align, note=None, sideways=False):
+    """One table in the form the Springer class expects.
+
+    sn-jnl wraps every ``table`` in ``center`` and ``threeparttable`` and sets
+    the body font itself, so the content must be exactly a caption, one
+    tabular, and optional ``\\footnotetext`` notes: no ``\\centering``, no size
+    commands, no ``\\resizebox``, and no ``[H]`` (float's H placement breaks
+    the class's nesting).  A wide table goes in ``sidewaystable``.
+    """
+    env = 'sidewaystable' if sideways else 'table'
+    lines = [f'\\begin{{{env}}}[h]', f'\\caption{{{caption}}}\\label{{{label}}}',
+             f'\\begin{{tabular}}{{{align}}}', '\\toprule',
+             ' & '.join(header) + ' \\\\', '\\midrule']
     for row in rows:
         lines.append(' & '.join(row) + ' \\\\' if row else '\\midrule')
-    lines += ['\\bottomrule', '\\end{tabular}' + ('}' if resize else '')]
+    lines += ['\\bottomrule', '\\end{tabular}']
     if note:
-        lines.append(f'\\begin{{flushleft}}\\{size} {note}\\end{{flushleft}}')
-    lines.append('\\end{table}')
+        mark, text = note
+        lines.append(f'\\footnotetext[{mark}]{{{text}}}' if mark else f'\\footnotetext{{{text}}}')
+    lines.append(f'\\end{{{env}}}')
     return '\n'.join(lines) + '\n'
 
 
@@ -113,7 +120,7 @@ def table_s1():
                'has none. Order is the median BIC selection. Unexplained variance is the fraction of '
                'the $\\log_{10}$ spectrum, or of the autocorrelation, that the fitted model leaves '
                'unexplained, median across repetitions.')
-    note = '$^\\dagger$ Upper bound of the search range.'
+    note = ('\\dagger', 'Upper bound of the search range.')
     return table('tab:s_benchmark', caption,
                  ['Process', 'Estimator', '$\\hat\\tau$ (ms)', '10--90\\% (ms)', 'Order',
                   'Unexpl.\\ PSD (\\%)', 'Unexpl.\\ ACF (\\%)'],
@@ -228,13 +235,13 @@ def table_s3(stats):
                'AR($p$) spectral fit, the BIC order, and the fraction of the $\\log_{10}$ spectrum each '
                'model leaves unexplained. The last two columns give the median AR($p$) timescale with '
                'the Welch window halved or doubled, relative to the value at the window used.')
-    note = (f'Over the full 0.05--8 Hz band available for the spike counts, the AR(1) fit leaves '
-            f'{100 * full:.0f}\\% of the log spectrum unexplained.')
+    note = ('', f'Over the full 0.05--8 Hz band available for the spike counts, the AR(1) fit leaves '
+                f'{100 * full:.0f}\\% of the log spectrum unexplained.')
     return table('tab:s_recordings', caption,
                  ['Recording', 'Traces', 'T (s)', 'Band (Hz)', 'Welch (s)', 'AR(1) $\\hat\\tau$ (ms)',
                   'AR($p$) mode $\\hat\\tau$ (ms)', 'Order', 'Unexpl.\\ AR(1) (\\%)', 'Unexpl.\\ AR($p$) (\\%)',
                   'Window $\\times\\tfrac12$', 'Window $\\times 2$'],
-                 rows, 'lrrrrrrrrrrr', note, size='footnotesize', resize=True)
+                 rows, 'lrrrrrrrrrrr', note, sideways=True)
 
 
 def table_s4(stats):

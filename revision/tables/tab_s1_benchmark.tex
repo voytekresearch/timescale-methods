@@ -1,8 +1,5 @@
-\begin{table}[H]
-\centering
-\footnotesize
-\caption{\textbf{Simulation benchmark.} Six estimators on the four benchmark processes and on four seconds of the AR(1) process, 200 repetitions each. The estimate is the timescale each estimator reports: $\tau$ for the AR(1) estimators, the envelope decay of the oscillator and the most important non-rhythmic mode of the AR(7) for the AR($p$) estimators. The true value is 200 ms for every autoregressive process; the power law has none. Order is the median BIC selection. Unexplained variance is the fraction of the $\log_{10}$ spectrum, or of the autocorrelation, that the fitted model leaves unexplained, median across repetitions.}
-\label{tab:s_benchmark}
+\begin{table}[h]
+\caption{\textbf{Simulation benchmark.} Six estimators on the four benchmark processes and on four seconds of the AR(1) process, 200 repetitions each. The estimate is the timescale each estimator reports: $\tau$ for the AR(1) estimators, the envelope decay of the oscillator and the most important non-rhythmic mode of the AR(7) for the AR($p$) estimators. The true value is 200 ms for every autoregressive process; the power law has none. Order is the median BIC selection. Unexplained variance is the fraction of the $\log_{10}$ spectrum, or of the autocorrelation, that the fitted model leaves unexplained, median across repetitions.}\label{tab:s_benchmark}
 \begin{tabular}{llrrrrr}
 \toprule
 Process & Estimator & $\hat\tau$ (ms) & 10--90\% (ms) & Order & Unexpl.\ PSD (\%) & Unexpl.\ ACF (\%) \\
@@ -43,5 +40,5 @@ AR(1), 4 s & AR(1), time & 169 & 109--259 & 1 & 35.2 & 6.3 \\
  & AR($p$), PSD & 181 & 93--406 & 1 & 35.1 & 5.7 \\
 \bottomrule
 \end{tabular}
-\begin{flushleft}\footnotesize $^\dagger$ Upper bound of the search range.\end{flushleft}
+\footnotetext[\dagger]{Upper bound of the search range.}
 \end{table}

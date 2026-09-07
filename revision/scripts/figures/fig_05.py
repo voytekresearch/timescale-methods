@@ -37,7 +37,7 @@ def ci_panel(ax, n, letter):
         mean_hat.append(ph.mean())
         lo.append((ph - half).mean())
         hi.append((ph + half).mean())
-    ax.fill_between(PHIS, lo, hi, color=P.LIGHT, alpha=0.6, lw=0, label='95% CI')
+    ax.fill_between(PHIS, lo, hi, color=P.LIGHT, alpha=0.6, lw=0, label=r'95\% CI')
     ax.plot(PHIS, mean_hat, color=FIT_COLOR, lw=1.8, label=r'Mean $\hat\varphi$')
     ax.plot(PHIS, PHIS, color='k', ls=':', lw=1.2, label='True')
     ax.set_xlabel(r'True $\varphi$')
@@ -67,15 +67,18 @@ with plt.rc_context({'text.usetex': True}):
         vals = sim[(sim['process'] == 'ar1') & (sim['method'] == 'ar1_direct')
                 & (sim['duration'] == near)]['tau'].to_numpy(float) / TAU
         vals = vals[np.isfinite(vals)]
-        ax.plot(grid, gaussian_kde(vals)(grid), color=colour, lw=1.6, label=rf'$T = {tot}\tau$')
+        ax.plot(grid, gaussian_kde(vals)(grid), color=colour, lw=1.6, label=rf'${tot}\tau$')
     ax.axvline(1.0, color='k', ls='--', lw=1.1)
     ax.set_xlim(-0.1, 2.1)
     ax.set_xlabel(r'$\hat\tau\,/\,\tau$')
     ax.set_ylabel('Density')
     ax.set_title('Sampling distribution')
     ax.set_box_aspect(1)
-    # Compact and flush with the right edge: the panel is 1.3 in wide at print
-    # size and the T = 1000 tau peak stands at its centre.
-    ax.legend(loc='upper left', fontsize=4)
+    P.panel_label(ax, 'c', dx=-0.30, fontsize=9)
+    # The T = 1000 tau peak stands at the centre and the legend must not touch
+    # it, so it is kept narrow (short handles, the duration as the title) and
+    # sits in the empty upper right.
+    ax.legend(loc='upper right', fontsize=4, title=r'$T$', title_fontsize=4,
+              handlelength=0.9, handletextpad=0.4, borderaxespad=0.3)
 
     save(fig, 'fig_finite.svg')
