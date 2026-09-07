@@ -1,6 +1,6 @@
 """Stage 2a: the core simulation benchmark.
 
-Five generative processes with closed-form spectra (the four of the main
+Four autoregressive processes with closed-form spectra (the three of the main
 figure and the alternative AR(5)) are estimated with all six timescale
 estimators at a long recording duration, so that everything seen here
 is model mismatch rather than finite-sample noise.  A population (Yule-Walker
@@ -29,7 +29,7 @@ import pandas as pd
 from tsmodes.benchmark import run_condition, summarize
 from tsmodes.estimators import population_ar, is_divergence
 from tsmodes.modes import ARModes, ar_psd
-from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARpModes, BENCH_TAU, PowerLaw,
+from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARpModes, BENCH_TAU,
                           arp_process)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,22 +39,31 @@ DURATION = 100.0
 N_REPS = 200
 WELCH_WIN_S = 4.0
 # The finite-sample column of the main figure: the same AR(1), recorded for
-# twenty timescales and analysed with the same settings as the long
-# recordings, so that the duration is the only thing that changes.  The
-# quarter-of-the-recording rule of run_04_finite was used here before, and on
-# four seconds it is a different analysis, not a shorter one: 1 s Welch
-# segments put the first frequency bin at 1 Hz, above the 0.8 Hz knee of a
-# 200 ms process, so the spectral fits ran to the 20 s search bound in a
-# quarter of the repetitions; and 1 s of lags from 1 s segments reaches half
-# the segment, where dividing out the Hann taper amplifies the lag-domain
-# noise fivefold and the ACF fell below -0.7 in half the repetitions.  Kept
-# here so that the figure's every column comes from one table and one
-# constructed timescale.
+# twenty timescales (four seconds) and analysed with the same settings as the
+# long recordings, so that the duration is the only thing that changes (the
+# 4 s Welch window is the whole record, so the spectrum is a single
+# periodogram).  Forty repetitions rather than 200: the column is about what
+# short records look like and how far their estimates scatter, and a modest
+# set of repetitions shows that without making the median of row d look like
+# a solution.  Shorter records were tried and rejected: at one second (five
+# timescales) the sample ACF is forced below zero by the subtraction of the
+# record's own mean, the finite bias rather than its noise, and the spectral
+# fits run to the search bound because a 1 s record cannot resolve the knee.
+# The quarter-of-the-recording rule of run_04_finite was also rejected here:
+# short Welch segments put the first frequency bin above the knee, and lags
+# out to half a segment are divided by a Hann taper factor near 0.2, which
+# amplifies the lag-domain noise fivefold.  Kept here so that the figure's
+# every column comes from one table and one constructed timescale.
 FINITE_DURATION = 20 * BENCH_TAU
+N_REPS_FINITE = 40
+# Lags at most a third of the record, the rule the recordings follow
+# (tsmodes.datasets.prepare_trace); for a 4 s record this is the default
+# half-second budget.
+FINITE_NLAGS = min(int(FINITE_DURATION * FS) // 3, 250)
 N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
 
-# Four processes, each present to answer one question; the three
-# autoregressive ones are the columns of the main figure.  A rhythm the model
+# Three processes, each present to answer one question, are the columns of
+# the main figure; the alternative AR(5) is simulated alongside.  A rhythm the model
 # cannot represent at any order -- a sinusoid added to the signal -- is the
 # sweep of run_03_oscillations and the supplementary grid.
 #
@@ -72,17 +81,14 @@ N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
 #                    alternative AR(5) (tsmodes.sims.ARP_MODES_5) is simulated
 #                    alongside so the figures can draw either; it is not in
 #                    the main figure.
-#   power law        outside the family and with no characteristic timescale
-#                    at all, so there is nothing for an estimator to recover.
 PROCESSES = [
     AR1(tau=BENCH_TAU),
     AR2Damped(tau=AR2_RHYTHM[0], f_osc=AR2_RHYTHM[1]),
     ARpModes(),
     arp_process('5'),
-    PowerLaw(d=0.45),
 ]
-SHORT_LABELS = ['AR(1)', 'AR(2) oscillator', ARpModes().label, arp_process('5').label, 'Power law']
-MAIN_PROCESSES = ['ar1', 'ar2_damped', 'arp_modes', 'power_law']
+SHORT_LABELS = ['AR(1)', 'AR(2) oscillator', ARpModes().label, arp_process('5').label]
+MAIN_PROCESSES = ['ar1', 'ar2_damped', 'arp_modes']
 MAX_ORDER = 30
 YLIM = (-3.1, 1.7)     # log10 seconds, for panel c; wide enough that
                        # every box fits and no off-scale marker is needed
@@ -169,8 +175,9 @@ def main():
                                       prep_kwargs={'welch_win_s': WELCH_WIN_S}))
         print(f'  ar1, {FINITE_DURATION:g} s (finite sample)', flush=True)
         rows.extend(run_condition(AR1(tau=BENCH_TAU), fs=FS, duration=FINITE_DURATION,
-                                  n_reps=N_REPS, seed=13, n_jobs=N_JOBS,
-                                  prep_kwargs={'welch_win_s': WELCH_WIN_S}))
+                                  n_reps=N_REPS_FINITE, seed=13, n_jobs=N_JOBS,
+                                  prep_kwargs={'welch_win_s': WELCH_WIN_S,
+                                               'nlags': FINITE_NLAGS}))
         df = pd.DataFrame(rows)
         df.to_csv(cache, index=False, compression='gzip')
     df = add_target_column(df)

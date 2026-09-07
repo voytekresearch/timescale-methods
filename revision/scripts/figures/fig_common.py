@@ -40,7 +40,7 @@ from tsmodes.estimators import ESTIMATOR_LABELS, estimate, prepare, spectrum_aco
 from tsmodes.modes import (ARModes, ar_acf, ar_acf_fft, ar_psd, poles_to_ar,
                            psd_from_poles)
 from tsmodes.sims import (AR1, AR2_RHYTHM, AR2Damped, ARP_MODES, ARP_VARIANTS,
-                          ARpModes, BENCH_TAU, PowerLaw, arp_process, sim_ar_process)
+                          ARpModes, BENCH_TAU, arp_process, sim_ar_process)
 from tsmodes.finite import phi_of_tau, tau_of_phi
 
 P.use_style()

@@ -1,43 +1,37 @@
 \begin{table}[h]
-\caption{\textbf{Simulation benchmark.} Six estimators on the four benchmark processes and on four seconds of the AR(1) process, 200 repetitions each. The estimate is the timescale each estimator reports: $\tau$ for the AR(1) estimators, the envelope decay of the oscillator and the most important non-rhythmic mode of the AR(7) for the AR($p$) estimators. The true value is 200 ms for every autoregressive process; the power law has none. Order is the median BIC selection. Unexplained variance is the fraction of the $\log_{10}$ spectrum, or of the autocorrelation, that the fitted model leaves unexplained, median across repetitions.}\label{tab:s_benchmark}
-\begin{tabular}{llrrrrr}
+\caption{\textbf{Simulation benchmark.} Six estimators on the three benchmark processes, 200 repetitions of 100 s each, and on 4 s records of the AR(1) process, 40 repetitions. The estimate is the timescale each estimator reports: $\tau$ for the AR(1) estimators, the envelope decay of the oscillator and the most important non-rhythmic mode of the AR(7) for the AR($p$) estimators; the true value is 200 ms in every case. Mode gives the kind of the reported mode, a real pole or a conjugate pair with its median frequency. $p$ is the median BIC order. Unexplained variance is the fraction of the $\log_{10}$ spectrum, or of the autocorrelation, that the fitted model leaves unexplained, median across repetitions.}\label{tab:s_benchmark}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llrrlrrr}
 \toprule
-Process & Estimator & $\hat\tau$ (ms) & 10--90\% (ms) & Order & Unexpl.\ PSD (\%) & Unexpl.\ ACF (\%) \\
+Process & Estimator & \shortstack[c]{$\hat\tau$ \\ (ms)} & \shortstack[c]{10--90\% \\ (ms)} & Mode & $p$ & \shortstack[c]{Unexpl. \\ PSD (\%)} & \shortstack[c]{Unexpl. \\ ACF (\%)} \\
 \midrule
-AR(1), 100 s & AR(1), time & 198 & 183--214 & 1 & 0.7 & 0.1 \\
- & AR(1), ACF & 199 & 168--239 & 1 & 0.7 & 0.05 \\
- & AR(1), PSD & 201 & 184--216 & 1 & 0.7 & 0.1 \\
- & AR($p$), time & 198 & 183--213 & 1 & 0.7 & 0.1 \\
- & AR($p$), ACF & 198 & 161--238 & 1 & 0.7 & 0.05 \\
- & AR($p$), PSD & 201 & 184--216 & 1 & 0.7 & 0.1 \\
+AR(1) & AR(1), time & 198 & 183--214 & real & 1 & 0.7 & 0.1 \\
+ & AR(1), ACF & 199 & 168--239 & real & 1 & 0.7 & 0.05 \\
+ & AR(1), PSD & 201 & 184--216 & real & 1 & 0.7 & 0.1 \\
+ & AR($p$), time & 198 & 183--213 & real & 1 & 0.7 & 0.1 \\
+ & AR($p$), ACF & 198 & 161--238 & real (96\%) & 1 & 0.7 & 0.05 \\
+ & AR($p$), PSD & 201 & 184--216 & real & 1 & 0.7 & 0.1 \\
 \midrule
-AR(2) oscillator & AR(1), time & 251 & 249--253 & 1 & 26.7 & 99.8 \\
- & AR(1), ACF & 10.2 & 10.1--10.3 & 1 & 38.5 & 79.5 \\
- & AR(1), PSD & 140 & 133--148 & 1 & 26.8 & 99.5 \\
- & AR($p$), time & 201 & 189--212 & 2 & 0.2 & 0.3 \\
- & AR($p$), ACF & 202 & 179--228 & 3 & 15.1 & 0.08 \\
- & AR($p$), PSD & 200 & 188--212 & 3 & 0.2 & 0.3 \\
+AR(2) oscillator & AR(1), time & 251 & 249--253 & real & 1 & 26.7 & 99.8 \\
+ & AR(1), ACF & 10.2 & 10.1--10.3 & real & 1 & 38.5 & 79.5 \\
+ & AR(1), PSD & 140 & 133--148 & real & 1 & 26.8 & 99.5 \\
+ & AR($p$), time & 201 & 189--212 & pair, 10.0 Hz & 2 & 0.2 & 0.3 \\
+ & AR($p$), ACF & 202 & 179--228 & pair, 10.0 Hz & 3 & 15.1 & 0.08 \\
+ & AR($p$), PSD & 200 & 188--212 & pair, 10.0 Hz & 3 & 0.2 & 0.3 \\
 \midrule
-AR(7) & AR(1), time & 1565 & 1436--1705 & 1 & 67.2 & 10.7 \\
- & AR(1), ACF & 180 & 151--215 & 1 & 67.5 & 2.8 \\
- & AR(1), PSD & 20000$^\dagger$ & 20000$^\dagger$ & 1 & 67.2 & 12.8 \\
- & AR($p$), time & 195 & 177--219 & 8 & 0.03 & 0.2 \\
- & AR($p$), ACF & 190 & 94--244 & 4 & 11.3 & 0.05 \\
- & AR($p$), PSD & 196 & 176--218 & 8 & 0.03 & 0.2 \\
+AR(7) & AR(1), time & 1565 & 1436--1705 & real & 1 & 67.2 & 10.7 \\
+ & AR(1), ACF & 180 & 151--215 & real & 1 & 67.5 & 2.8 \\
+ & AR(1), PSD & 20000$^\dagger$ & 20000$^\dagger$ & real & 1 & 67.2 & 12.8 \\
+ & AR($p$), time & 195 & 177--219 & real & 8 & 0.03 & 0.2 \\
+ & AR($p$), ACF & 190 & 94--244 & real (90\%) & 4 & 11.3 & 0.05 \\
+ & AR($p$), PSD & 196 & 176--218 & real & 8 & 0.03 & 0.2 \\
 \midrule
-Power law & AR(1), time & 6.32 & 5.76--7.19 & 1 & 36.2 & 58.4 \\
- & AR(1), ACF & 91 & 74--112 & 1 & 124 & 5.3 \\
- & AR(1), PSD & 4.38 & 4.26--4.49 & 1 & 26.7 & 66.6 \\
- & AR($p$), time & 13.8 & 13.0--14.6 & 20 & 4.5 & 4.2 \\
- & AR($p$), ACF & 91 & 74--112 & 1 & 124 & 5.3 \\
- & AR($p$), PSD & 12.9 & 12.0--13.8 & 20 & 4.2 & 6.5 \\
-\midrule
-AR(1), 4 s & AR(1), time & 169 & 109--259 & 1 & 35.2 & 6.3 \\
- & AR(1), ACF & 181 & 65--384 & 1 & 35.3 & 4.0 \\
- & AR(1), PSD & 181 & 94--406 & 1 & 35.2 & 5.9 \\
- & AR($p$), time & 167 & 110--253 & 1 & 35.2 & 6.3 \\
- & AR($p$), ACF & 189 & 85--419 & 2 & 92.3 & 1.2 \\
- & AR($p$), PSD & 181 & 93--406 & 1 & 35.1 & 5.7 \\
+AR(1), 4 s & AR(1), time & 155 & 116--298 & real & 1 & 35.1 & 6.3 \\
+ & AR(1), ACF & 200 & 84--368 & real & 1 & 35.1 & 4.0 \\
+ & AR(1), PSD & 197 & 110--495 & real & 1 & 35.1 & 5.5 \\
+ & AR($p$), time & 153 & 119--300 & real & 1 & 35.1 & 6.5 \\
+ & AR($p$), ACF & 221 & 110--377 & real (60\%) & 2 & 95.7 & 0.7 \\
+ & AR($p$), PSD & 197 & 109--495 & real & 1 & 35.1 & 5.5 \\
 \bottomrule
 \end{tabular}
 \footnotetext[\dagger]{Upper bound of the search range.}

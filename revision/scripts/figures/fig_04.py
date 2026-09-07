@@ -3,6 +3,8 @@
 Run on its own from any directory: python scripts/figures/fig_04.py
 """
 # %%
+import copy
+
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
@@ -15,23 +17,32 @@ from fig_common import (
 # %%
 DURATION, WELCH_WIN_S = 100.0, 4.0
 T_FINITE = 20 * BENCH_TAU            # the finite sample: twenty timescales
+FINITE_NLAGS = min(int(T_FINITE * FS) // 3, 250)   # lags at most a third of the record, as for the recordings
 FINITE_SEED = 13                     # run_02_benchmark's seed for that condition
+N_REPS_FINITE = 40                   # and its number of repetitions
 bench = pd.read_csv(RES / 'benchmark_main.csv.gz')
 long = bench[np.isclose(bench['duration'], DURATION)]
 finite = bench[(bench['process'] == 'ar1') & np.isclose(bench['duration'], T_FINITE)]
 
 
-def median_repetition(table):
-    """The repetition whose two AR(p) estimates are jointly closest to their
-    medians: the finite-sample example is a member of the distribution drawn
-    under it, and the most typical one, rather than an arbitrary draw."""
-    acf = table[table['method'] == 'arp_acf'].set_index('rep')['tau_relaxation']
-    psd = table[table['method'] == 'arp_psd'].set_index('rep')['tau_relaxation']
-    dist = (np.log(acf / acf.median()).abs() + np.log(psd / psd.median()).abs())
-    return int(dist.idxmin())
+def finite_records():
+    """The finite-sample repetitions, prepared exactly as the benchmark stage
+    prepares them (same seeding as tsmodes.benchmark)."""
+    proc = AR1(tau=BENCH_TAU)
+    return [prepare(proc.simulate(T_FINITE, FS, np.random.default_rng([FINITE_SEED, r])),
+                    FS, welch_win_s=WELCH_WIN_S, nlags=FINITE_NLAGS)
+            for r in range(N_REPS_FINITE)]
 
 
-FINITE_REP = median_repetition(finite)
+def averaged(signals):
+    """One Signal carrying the mean PSD and mean ACF of many short records:
+    what a short recording looks like once the sampling noise of single
+    records is averaged over repetitions (trials), leaving the finite-sample
+    bias and a little of the noise."""
+    out = copy.copy(signals[0])
+    out.powers = np.mean([s.powers for s in signals], axis=0)
+    out.corrs = np.mean([s.corrs for s in signals], axis=0)
+    return out
 
 # (process, label, table, robust fit?).  Every column has the same
 # constructed timescale, BENCH_TAU = 200 ms: the AR(1)'s tau, the AR(2)
@@ -59,36 +70,54 @@ def target(df, proc):
 
 with plt.rc_context({'text.usetex': True}):
     n = len(COLS)
-    fig = plt.figure(figsize=(TEXT_WIDTH, TEXT_WIDTH * 7.4 / 8.4))
-    gs = fig.add_gridspec(4, n, hspace=0.8, wspace=0.5, height_ratios=[0.7, 1.0, 1.0, 1.15])
+    fig = plt.figure(figsize=(TEXT_WIDTH, TEXT_WIDTH * 7.9 / 8.4))
+    gs = fig.add_gridspec(4, n, hspace=0.8, wspace=0.5, height_ratios=[1.05, 1.0, 1.0, 1.15])
     col_vals, tau_axes = {}, []
     for j, (proc, label, df, robust) in enumerate(COLS):
         finite_col = j == n - 1
         seconds = T_FINITE if finite_col else DURATION
-        # The finite sample is repetition FINITE_REP of the benchmark condition
-        # (same seeding as tsmodes.benchmark), analysed exactly as the long
-        # recordings, so the duration is the only difference.
-        rng = (np.random.default_rng([FINITE_SEED, FINITE_REP]) if finite_col
-               else np.random.default_rng(3))
-        signal = prepare(proc.simulate(seconds, FS, rng), FS, welch_win_s=WELCH_WIN_S)
+        if finite_col:
+            # Rows b and c show the PSD and ACF averaged over the repetitions
+            # of the benchmark condition, and the fits to those averages; row
+            # a shows the first record; row d the fits to each record.
+            records = finite_records()
+            trace = records[0].sig
+            signal = averaged(records)
+        else:
+            trace = proc.simulate(seconds, FS, np.random.default_rng(3))
+            signal = prepare(trace, FS, welch_win_s=WELCH_WIN_S)
         fit_psd = estimate(signal, 'arp_psd', robust=robust)
         fit_acf = estimate(signal, 'arp_acf', robust=robust)
 
-        # -- row a: the signal ---------------------------------------------------
+        # -- row a: the signal, with the whole record in an inset ----------------
         ax = fig.add_subplot(gs[0, j])
         t = np.arange(int(min(1.5, seconds) * FS)) / FS
-        y = signal.sig[:len(t)]
+        y = trace[:len(t)]
         ax.plot(t, y / np.std(y), color=DATA_COLOR, lw=0.5)
         ax.set_xlim(0, 1.5)
-        ax.set_ylim(-4, 4)
+        # The trace lives in the lower part of the panel; the inset sits above
+        # it, so the two never overlap.
+        ax.set_ylim(-4, 10)
         ax.set_xticks([0, 1])
         ax.set_yticks([])
         ax.set_title(label)
         ax.spines['left'].set_visible(False)
         if j == 0:
-            ax.set_ylabel('Signal')
+            ax.set_ylabel('Signal', y=0.3)
             P.panel_label(ax, 'a', dx=-0.32, dy=1.35, fontsize=9)
         ax.set_xlabel('Time (s)')
+        ins = ax.inset_axes([0.0, 0.66, 1.0, 0.32])
+        t_all = np.arange(len(trace)) / FS
+        ins.plot(t_all, trace / np.std(trace), color=DATA_COLOR, lw=0.2)
+        ins.set_xlim(0, seconds)
+        ins.set_xticks([0, seconds])
+        ins.set_xticklabels(['0', f'{seconds:g} s'], fontsize=5)
+        ins.tick_params(axis='x', length=1.5, pad=1)
+        ins.set_yticks([])
+        for side in ('left', 'top', 'right'):
+            ins.spines[side].set_visible(False)
+        ins.spines['bottom'].set_linewidth(0.5)
+        ins.patch.set_alpha(0.0)
 
         # -- row b: the spectrum and its AR(p) fit -------------------------------
         ax = fig.add_subplot(gs[1, j])

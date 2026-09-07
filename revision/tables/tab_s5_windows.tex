@@ -1,17 +1,18 @@
 \begin{table}[h]
-\caption{\textbf{Windowing.} For the AR($p$) spectral estimate: the window duration, in units of the estimated timescale, beyond which the median estimate stays within 20\% of its value in the longest window, and the median estimate in the shortest window relative to the longest. The remaining columns give, for each estimator, the spread of estimates across the longest windows divided by the AR(1) sampling bound of eq. \ref{eq:finite} at that duration.}\label{tab:s_windows}
-\begin{tabular}{lrrrrrrr}
+\caption{\textbf{Analysis window and recording window.} The first two columns give the median AR($p$) spectral timescale with the Welch window halved or doubled, relative to its value at the window used. The rest concern the windowing analysis: the window duration, in units of the estimated timescale, beyond which the median AR($p$) spectral estimate stays within 20\% of its value in the longest window; the median estimate in the shortest window relative to the longest; and the spread of estimates across the longest windows divided by the AR(1) sampling bound of eq. \ref{eq:finite} at that duration, its median and maximum across the five estimators.}\label{tab:s_windows}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
 \toprule
-Recording & $T/\hat\tau$ to 20\% & Shortest/longest & AR(1), time & AR(1), ACF & AR(1), PSD & AR($p$), ACF & AR($p$), PSD \\
+Recording & \shortstack[c]{Welch \\ $\times\tfrac12$} & \shortstack[c]{Welch \\ $\times 2$} & \shortstack[c]{$T/\hat\tau$ \\ to 20\%} & \shortstack[c]{Shortest/ \\ longest} & \shortstack[c]{Excess \\ median} & \shortstack[c]{Excess \\ max} \\
 \midrule
-Human fMRI & 42 & 0.84 & 6 & 7 & 6 & 7 & 5 \\
-Human EEG & 563 & 0.29 & 4 & 23 & 22 & 20 & 12 \\
-Human MEG & 2316 & 0.47 & 16 & 44 & 34 & 22 & 19 \\
-Human ECoG & 320 & 0.44 & 5 & 17 & 10 & 15 & 8 \\
-Macaque ECoG & 534 & 0.60 & 17 & 18 & 23 & 33 & 30 \\
-Mouse LFP & 1750 & 0.29 & 5 & 6 & 5 & 8 & 8 \\
-Mouse spikes & 136 & 0.13 & 24 & 11 & 15 & 7 & 14 \\
-Rat LFP & 1784 & 0.28 & 19 & 20 & 18 & 11 & 18 \\
+Human fMRI & 0.82 & 1.09 & 42 & 0.84 & 6 & 7 \\
+Human EEG & 1.49 & 1.55 & 563 & 0.29 & 20 & 23 \\
+Human MEG & 0.94 & 1.11 & 2316 & 0.47 & 22 & 44 \\
+Human ECoG & 1.10 & 1.01 & 320 & 0.44 & 10 & 17 \\
+Macaque ECoG & 0.85 & 0.86 & 534 & 0.60 & 23 & 33 \\
+Mouse LFP & 1.00 & 1.01 & 1750 & 0.29 & 6 & 8 \\
+Mouse spikes & 1.06 & 0.91 & 136 & 0.13 & 14 & 24 \\
+Rat LFP & 1.04 & 0.97 & 1784 & 0.28 & 18 & 20 \\
 \bottomrule
 \end{tabular}
 \end{table}

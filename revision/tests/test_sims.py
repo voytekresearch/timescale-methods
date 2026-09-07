@@ -5,13 +5,13 @@ import pytest
 from scipy.signal import welch
 
 from tsmodes.modes import ar_acf, ar_to_poles
-from tsmodes.sims import (AR1, AR1Mixture, AR1PlusSine, AR2Damped, PowerLaw,
-                          SumAR1, ar_psd_density, davies_harte, sim_ar_process,
+from tsmodes.sims import (AR1, AR1Mixture, AR1PlusSine, AR2Damped,
+                          SumAR1, ar_psd_density, sim_ar_process,
                           tau_to_phi)
 
 FS = 500.0
 PROCESSES = [AR1(tau=0.05), AR1PlusSine(tau=0.05, f_osc=10.0, snr=1.0), AR2Damped(tau=0.05, f_osc=10.0),
-             SumAR1(tau0=0.01, tau1=0.2, weight=0.5), PowerLaw(d=0.45), AR1Mixture()]
+             SumAR1(tau0=0.01, tau1=0.2, weight=0.5), AR1Mixture()]
 
 
 def _welch(sig, fs, win_s=2.0):
@@ -61,35 +61,12 @@ def test_integrated_timescale_of_mixture_is_variance_weighted():
     assert proc.tau_integrated(FS) == pytest.approx(numeric, rel=1e-3)
 
 
-def test_power_law_integrated_timescale_diverges():
-    assert not np.isfinite(PowerLaw(d=0.45).tau_integrated(FS))
-
-
-def test_power_law_acf_decays_as_a_power_law():
-    proc = PowerLaw(d=0.4)
-    lags = np.array([10.0, 100.0, 1000.0])
-    rho = proc.acf(lags)
-    # rho(k) ~ k^(2d - 1)
-    slope = np.polyfit(np.log(lags), np.log(rho), 1)[0]
-    assert slope == pytest.approx(2 * proc.d - 1, abs=0.02)
-
-
 def test_ar2_damped_poles_match_requested_tau_and_frequency():
     proc = AR2Damped(tau=0.08, f_osc=12.0)
     poles = ar_to_poles(proc.phi(FS))
     r = np.abs(poles[0])
     assert -1 / (FS * np.log(r)) == pytest.approx(0.08, rel=1e-10)
     assert FS * abs(np.angle(poles[0])) / (2 * np.pi) == pytest.approx(12.0, rel=1e-10)
-
-
-def test_davies_harte_reproduces_the_target_autocovariance():
-    rng = np.random.default_rng(2)
-    phi = np.array([0.9])
-    n = 4096
-    acov = ar_acf(phi, n, normalize=False)
-    reps = np.array([davies_harte(acov, n, rng) for _ in range(200)])
-    emp = np.array([np.mean(reps[:, :n - k] * reps[:, k:]) for k in range(6)])
-    assert np.allclose(emp / emp[0], acov[:6] / acov[0], atol=0.02)
 
 
 def test_sim_ar_process_matches_theoretical_variance():

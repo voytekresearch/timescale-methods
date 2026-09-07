@@ -13,7 +13,7 @@ import pytest
 from tsmodes.estimators import (estimate, fit_ar_acf, fit_ar_psd, prepare,
                                 psd_fit_points)
 from tsmodes.modes import ARModes, ar_to_poles, group_poles, poles_to_ar
-from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped, PowerLaw,
+from tsmodes.sims import (AR1, AR1PlusSine, AR2Damped,
                           sim_ar_process)
 
 FS = 500.0
@@ -24,7 +24,6 @@ PROCESSES = [
     (AR1PlusSine(tau=TAU, f_osc=10.0, snr=1.0), 'ar1_sine'),
     (AR1PlusSine(tau=TAU, f_osc=4.0, snr=4.0), 'ar1_sine_strong'),
     (AR2Damped(tau=TAU, f_osc=10.0), 'ar2_damped'),
-    (PowerLaw(d=0.45), 'power_law'),
 ]
 
 

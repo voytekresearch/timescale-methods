@@ -31,7 +31,7 @@ from tsmodes.estimators import ESTIMATOR_LABELS
 from tsmodes.finite import (ar1_tau_ci, ar1_tau_moments, phi_of_tau,
                             relative_bias_asymptotic, relative_sd_asymptotic,
                             sample_tau_finite, duration_for_relative_sd)
-from tsmodes.sims import AR1, AR2_RHYTHM, AR2Damped, ARpModes, PowerLaw
+from tsmodes.sims import AR1, AR2_RHYTHM, AR2Damped, ARpModes
 
 ROOT = Path(__file__).resolve().parents[1]
 FIG, RES = ROOT / 'figures', ROOT / 'results'
@@ -49,9 +49,8 @@ METHODS = ['ar1_direct', 'arp_direct', 'ar1_acf', 'arp_acf', 'ar1_psd', 'arp_psd
 OTHER = [
     AR2Damped(tau=AR2_RHYTHM[0], f_osc=AR2_RHYTHM[1]),
     ARpModes(),
-    PowerLaw(d=0.45),
 ]
-OTHER_LABELS = ['AR(2) oscillator', ARpModes().label, 'Power law']
+OTHER_LABELS = ['AR(2) oscillator', ARpModes().label]
 
 
 def prep_for(duration):

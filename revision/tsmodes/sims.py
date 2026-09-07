@@ -24,7 +24,6 @@ that ``int_0^{fs/2} S(f) df = Var(x)``, matching ``scipy.signal.welch``.
 from dataclasses import dataclass, field
 
 import numpy as np
-from scipy.special import gammaln
 
 from .modes import ARModes, ar_acf, ar_psd, ar_to_poles, poles_to_ar
 
@@ -66,31 +65,6 @@ def ar_psd_density(phi, freqs, fs, sigma2=1.0):
     k = np.arange(1, len(phi) + 1)
     z_inv = np.exp(-2j * np.pi * np.outer(freqs, k) / fs)
     return (2.0 * sigma2 / fs) / np.abs(1.0 - z_inv @ phi) ** 2
-
-
-def davies_harte(acov, n, rng):
-    """Exact circulant-embedding simulation of a stationary Gaussian process.
-
-    ``acov`` must hold gamma(0), ..., gamma(n).
-    """
-    acov = np.asarray(acov, dtype=float)
-    if len(acov) < n + 1:
-        raise ValueError('Need autocovariance up to lag n.')
-    c = np.concatenate([acov[: n + 1], acov[n - 1:0:-1]])
-    lam = np.fft.fft(c).real
-    if lam.min() < -1e-8 * lam.max():
-        lam = np.clip(lam, 0.0, None)  # nearest PSD embedding
-    m = len(c)
-
-    z = rng.standard_normal(m)
-    y = np.zeros(m, dtype=complex)
-    y[0] = np.sqrt(lam[0]) * z[0]
-    y[n] = np.sqrt(lam[n]) * z[n]
-    half = np.arange(1, n)
-    y[half] = np.sqrt(lam[half] / 2.0) * (z[half] + 1j * z[m - half])
-    y[m - half] = np.conj(y[half])
-    x = np.fft.fft(y).real / np.sqrt(m)
-    return x[:n]
 
 
 def integrated_timescale_from_acf(rho, fs):
@@ -346,51 +320,6 @@ class SumAR1(Process):
 
 
 @dataclass(kw_only=True)
-class PowerLaw(Process):
-    """Long-memory ARFIMA(0, d, 0): a scale-free negative control.
-
-    ``S(f) ~ |2 sin(pi f / fs)|^{-2d}``, so the low-frequency spectral exponent
-    is ``chi = 2d``.  The ACF decays as a power law, the integrated timescale
-    diverges, and no finite characteristic tau exists.
-    """
-
-    d: float = 0.45
-
-    def __post_init__(self):
-        self.name = 'power_law'
-        self.label = f'Power law (ARFIMA d={self.d:g}, $\\chi$={2*self.d:g})'
-        self.tau_true = np.nan
-        self.params = {'d': self.d, 'chi': 2 * self.d}
-
-    def acf(self, lags, fs=None):
-        lags = np.asarray(lags, dtype=float)
-        d = self.d
-        return np.exp(gammaln(1 - d) - gammaln(d)
-                      + gammaln(lags + d) - gammaln(1 + lags - d))
-
-    def acov(self, nlags):
-        d = self.d
-        k = np.arange(nlags + 1, dtype=float)
-        var = np.exp(gammaln(1 - 2 * d) - 2 * gammaln(1 - d))
-        return var * self.acf(k)
-
-    def simulate(self, n_seconds, fs, rng):
-        n = int(round(n_seconds * fs))
-        return davies_harte(self.acov(n), n, rng)
-
-    def psd(self, freqs, fs):
-        freqs = np.asarray(freqs, dtype=float)
-        w = np.pi * freqs / fs
-        with np.errstate(divide='ignore'):
-            base = np.abs(2 * np.sin(w)) ** (-2 * self.d)
-        base = np.where(freqs == 0, np.inf, base)
-        return (2.0 / fs) * base
-
-    def tau_integrated(self, fs, max_lag_s=None):
-        return np.inf if self.d > 0 else 0.0
-
-
-@dataclass(kw_only=True)
 class AR1PlusAR2(Process):
     """Aperiodic relaxation plus a *broadband* stochastic rhythm.
 
@@ -564,7 +493,7 @@ def arp_process(choice='7'):
 class AR1Mixture(Process):
     """A log-uniform mixture of independent AR(1) relaxations.
 
-    Approximates a power law over the band spanned by the component
+    Its spectrum falls smoothly over the band spanned by the component
     timescales while remaining short-memory, so the integrated timescale
     exists but is dominated by the slowest components.
     """
