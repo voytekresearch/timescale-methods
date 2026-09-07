@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "timescales"
+description = "Timescale simulation, estimation and interpretation methods."
+readme = "README.rst"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "The Voytek Lab", email = "voyteklab@gmail.com" }]
+maintainers = [{ name = "Ryan Hammonds", email = "rhammonds@ucsd.edu" }]
+keywords = [
+    "neuroscience", "timescales", "power spectra", "autocorrelation",
+    "acf", "autoregressive", "electrophysiology",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3",
+]
+dynamic = ["version", "dependencies"]
+
+[project.optional-dependencies]
+tests = ["pytest", "pytest-cov"]
+paper = ["pandas", "dvc"]
+all = ["timescales[tests,paper]"]
+
+[project.urls]
+Homepage = "https://github.com/voytekresearch/timescale-methods"
+Source = "https://github.com/voytekresearch/timescale-methods"
+"Bug Reports" = "https://github.com/voytekresearch/timescale-methods/issues"
+
+[tool.setuptools.packages.find]
+include = ["timescales*"]
+
+[tool.setuptools.package-data]
+"timescales.tests" = ["data/*.npz"]
+
+[tool.setuptools.dynamic]
+version = { attr = "timescales.version.__version__" }
+dependencies = { file = ["requirements.txt"] }
+
+[tool.pytest.ini_options]
+testpaths = ["timescales", "revision/tests"]
