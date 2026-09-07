@@ -15,6 +15,7 @@ from fig_common import (
 # %%
 DURATION, WELCH_WIN_S = 100.0, 4.0
 T_FINITE = 20 * BENCH_TAU            # the finite sample: twenty timescales
+FINITE_LAGS_S = 10 * BENCH_TAU       # and its ACF, out to ten timescales of lag
 bench = pd.read_csv(RES / 'benchmark_main.csv.gz')
 long = bench[np.isclose(bench['duration'], DURATION)]
 finite = bench[(bench['process'] == 'ar1') & np.isclose(bench['duration'], T_FINITE)]
@@ -52,10 +53,12 @@ with plt.rc_context({'text.usetex': True}):
         rng = np.random.default_rng(3)
         finite_col = j == n - 1
         seconds = T_FINITE if finite_col else DURATION
-        # The finite sample is analysed exactly as the long recordings (same
-        # Welch window, same lags), so the duration is the only difference;
-        # see FINITE_DURATION in run_02_benchmark for why not the quarter rule.
-        signal = prepare(proc.simulate(seconds, FS, rng), FS, welch_win_s=WELCH_WIN_S)
+        # The finite sample is analysed with the long recordings' Welch window,
+        # so the duration is the only difference in the spectrum; its ACF runs
+        # to ten timescales of lag (FINITE_LAGS_S in run_02_benchmark) so the
+        # sampling noise of a short record's autocorrelation is visible.
+        signal = prepare(proc.simulate(seconds, FS, rng), FS, welch_win_s=WELCH_WIN_S,
+                        nlags_s=FINITE_LAGS_S if finite_col else None)
         fit_psd = estimate(signal, 'arp_psd', robust=robust)
         fit_acf = estimate(signal, 'arp_acf', robust=robust)
 
@@ -95,14 +98,17 @@ with plt.rc_context({'text.usetex': True}):
 
         # -- row c: the autocorrelation and its AR(p) fit ------------------------
         ax = fig.add_subplot(gs[2, j])
-        nlags = min(len(signal.corrs) - 1, 300)     # 0.6 s, three timescales
+        nlags = len(signal.corrs) - 1               # every lag the fit used
         lags = np.arange(nlags + 1) / FS
         ax.plot(lags, signal.corrs[:nlags + 1], color=DATA_COLOR, lw=1.0)
         ax.plot(lags, fit_acf.params['height'] * ar_acf_fft(fit_acf.phi, nlags)
                 + fit_acf.params['acf_offset'], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-        ax.set_xlim(None, 0.5)
-        ax.set_xticks([0, 0.25, 0.5])
+        # Every column shows the lags its fit used: 0.5 s, and 2 s for the
+        # finite sample.
+        lag_max = FINITE_LAGS_S if finite_col else 0.5
+        ax.set_xlim(None, lag_max)
+        ax.set_xticks([0, lag_max / 2, lag_max])
         ax.set_ylim(-1.05, 1.05)
         ax.set_yticks([0, 1])
         if j == 0:

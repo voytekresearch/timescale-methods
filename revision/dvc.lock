@@ -49,8 +49,8 @@ stages:
     deps:
     - path: scripts/run_02_benchmark.py
       hash: md5
-      md5: 14de24dff6d4cd9ad1037d02ae1d8b4b
-      size: 8582
+      md5: 409958c121fd5d385a9f029e4ea9b1bb
+      size: 8957
     - path: tsmodes/__init__.py
       hash: md5
       md5: d41d8cd98f00b204e9800998ecf8427e
@@ -74,16 +74,16 @@ stages:
     outs:
     - path: results/benchmark_main.csv.gz
       hash: md5
-      md5: 0d62a7b11abfd980a65ac39780e53af6
-      size: 781997
+      md5: f93853be50749ea5d33265c7b86eb268
+      size: 770773
     - path: results/benchmark_main_summary.csv
       hash: md5
-      md5: 8605a3f980181cdc611ac8046ba4e850
-      size: 9254
+      md5: 34d00975b4a41c5b685450b038b2b8ff
+      size: 9242
     - path: results/benchmark_main_summary_integrated.csv
       hash: md5
-      md5: 269ed6751924d944c55663d93daf0ad8
-      size: 9481
+      md5: eb7680e9fa28c8adfc541117795802d2
+      size: 9470
     - path: results/population_ar.csv
       hash: md5
       md5: 81bbb3ba6fe647ff6a1dde0b44000e1b
@@ -452,8 +452,8 @@ stages:
       nfiles: 10
     - path: results/benchmark_main.csv.gz
       hash: md5
-      md5: 0d62a7b11abfd980a65ac39780e53af6
-      size: 781997
+      md5: f93853be50749ea5d33265c7b86eb268
+      size: 770773
     - path: results/damped_grid.csv.gz
       hash: md5
       md5: fe0f386d473c4b23e38d312e8f02c5a2
@@ -480,8 +480,8 @@ stages:
       size: 578922
     - path: scripts/figures
       hash: md5
-      md5: 7233c879ed4c71d3c377d847d827b706.dir
-      size: 57740
+      md5: 170b4db45ca4e0c92c41e3e1490f69cb.dir
+      size: 58138
       nfiles: 11
     - path: scripts/plot_figures.py
       hash: md5
@@ -526,8 +526,8 @@ stages:
       size: 70686
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: 13be38cc5094b65cca71f23481a0578c
-      size: 203232
+      md5: 258cc5f57eca5542b2d6e184ecb59a6e
+      size: 206469
     - path: figures/fig_bias.svg
       hash: md5
       md5: 91dbd2b6f266564ce8fe70053f71d986
