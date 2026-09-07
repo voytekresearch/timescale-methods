@@ -292,7 +292,7 @@ For the recordings, a mode was reported only if the fit band could resolve its t
 
 Four processes were simulated in the benchmark, each with a closed-form PSD and ACF, at 500 Hz for 100 s with 200 repetitions: an AR(1) process, an AR(2) oscillator, an AR(7) process, and a power-law process (\tabpanel{tab:s_benchmark}). The three autoregressive processes were constructed with a 200 ms timescale so that the columns of \figpanel{fig:benchmark}{} share one axis. AR(1) with $\tau = 200$ ms served as the positive control. The AR(2) oscillator has poles at $|\lambda| e^{\pm i\theta}$, with $|\lambda| = e^{-1/(\tau f_s)}$ and $\theta = 2\pi f_0/f_s$, where $f_0 = 10$ Hz and $\tau = 200$ ms, corresponding to two cycles. The AR($p$) process is the AR(7) process shown in \figpanel{fig:modes}{}, with relaxations at 200, 20 and 2 ms and oscillations at 10 Hz (150 ms envelope) and 40 Hz (60 ms envelope). Its two slow relaxations have comparable importance and differ by an order of magnitude, while its oscillations persist for more than one cycle, making the 200 ms relaxation the most important non-rhythmic mode.
 
-The finite-sample column in \figpanel{fig:benchmark}{} uses the AR(1) process simulated for four seconds and analyzed with the same 4 s Welch window as the 100 s recordings, with the ACF taken out to 2 s of lag, ten timescales, so that its sampling noise is visible. The power-law process is fractionally differenced noise with $d = 0.45$ \cite{granger_introduction_1980, hosking_fractional_1981}, whose ACF decays as a power law rather than exponentially, so no AR model of finite order reproduces it; it has no timescale to construct.
+The finite-sample column in \figpanel{fig:benchmark}{} uses the AR(1) process simulated for four seconds and analyzed with the same 4 s Welch window and 0.5 s of lags as the 100 s recordings, so that the duration is the only difference. The example drawn in \figpanel{fig:benchmark}{} is the repetition whose two AR($p$) estimates are jointly closest to their medians. The power-law process is fractionally differenced noise with $d = 0.45$ \cite{granger_introduction_1980, hosking_fractional_1981}, whose ACF decays as a power law rather than exponentially, so no AR model of finite order reproduces it; it has no timescale to construct.
 
 The damped-oscillator sweep repeated the AR(2) comparison across envelope decays of 20, 50 and 150 ms and frequencies of 5, 10, 20 and 40 Hz, with 20 repetitions per condition (\tabpanel{tab:s_damped}). For processes that are not AR(1), the target timescale is defined by applying the same rule as the estimator to the true poles: the relaxation time for AR(1), the envelope decay for the AR(2) oscillator, and the most important non-rhythmic mode for the AR(7). All theoretical spectra and autocorrelations were verified against long simulations.
 
@@ -391,12 +391,12 @@ Power law & AR(1), time & 6.32 & 5.76--7.19 & 1 & 36.2 & 58.4 \\
  & AR($p$), ACF & 91 & 74--112 & 1 & 124 & 5.3 \\
  & AR($p$), PSD & 12.9 & 12.0--13.8 & 20 & 4.2 & 6.5 \\
 \midrule
-AR(1), 4 s & AR(1), time & 169 & 109--259 & 1 & 35.2 & 57.9 \\
- & AR(1), ACF & 142 & 74--664 & 1 & 35.3 & 52.1 \\
- & AR(1), PSD & 181 & 94--406 & 1 & 35.2 & 61.9 \\
- & AR($p$), time & 167 & 110--253 & 1 & 35.2 & 58.1 \\
- & AR($p$), ACF & 171 & 79--812 & 1 & 35.9 & 40.9 \\
- & AR($p$), PSD & 181 & 93--406 & 1 & 35.1 & 61.9 \\
+AR(1), 4 s & AR(1), time & 169 & 109--259 & 1 & 35.2 & 6.3 \\
+ & AR(1), ACF & 181 & 65--384 & 1 & 35.3 & 4.0 \\
+ & AR(1), PSD & 181 & 94--406 & 1 & 35.2 & 5.9 \\
+ & AR($p$), time & 167 & 110--253 & 1 & 35.2 & 6.3 \\
+ & AR($p$), ACF & 189 & 85--419 & 2 & 92.3 & 1.2 \\
+ & AR($p$), PSD & 181 & 93--406 & 1 & 35.1 & 5.7 \\
 \bottomrule
 \end{tabular}
 \footnotetext[\dagger]{Upper bound of the search range.}
@@ -502,7 +502,7 @@ Rat LFP & 1784 & 0.28 & 19 & 20 & 18 & 11 & 18 \\
 Duration & AR(1) fits (\%) & AR($p$) fits (\%) \\
 \midrule
 100 s ($T = 500\tau$) & 0.0 & 4.5 \\
-4 s ($T = 20\tau$) & 65.0 & 69.0 \\
+4 s ($T = 20\tau$) & 55.5 & 57.0 \\
 \bottomrule
 \end{tabular}
 \end{table}

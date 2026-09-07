@@ -15,10 +15,23 @@ from fig_common import (
 # %%
 DURATION, WELCH_WIN_S = 100.0, 4.0
 T_FINITE = 20 * BENCH_TAU            # the finite sample: twenty timescales
-FINITE_LAGS_S = 10 * BENCH_TAU       # and its ACF, out to ten timescales of lag
+FINITE_SEED = 13                     # run_02_benchmark's seed for that condition
 bench = pd.read_csv(RES / 'benchmark_main.csv.gz')
 long = bench[np.isclose(bench['duration'], DURATION)]
 finite = bench[(bench['process'] == 'ar1') & np.isclose(bench['duration'], T_FINITE)]
+
+
+def median_repetition(table):
+    """The repetition whose two AR(p) estimates are jointly closest to their
+    medians: the finite-sample example is a member of the distribution drawn
+    under it, and the most typical one, rather than an arbitrary draw."""
+    acf = table[table['method'] == 'arp_acf'].set_index('rep')['tau_relaxation']
+    psd = table[table['method'] == 'arp_psd'].set_index('rep')['tau_relaxation']
+    dist = (np.log(acf / acf.median()).abs() + np.log(psd / psd.median()).abs())
+    return int(dist.idxmin())
+
+
+FINITE_REP = median_repetition(finite)
 
 # (process, label, table, robust fit?).  Every column has the same
 # constructed timescale, BENCH_TAU = 200 ms: the AR(1)'s tau, the AR(2)
@@ -50,15 +63,14 @@ with plt.rc_context({'text.usetex': True}):
     gs = fig.add_gridspec(4, n, hspace=0.8, wspace=0.5, height_ratios=[0.7, 1.0, 1.0, 1.15])
     col_vals, tau_axes = {}, []
     for j, (proc, label, df, robust) in enumerate(COLS):
-        rng = np.random.default_rng(3)
         finite_col = j == n - 1
         seconds = T_FINITE if finite_col else DURATION
-        # The finite sample is analysed with the long recordings' Welch window,
-        # so the duration is the only difference in the spectrum; its ACF runs
-        # to ten timescales of lag (FINITE_LAGS_S in run_02_benchmark) so the
-        # sampling noise of a short record's autocorrelation is visible.
-        signal = prepare(proc.simulate(seconds, FS, rng), FS, welch_win_s=WELCH_WIN_S,
-                        nlags_s=FINITE_LAGS_S if finite_col else None)
+        # The finite sample is repetition FINITE_REP of the benchmark condition
+        # (same seeding as tsmodes.benchmark), analysed exactly as the long
+        # recordings, so the duration is the only difference.
+        rng = (np.random.default_rng([FINITE_SEED, FINITE_REP]) if finite_col
+               else np.random.default_rng(3))
+        signal = prepare(proc.simulate(seconds, FS, rng), FS, welch_win_s=WELCH_WIN_S)
         fit_psd = estimate(signal, 'arp_psd', robust=robust)
         fit_acf = estimate(signal, 'arp_acf', robust=robust)
 
@@ -104,11 +116,8 @@ with plt.rc_context({'text.usetex': True}):
         ax.plot(lags, fit_acf.params['height'] * ar_acf_fft(fit_acf.phi, nlags)
                 + fit_acf.params['acf_offset'], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE)
         ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
-        # Every column shows the lags its fit used: 0.5 s, and 2 s for the
-        # finite sample.
-        lag_max = FINITE_LAGS_S if finite_col else 0.5
-        ax.set_xlim(None, lag_max)
-        ax.set_xticks([0, lag_max / 2, lag_max])
+        ax.set_xlim(None, 0.5)
+        ax.set_xticks([0, 0.25, 0.5])
         ax.set_ylim(-1.05, 1.05)
         ax.set_yticks([0, 1])
         if j == 0:

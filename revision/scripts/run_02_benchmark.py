@@ -49,12 +49,8 @@ WELCH_WIN_S = 4.0
 # the segment, where dividing out the Hann taper amplifies the lag-domain
 # noise fivefold and the ACF fell below -0.7 in half the repetitions.  Kept
 # here so that the figure's every column comes from one table and one
-# constructed timescale.  Its ACF is taken out to ten timescales of lag, the
-# same span in units of tau as the finite-sample panel of fig_bias, so that
-# the sampling noise of a short record's autocorrelation is visible: over
-# half a second (2.5 tau) it is a smooth wiggle, over 2 s it is not.
+# constructed timescale.
 FINITE_DURATION = 20 * BENCH_TAU
-FINITE_LAGS_S = 10 * BENCH_TAU
 N_JOBS = int(os.environ.get('TSMODES_N_JOBS', '12'))
 
 # Four processes, each present to answer one question; the three
@@ -174,8 +170,7 @@ def main():
         print(f'  ar1, {FINITE_DURATION:g} s (finite sample)', flush=True)
         rows.extend(run_condition(AR1(tau=BENCH_TAU), fs=FS, duration=FINITE_DURATION,
                                   n_reps=N_REPS, seed=13, n_jobs=N_JOBS,
-                                  prep_kwargs={'welch_win_s': WELCH_WIN_S,
-                                               'nlags_s': FINITE_LAGS_S}))
+                                  prep_kwargs={'welch_win_s': WELCH_WIN_S}))
         df = pd.DataFrame(rows)
         df.to_csv(cache, index=False, compression='gzip')
     df = add_target_column(df)
