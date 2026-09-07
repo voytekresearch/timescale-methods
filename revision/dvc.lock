@@ -480,8 +480,8 @@ stages:
       size: 578922
     - path: scripts/figures
       hash: md5
-      md5: 604262491645d9be775428d4c32a83db.dir
-      size: 59672
+      md5: 4abfa7d0d15d5cc01cd15b2d7cd4d2fc.dir
+      size: 60885
       nfiles: 11
     - path: scripts/plot_figures.py
       hash: md5
@@ -526,8 +526,8 @@ stages:
       size: 70686
     - path: figures/fig_benchmark.svg
       hash: md5
-      md5: 5226b56f2b8126ace12871f5d0a65c88
-      size: 324248
+      md5: 4d893886b02ad4a7e1c4eac3f8627c29
+      size: 568266
     - path: figures/fig_bias.svg
       hash: md5
       md5: 91dbd2b6f266564ce8fe70053f71d986

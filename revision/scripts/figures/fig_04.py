@@ -6,6 +6,7 @@ Run on its own from any directory: python scripts/figures/fig_04.py
 import copy
 
 import matplotlib.ticker as mticker
+from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,24 +26,36 @@ long = bench[np.isclose(bench['duration'], DURATION)]
 finite = bench[(bench['process'] == 'ar1') & np.isclose(bench['duration'], T_FINITE)]
 
 
-def finite_records():
-    """The finite-sample repetitions, prepared exactly as the benchmark stage
-    prepares them (same seeding as tsmodes.benchmark)."""
-    proc = AR1(tau=BENCH_TAU)
-    return [prepare(proc.simulate(T_FINITE, FS, np.random.default_rng([FINITE_SEED, r])),
-                    FS, welch_win_s=WELCH_WIN_S, nlags=FINITE_NLAGS)
-            for r in range(N_REPS_FINITE)]
+LONG_SEED, N_REPS_LONG = 11, 200     # the 100 s conditions' seed and repetitions
 
 
-def averaged(signals):
-    """One Signal carrying the mean PSD and mean ACF of many short records:
-    what a short recording looks like once the sampling noise of single
-    records is averaged over repetitions (trials), leaving the finite-sample
-    bias and a little of the noise."""
-    out = copy.copy(signals[0])
-    out.powers = np.mean([s.powers for s in signals], axis=0)
-    out.corrs = np.mean([s.corrs for s in signals], axis=0)
-    return out
+def records(proc, seconds, seed, n_reps, nlags=None):
+    """The repetitions of one benchmark condition, prepared exactly as the
+    benchmark stage prepares them (same seeding as tsmodes.benchmark).
+    Returns the first record's trace and the prepared signals, without the
+    traces, which are not needed again."""
+    out, trace = [], None
+    for r in range(n_reps):
+        sig = proc.simulate(seconds, FS, np.random.default_rng([seed, r]))
+        signal = prepare(sig, FS, welch_win_s=WELCH_WIN_S, nlags=nlags)
+        signal.sig = None
+        if trace is None:
+            trace = sig
+        out.append(signal)
+    return trace, out
+
+
+def across(signals):
+    """The mean PSD and ACF across repetitions, as one Signal, and their
+    10th to 90th percentiles across repetitions: the same statistic as the
+    whiskers of row d, so rows b and c show the spread of the data that row d
+    shows in the estimates."""
+    powers = np.array([s.powers for s in signals])
+    corrs = np.array([s.corrs for s in signals])
+    mean = copy.copy(signals[0])
+    mean.powers, mean.corrs = powers.mean(axis=0), corrs.mean(axis=0)
+    band = (np.percentile(powers, [10, 90], axis=0), np.percentile(corrs, [10, 90], axis=0))
+    return mean, band
 
 # (process, label, table, robust fit?).  Every column has the same
 # constructed timescale, BENCH_TAU = 200 ms: the AR(1)'s tau, the AR(2)
@@ -58,6 +71,7 @@ COLS = [
     (AR1(tau=BENCH_TAU), 'Finite sample', finite, False),
 ]
 METHODS = [('arp_acf', 'ACF'), ('arp_psd', 'PSD')]
+BAND_COLOR = '#c8c8c8'               # the 10-90% band across repetitions
 OSCILLATORY_TRUTH = {'ar2_damped'}
 
 
@@ -76,16 +90,17 @@ with plt.rc_context({'text.usetex': True}):
     for j, (proc, label, df, robust) in enumerate(COLS):
         finite_col = j == n - 1
         seconds = T_FINITE if finite_col else DURATION
+        # Rows b and c show, for every column, the PSD and ACF averaged over
+        # the repetitions of the benchmark condition with their 10-90% band
+        # across repetitions, and the fits to the averages; row a shows the
+        # first record; row d the fits to each record.  The band is a hairline
+        # for the 100 s conditions and wide for the 4 s one: the same spread
+        # that row d shows in the estimates.
         if finite_col:
-            # Rows b and c show the PSD and ACF averaged over the repetitions
-            # of the benchmark condition, and the fits to those averages; row
-            # a shows the first record; row d the fits to each record.
-            records = finite_records()
-            trace = records[0].sig
-            signal = averaged(records)
+            trace, reps = records(proc, seconds, FINITE_SEED, N_REPS_FINITE, nlags=FINITE_NLAGS)
         else:
-            trace = proc.simulate(seconds, FS, np.random.default_rng(3))
-            signal = prepare(trace, FS, welch_win_s=WELCH_WIN_S)
+            trace, reps = records(proc, seconds, LONG_SEED, N_REPS_LONG)
+        signal, (psd_band, acf_band) = across(reps)
         fit_psd = estimate(signal, 'arp_psd', robust=robust)
         fit_acf = estimate(signal, 'arp_acf', robust=robust)
 
@@ -123,6 +138,7 @@ with plt.rc_context({'text.usetex': True}):
         ax = fig.add_subplot(gs[1, j])
         m = signal.fit_mask
         f = signal.freqs[m]
+        ax.fill_between(f, psd_band[0][m], psd_band[1][m], color=BAND_COLOR, lw=0, zorder=0)
         ax.loglog(f, signal.powers[m], color=DATA_COLOR, lw=1.0)
         ax.loglog(f, ar_psd(fit_psd.phi, f, FS, fit_psd.offset), color=FIT_COLOR,
                 lw=FIT_LW, ls=FIT_STYLE)
@@ -131,9 +147,10 @@ with plt.rc_context({'text.usetex': True}):
         ax.yaxis.set_minor_locator(mticker.NullLocator())
         if j == 0:
             ax.set_ylabel('Power')
-            ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Data'),
+            ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Mean'),
+                              Patch(color=BAND_COLOR, label='10--90\\%'),
                               proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
-                    loc='lower left', fontsize=6)
+                    loc='lower left', fontsize=5, handlelength=1.2, borderaxespad=0.3)
             P.panel_label(ax, 'b', dx=-0.32, dy=1.18, fontsize=9)
         ax.set_xlabel('Frequency (Hz)')
 
@@ -141,6 +158,8 @@ with plt.rc_context({'text.usetex': True}):
         ax = fig.add_subplot(gs[2, j])
         nlags = len(signal.corrs) - 1               # every lag the fit used
         lags = np.arange(nlags + 1) / FS
+        ax.fill_between(lags, acf_band[0][:nlags + 1], acf_band[1][:nlags + 1],
+                        color=BAND_COLOR, lw=0, zorder=0)
         ax.plot(lags, signal.corrs[:nlags + 1], color=DATA_COLOR, lw=1.0)
         ax.plot(lags, fit_acf.params['height'] * ar_acf_fft(fit_acf.phi, nlags)
                 + fit_acf.params['acf_offset'], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE)
@@ -151,9 +170,10 @@ with plt.rc_context({'text.usetex': True}):
         ax.set_yticks([0, 1])
         if j == 0:
             ax.set_ylabel('Autocorrelation')
-            ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Data'),
+            ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Mean'),
+                            Patch(color=BAND_COLOR, label='10--90\\%'),
                             proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
-                    loc='lower right', fontsize=6)
+                    loc='lower left', fontsize=5, handlelength=1.2, borderaxespad=0.3)
             P.panel_label(ax, 'c', dx=-0.32, dy=1.18, fontsize=9)
         else:
             ax.set_yticklabels([])
