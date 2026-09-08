@@ -1,9 +1,0 @@
-# Requirements for building the documentation site
-sphinx
-sphinx-gallery
-sphinx-book-theme
-sphinx-copybutton
-sphinx-design
-sphinx-remove-toctrees
-numpydoc
-nbsphinx

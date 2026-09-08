@@ -1,6 +1,5 @@
 """Branching simulations."""
 
-from neurodsp.utils.norm import normalize_sig
 
 import numpy as np
 
@@ -59,6 +58,7 @@ def sim_branching(n_seconds, fs, tau, lambda_h, lambda_a=None, mean=None, varian
 
     # Normalize
     if mean is not None or variance is not None:
+        from neurodsp.utils.norm import normalize_sig  # noqa: E402
         sig = normalize_sig(sig, mean=mean, variance=variance)
 
     return sig

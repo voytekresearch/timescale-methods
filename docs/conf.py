@@ -101,13 +101,12 @@ html_show_sourcelink = False
 
 # Configurations for sphinx gallery
 sphinx_gallery_conf = {
-    'examples_dirs': ['figures', 'tutorials'],
-    'gallery_dirs': ['auto_figures', 'auto_tutorials'],
+    'examples_dirs': ['tutorials'],
+    'gallery_dirs': ['auto_tutorials'],
     'backreferences_dir': 'generated',
     'doc_module': ('timescales',),
     'reference_url': {'timescales': None},
     'remove_config_comments': True,
-    'ignore_pattern': r'fig06\.py$',
 }
 
 nb_execution_mode = 'off'

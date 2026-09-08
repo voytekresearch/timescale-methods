@@ -1,0 +1,239 @@
+# Fitting and plotting are separate stages on purpose.
+#
+# Each stage lists only the modules its script imports, so a change is scoped
+# to the work it can actually affect: editing timescales/finite.py rebuilds the
+# finite-sampling and truncation fits, not the mode decomposition.  The
+# general estimators, modes, processes and finite-sample theory live in the
+# installed `timescales` package (../timescales), so the deps point there;
+# what is left under tsmodes/ is this paper's own code: the six-estimator
+# comparison and its settings, the signal preparation, the dataset registry,
+# the Monte-Carlo harness, the figure style and the process constants.
+#
+# Changing a figure used to mean rerunning every fit, because the two lived in
+# one script and nothing recorded what depended on what.  Here each analysis
+# has a `fit` stage that writes tables and a `plot` stage that reads them, so
+# editing an axis label reruns a few seconds of plotting while editing an
+# estimator reruns only the fits that use it.  `dvc repro` works out which.
+#
+# What DVC cannot check is two constants in two files that have to agree:
+# scripts/check_sync.py does that, and both have to be silent.
+
+stages:
+
+  # ---- fits -----------------------------------------------------------
+  fit_modes:
+    cmd: python scripts/run_01_modes.py
+    deps:
+      - scripts/run_01_modes.py
+      - tsmodes/__init__.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - ../timescales/sim/processes.py
+      - tsmodes/constants.py
+    outs:
+      - results/modes_checks.json
+      - results/modes_ground_truth_table.csv
+      - results/modes_estimated_table.csv
+      - results/modes_vs_coefficients_sweep.csv
+      - results/modes_vs_coefficients_repeatability.csv
+
+  fit_benchmark:
+    cmd: python scripts/run_02_benchmark.py --rerun
+    deps:
+      - scripts/run_02_benchmark.py
+      - tsmodes/__init__.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - ../timescales/sim/processes.py
+      - tsmodes/constants.py
+      - tsmodes/benchmark.py
+    outs:
+      - results/benchmark_main.csv.gz
+      - results/benchmark_main_summary.csv
+      - results/benchmark_main_summary_integrated.csv
+      - results/population_ar.csv
+
+  fit_oscillations:
+    cmd: python scripts/run_03_oscillations.py --rerun
+    deps:
+      - scripts/run_03_oscillations.py
+      - tsmodes/__init__.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - ../timescales/sim/processes.py
+      - tsmodes/constants.py
+      - tsmodes/benchmark.py
+    outs:
+      - results/oscillation_sweep.csv.gz
+      - results/damped_grid.csv.gz
+      - results/oscillation_population_orders.csv
+
+  fit_finite:
+    cmd: python scripts/run_04_finite.py
+    deps:
+      - scripts/run_04_finite.py
+      - tsmodes/__init__.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - ../timescales/sim/processes.py
+      - tsmodes/constants.py
+      - tsmodes/benchmark.py
+      - ../timescales/finite.py
+    outs:
+      - results/finite_sampling.csv.gz
+      - results/finite_summary.csv
+      - results/finite_analytic.csv
+
+  fit_realdata:
+    cmd: python scripts/run_05_real_data.py
+    deps:
+      - scripts/run_05_real_data.py
+      - tsmodes/__init__.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - tsmodes/benchmark.py
+      - tsmodes/datasets.py
+      - data
+    outs:
+      - results/real_data_fits.csv
+      - results/real_data_modes.csv
+      - results/real_data_summary.csv
+
+  fit_truncation:
+    cmd: python scripts/run_06_empirical_truncation.py --rerun
+    deps:
+      - scripts/run_06_empirical_truncation.py
+      - tsmodes/__init__.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - tsmodes/benchmark.py
+      - tsmodes/datasets.py
+      - ../timescales/finite.py
+      - data
+    outs:
+      - results/empirical_truncation.csv.gz
+      - results/empirical_truncation_summary.csv
+      - results/empirical_stability_requirements.csv
+
+  # ---- supplementary tables -------------------------------------------
+  # The tables the manuscript quotes, built from the result tables so they
+  # cannot drift from the numbers.  This stage writes tables/ only; putting
+  # them into the manuscript is a separate, deliberate step:
+  #
+  #     python scripts/make_tables.py --write ../overleaf/main.tex
+  #
+  make_tables:
+    cmd: python scripts/make_tables.py --rerun > /dev/null
+    deps:
+      - scripts/make_tables.py
+      # the benchmark stage owns the durations the tables report
+      - scripts/run_02_benchmark.py
+      - tsmodes/__init__.py
+      - tsmodes/constants.py
+      - tsmodes/datasets.py
+      - tsmodes/estimators.py
+      - tsmodes/prep.py
+      - ../timescales/conversions/conv.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      # mode SELECTION for display only: which modes are worth reporting.
+      # Listed here and on plot_figures alone, because it changes no fit --
+      # a reporting change must not invalidate the Monte Carlo stages.
+      - ../timescales/decomposition/select.py
+      - data
+      - results/benchmark_main.csv.gz
+      - results/damped_grid.csv.gz
+      - results/real_data_summary.csv
+      - results/real_data_fits.csv
+      - results/empirical_stability_requirements.csv
+    outs:
+      - results/tables_realdata.json
+      - tables/tab_s1_benchmark.tex
+      - tables/tab_s2_damped.tex
+      - tables/tab_s3_recordings.tex
+      - tables/tab_s4_modes.tex
+      - tables/tab_s5_windows.tex
+      - tables/tab_s6_disagree.tex
+
+  # ---- figures --------------------------------------------------------
+  # Every figure is drawn by one notebook, so it can be edited figure by
+  # figure in Jupyter; this stage executes it headlessly.
+  plot_figures:
+    cmd: python scripts/plot_figures.py
+    deps:
+      - scripts/plot_figures.py
+      - scripts/figures
+      # a figure reads a condition from the stage that defines it: fig_04 the
+      # finite-sample duration, seed and repetitions, fig_s1 the sweep grid
+      - scripts/run_02_benchmark.py
+      - scripts/run_03_oscillations.py
+      - tsmodes/plotting.py
+      - tsmodes/datasets.py
+      - ../timescales/conversions/conv.py
+      - tsmodes/prep.py
+      - tsmodes/estimators.py
+      - ../timescales/ar/core.py
+      - ../timescales/ar/metrics.py
+      - ../timescales/ar/spectral.py
+      - ../timescales/ar/time.py
+      - ../timescales/decomposition/modes.py
+      - ../timescales/decomposition/select.py
+      - ../timescales/sim/processes.py
+      - tsmodes/constants.py
+      - ../timescales/finite.py
+      - data
+      - results/modes_vs_coefficients_repeatability.csv
+      - results/oscillation_sweep.csv.gz
+      - results/damped_grid.csv.gz
+      - results/finite_sampling.csv.gz
+      - results/real_data_fits.csv
+      - results/benchmark_main.csv.gz
+      - results/empirical_truncation_summary.csv
+    outs:
+      - figures/fig_ar1.svg
+      - figures/fig_bias.svg
+      - figures/fig_modes.svg
+      - figures/fig_benchmark.svg
+      - figures/fig_finite.svg
+      - figures/fig_realdata.svg
+      - figures/figS_oscillation_grid.svg
+      - figures/figS_windows.svg

@@ -1,0 +1,262 @@
+"""Fig. 4 -- the AR(p) estimators on four simulated cases (fig_benchmark.svg).
+
+Run on its own from any directory: python scripts/figures/fig_04.py
+"""
+# %%
+import copy
+
+import matplotlib.ticker as mticker
+from matplotlib.patches import Patch
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from fig_common import (
+    AR1, AR2_OSC, ARP, BENCH_TAU, DATA_COLOR, FIT_COLOR, FIT_LW, FIT_STYLE,
+    FS, P, RES, TEXT_WIDTH, ar_acf_fft, ar_psd, estimate, prepare, proxy, save)
+
+# %%
+from run_02_benchmark import DURATION, WELCH_WIN_S
+# The finite-sample condition is defined once, by the stage that simulates it.
+# Restating the duration, seed or repetition count here is how the figure and
+# the table silently drift apart: DVC reruns both stages when the stage script
+# changes, but it cannot know that two constants in two files have to agree.
+from run_02_benchmark import (FINITE_DURATION as T_FINITE, FINITE_NLAGS,
+                              FINITE_SEED, N_REPS_FINITE)
+bench = pd.read_csv(RES / 'benchmark_main.csv.gz')
+long = bench[np.isclose(bench['duration'], DURATION)]
+finite = bench[(bench['process'] == 'ar1') & np.isclose(bench['duration'], T_FINITE)]
+
+
+LONG_SEED, N_REPS_LONG = 11, 200     # the 100 s conditions' seed and repetitions
+
+
+def records(proc, seconds, seed, n_reps, nlags=None):
+    """The repetitions of one benchmark condition, prepared exactly as the
+    benchmark stage prepares them (same seeding as tsmodes.benchmark).
+    Returns the first record's trace and the prepared signals, without the
+    traces, which are not needed again."""
+    out, trace = [], None
+    for r in range(n_reps):
+        sig = proc.simulate(seconds, FS, np.random.default_rng([seed, r]))
+        signal = prepare(sig, FS, welch_win_s=WELCH_WIN_S, nlags=nlags)
+        signal.sig = None
+        if trace is None:
+            trace = sig
+        out.append(signal)
+    return trace, out
+
+
+def across(signals):
+    """The mean PSD and ACF across repetitions, as one Signal, and their
+    10th to 90th percentiles across repetitions: the same statistic as the
+    whiskers of row d, so rows b and c show the spread of the data that row d
+    shows in the estimates."""
+    powers = np.array([s.powers for s in signals])
+    corrs = np.array([s.corrs for s in signals])
+    mean = copy.copy(signals[0])
+    mean.powers, mean.corrs = powers.mean(axis=0), corrs.mean(axis=0)
+    band = (
+        np.percentile(powers, [10, 90], axis=0),
+        np.percentile(corrs, [10, 90], axis=0)
+    )
+    return mean, band
+
+# (process, label, table, robust fit?).  Every column has the same
+# constructed timescale, BENCH_TAU = 200 ms: the AR(1)'s tau, the AR(2)
+# oscillator's envelope decay (the rhythm of fig_bias b), the AR(7)'s
+# dominant relaxation (the process of fig_modes; with TSMODES_ARP=5 the
+# AR(5), whose target is 100 ms) and the finite sample's tau, so that row d
+# can share one axis.  The finite sample is simulated by the benchmark stage
+# too (run_02_benchmark, FINITE_DURATION).
+COLS = [
+    (AR1(tau=BENCH_TAU), 'AR(1)', long[long['process'] == 'ar1'], False),
+    (AR2_OSC, 'AR(2) oscillator', long[long['process'] == 'ar2_damped'], True),
+    (ARP, ARP.label, long[long['process'] == ARP.name], False),
+    (AR1(tau=BENCH_TAU), 'Finite sample', finite, False),
+]
+# The two estimators this figure draws, with their axis labels.  Named
+# apart from a stage's METHODS, which is the full list it runs.
+SHOWN_METHODS = [('arp_acf', 'ACF'), ('arp_psd', 'PSD')]
+BAND_COLOR = '#c8c8c8'               # the 10-90% band across repetitions
+# Which processes report the oscillatory truth rather than the relaxation
+# truth is the stage's decision: it writes the truth column by this set,
+# and the figure reads a different column if the two ever disagree.
+from run_02_benchmark import OSCILLATORY_TRUTH
+
+
+def target(df, proc):
+    """The timescale each AR(p) fit is asked for: the envelope decay for the
+    oscillator, the most important relaxation mode otherwise."""
+    col = 'top_osc_tau' if proc.name in OSCILLATORY_TRUTH else 'tau_relaxation'
+    return df[col].to_numpy(float)
+
+
+with plt.rc_context({'text.usetex': True}):
+    n = len(COLS)
+    fig = plt.figure(figsize=(TEXT_WIDTH, TEXT_WIDTH * 7.9 / 8.4))
+    gs = fig.add_gridspec(
+        4, n,
+        hspace=0.8, wspace=0.5,
+        height_ratios=[1.05, 1.0, 1.0, 1.15]
+    )
+    col_vals, tau_axes = {}, []
+    for j, (proc, label, df, robust) in enumerate(COLS):
+        finite_col = j == n - 1
+        seconds = T_FINITE if finite_col else DURATION
+        # Rows b and c show, for every column, the PSD and ACF averaged over
+        # the repetitions of the benchmark condition with their 10-90% band
+        # across repetitions, and the fits to the averages; row a shows the
+        # first record; row d the fits to each record.  The band is a hairline
+        # for the 100 s conditions and wide for the 4 s one: the same spread
+        # that row d shows in the estimates.
+        if finite_col:
+            trace, reps = records(
+                proc, seconds, FINITE_SEED, N_REPS_FINITE, nlags=FINITE_NLAGS
+            )
+        else:
+            trace, reps = records(proc, seconds, LONG_SEED, N_REPS_LONG)
+        signal, (psd_band, acf_band) = across(reps)
+        fit_psd = estimate(signal, 'arp_psd', robust=robust)
+        fit_acf = estimate(signal, 'arp_acf', robust=robust)
+
+        # -- row a: the signal, with the whole record in an inset ----------------
+        ax = fig.add_subplot(gs[0, j])
+        t = np.arange(int(min(1.5, seconds) * FS)) / FS
+        y = trace[:len(t)]
+        ax.plot(t, y / np.std(y), color=DATA_COLOR, lw=0.5)
+        ax.set_xlim(0, 1.5)
+        # The trace lives in the lower part of the panel; the inset sits above
+        # it, so the two never overlap.
+        ax.set_ylim(-4, 10)
+        ax.set_xticks([0, 1])
+        ax.set_yticks([])
+        ax.set_title(label)
+        ax.spines['left'].set_visible(False)
+        if j == 0:
+            ax.set_ylabel('Signal', y=0.3)
+            P.panel_label(ax, 'a', dx=-0.32, dy=1.35, fontsize=9)
+        ax.set_xlabel('Time (s)')
+        ins = ax.inset_axes([0.0, 0.7, 1.0, 0.32])
+        t_all = np.arange(len(trace)) / FS
+        ins.plot(t_all, trace / np.std(trace), color=DATA_COLOR, lw=0.2)
+        ins.set_xlim(0, 100)
+        # The trace is drawn on a common 0-100 s axis so the four columns are
+        # directly comparable.  A short condition then puts its end tick beside
+        # the origin, where the two labels collide, so it is labelled alone.
+        if seconds > 0.15 * 100:
+            ins.set_xticks([0, seconds])
+            ins.set_xticklabels(['0', f'{seconds:g} s'], fontsize=5)
+        else:
+            ins.set_xticks([seconds])
+            ins.set_xticklabels([f'{seconds:g} s'], fontsize=5, ha='left')
+        ins.tick_params(axis='x', length=1.5, pad=1)
+        ins.set_yticks([])
+        for side in ('left', 'top', 'right'):
+            ins.spines[side].set_visible(False)
+        ins.spines['bottom'].set_linewidth(0.5)
+        ins.patch.set_alpha(0.0)
+
+        # -- row b: the spectrum and its AR(p) fit -------------------------------
+        ax = fig.add_subplot(gs[1, j])
+        m = signal.fit_mask
+        f = signal.freqs[m]
+        ax.fill_between(f, psd_band[0][m], psd_band[1][m], color=BAND_COLOR, lw=0, zorder=0)
+        ax.loglog(f, signal.powers[m], color=DATA_COLOR, lw=1.0)
+        ax.loglog(f, ar_psd(fit_psd.phi, f, FS, fit_psd.offset), color=FIT_COLOR,
+                lw=FIT_LW, ls=FIT_STYLE)
+        ax.set_xticks([1, 10, 100])
+        ax.set_yticks([])
+        ax.yaxis.set_minor_locator(mticker.NullLocator())
+        if j == 0:
+            ax.set_ylabel('Power')
+            ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Mean'),
+                              Patch(color=BAND_COLOR, label='10--90\\%'),
+                              proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
+                    loc='lower left', fontsize=5, handlelength=1.2, borderaxespad=0.3)
+            P.panel_label(ax, 'b', dx=-0.32, dy=1.18, fontsize=9)
+        ax.set_xlabel('Frequency (Hz)')
+
+        # -- row c: the autocorrelation and its AR(p) fit ------------------------
+        ax = fig.add_subplot(gs[2, j])
+        nlags = len(signal.corrs) - 1               # every lag the fit used
+        lags = np.arange(nlags + 1) / FS
+        ax.fill_between(lags, acf_band[0][:nlags + 1], acf_band[1][:nlags + 1],
+                        color=BAND_COLOR, lw=0, zorder=0)
+        ax.plot(lags, signal.corrs[:nlags + 1], color=DATA_COLOR, lw=1.0)
+        ax.plot(lags, fit_acf.params['height'] * ar_acf_fft(fit_acf.phi, nlags)
+                + fit_acf.params['acf_offset'], color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE)
+        ax.axhline(0, color=P.LIGHT, lw=0.6, zorder=0)
+        ax.set_xlim(None, 0.5)
+        ax.set_xticks([0, 0.25, 0.5])
+        ax.set_ylim(-1.05, 1.05)
+        ax.set_yticks([0, 1])
+        if j == 0:
+            ax.set_ylabel('Autocorrelation')
+            ax.legend(handles=[proxy(color=DATA_COLOR, lw=1.2, label='Mean'),
+                            Patch(color=BAND_COLOR, label='10--90\\%'),
+                            proxy(color=FIT_COLOR, lw=FIT_LW, ls=FIT_STYLE, label='AR($p$) fit')],
+                    loc='lower left', fontsize=5, handlelength=1.2, borderaxespad=0.3)
+            P.panel_label(ax, 'c', dx=-0.32, dy=1.18, fontsize=9)
+        else:
+            ax.set_yticklabels([])
+        ax.set_xlabel('Lag (s)')
+
+        # -- row d: what each AR(p) fit reports, on one shared axis --------------
+        ax = fig.add_subplot(gs[3, j], sharey=tau_axes[0] if tau_axes else None)
+        for i, (method, name) in enumerate(SHOWN_METHODS):
+            vals = target(df[df['method'] == method], proc) * 1e3
+            vals = vals[np.isfinite(vals) & (vals > 0)]
+            if not len(vals):
+                continue
+            col_vals.setdefault(j, []).append(np.percentile(vals, [10, 90]))
+            colour = P.METHOD_COLORS[method]
+            bp = ax.boxplot([vals], positions=[i], widths=0.6, whis=(10, 90),
+                            patch_artist=True, showfliers=False,
+                            medianprops=dict(color='k', lw=1.2),
+                            whiskerprops=dict(color=colour, lw=0.9),
+                            capprops=dict(color=colour, lw=0.9))
+            for box in bp['boxes']:
+                box.set(facecolor=colour, alpha=0.6, lw=0.7, edgecolor=colour)
+        truth = proc.tau_true * 1e3
+        if np.isfinite(truth):
+            ax.axhline(truth, color='k', ls='--', lw=1.1)
+        ax.set_yscale('log')
+        ax.set_xlim(-0.7, 1.7)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels([name for _, name in SHOWN_METHODS])
+        ax.set_xlabel('Fit domain')
+
+        if j == 0:
+            ax.set_ylabel('Estimated $\\tau$ (ms)')
+            ax.legend(handles=[proxy(color='k', ls='--', lw=1.1, label='True $\\tau$')],
+                      loc='upper right', fontsize=6, handlelength=1.8)
+            P.panel_label(ax, 'd', dx=-0.32, dy=1.14, fontsize=9)
+        tau_axes.append(ax)      # every column keeps its own tick labels
+
+    # One y-range for the whole row, since every column has the same
+    # constructed timescale: it covers the 10-90% whiskers of every box and
+    # never goes below 5 ms -- the few fits that collapse to a sample or two
+    # are real, but they should not set the axis.  Every column keeps its own
+    # tick labels.
+
+    vals = np.concatenate([v for cols in col_vals.values() for v in cols])
+    lo, hi = max(np.min(vals) / 1.5, 5.0), np.max(vals) * 1.5
+    tau_axes[0].set_ylim(lo, hi)
+
+    # Under a decade or two a LogLocator names almost nothing, so the round
+    # values inside the range are named outright.  Once the range spans more
+    # than about three decades (the finite-sample column's spectral fits reach
+    # the 20 s bound of the search range) only the decades are named, or the
+    # labels overlap.
+
+    steps = (1, 2, 5) if np.log10(hi / lo) < 3.0 else (1,)
+    ticks = [m * 10 ** k for k in range(0, 6) for m in steps if lo <= m * 10 ** k <= hi]
+    for ax in tau_axes:
+        ax.yaxis.set_major_locator(mticker.FixedLocator(ticks))
+        ax.yaxis.set_minor_locator(mticker.NullLocator())
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f'{v:g}'))
+
+    save(fig, 'fig_benchmark.svg')
+
+# %%

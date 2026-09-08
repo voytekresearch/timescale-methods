@@ -9,4 +9,17 @@ from .branching import sim_branching
 from .processes import (Process, AR1, AR1PlusSine, AR2Damped, SumAR1,
                         AR1PlusAR2, ARpModes, AR1Mixture, sim_ar_process,
                         ar_psd_density, integrated_timescale_from_acf)
-from neurodsp.sim import sim_synaptic_kernel
+
+
+def __getattr__(name):
+    """Re-export neurodsp's synaptic kernel without importing neurodsp here.
+
+    The spike, Ornstein-Uhlenbeck and branching simulations need neurodsp;
+    fitting and decomposing a model does not.  Importing it lazily keeps
+    ``import timescales`` to numpy and scipy.  Install with
+    ``pip install timescales[all]`` to use these simulations.
+    """
+    if name == 'sim_synaptic_kernel':
+        from neurodsp.sim import sim_synaptic_kernel
+        return sim_synaptic_kernel
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')

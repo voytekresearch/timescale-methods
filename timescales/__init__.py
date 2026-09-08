@@ -13,4 +13,5 @@ from .conversions import (convert_knee, convert_tau, knee_to_tau, tau_to_knee,
 from .ar import ARPSD, ARACF
 from .decomposition import ARModes, Mode
 from .utils import compute_psd, compute_acf
-from . import ar, conversions, decomposition, finite, sim, utils
+from .data import load_spectrum, load_acf, DATASETS
+from . import ar, conversions, data, decomposition, finite, sim, utils

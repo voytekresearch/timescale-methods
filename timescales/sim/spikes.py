@@ -5,8 +5,6 @@ import warnings
 import numpy as np
 from scipy.signal import convolve
 
-from neurodsp.sim import sim_synaptic_kernel
-from neurodsp.utils.norm import normalize_sig
 
 
 def sim_spikes_synaptic(n_seconds, fs, tau, mu=None, refract=None, isi=None, var_noise=None):
@@ -43,6 +41,7 @@ def sim_spikes_synaptic(n_seconds, fs, tau, mu=None, refract=None, isi=None, var
                       'simulation of tau. Increase tau or fs.')
 
     # Simulate a synaptic kernel
+    from neurodsp.sim import sim_synaptic_kernel
     kernel = sim_synaptic_kernel(10 * tau, fs, 0, tau)
 
     # Simulate probabilities of spiking
@@ -244,6 +243,7 @@ def bin_spikes(spikes, fs, bin_size, mean=None, variance=None):
         spikes_bin = spikes.reshape(-1, bin_size).sum(axis=1)
 
         if mean is not None or variance is not None:
+            from neurodsp.utils.norm import normalize_sig
             spikes_bin = normalize_sig(spikes_bin, mean=mean, variance=variance)
 
         fs_bin = fs / bin_size

@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from neurodsp.utils.norm import normalize_sig
 
 def sim_ou(n_seconds, fs, tau, mean=0., variance=1.):
     """Simulate spikes as an Ornstein-Uhlenbeck process.
@@ -37,6 +36,7 @@ def sim_ou(n_seconds, fs, tau, mean=0., variance=1.):
             (-(sig[ind] - mean) / tau) + sigma * sqrtdt * np.random.randn()
 
     # Enforce exact mean and variance
+    from neurodsp.utils.norm import normalize_sig  # noqa: E402
     sig = normalize_sig(sig, mean=mean, variance=variance)
 
     return sig
