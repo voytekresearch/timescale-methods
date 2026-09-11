@@ -191,8 +191,9 @@ stages:
       - tables/tab_s2_damped.tex
       - tables/tab_s3_recordings.tex
       - tables/tab_s4_modes.tex
-      - tables/tab_s5_windows.tex
-      - tables/tab_s6_disagree.tex
+      - tables/tab_s5_reported.tex
+      - tables/tab_s6_windows.tex
+      - tables/tab_s7_disagree.tex
 
   # ---- figures --------------------------------------------------------
   # Every figure is drawn by one notebook, so it can be edited figure by

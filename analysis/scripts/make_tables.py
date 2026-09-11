@@ -137,7 +137,7 @@ def table(label, caption, header, rows, align, note=None):
 
 def reported_mode(row):
     """Kind and frequency of the mode a benchmark row reports: the AR(1)
-    estimators report a real pole; an AR(p) estimator's reported timescale is
+    estimators report a real pole. An AR(p) estimator's reported timescale is
     matched to the fit's three most important modes."""
     if row['method'].startswith('ar1_'):
         return 'relaxation', 0.0
@@ -170,7 +170,7 @@ def table_s1():
                f'AR(1) process, {N_REPS_FINITE} repetitions. The estimate is the timescale each '
                'estimator reports: $\\tau$ for the AR(1) estimators, the envelope decay of the '
                'oscillator and the most important non-rhythmic mode of the AR(7) for the AR($p$) '
-               'estimators; the true value is 200 ms in every case. Mode gives the kind of the '
+               'estimators. The true value is 200 ms in every case. Mode gives the kind of the '
                'reported mode, a real pole or a conjugate pair with its median frequency. $p$ is '
                'the median BIC order. Unexplained variance is the fraction of the $\\log_{10}$ '
                'spectrum, or of the autocorrelation, that the fitted model leaves unexplained, '
@@ -186,6 +186,28 @@ def table_s1():
 # S2: the damped-oscillator sweep
 # ---------------------------------------------------------------------------
 
+def _envelope_decay(row, f_osc, tol=0.2):
+    """The timescale an AR(p) fit reports for a damped oscillator.
+
+    The envelope decay of the fitted pair at the oscillation frequency, when
+    the fit places one there.  A fit is not obliged to: at f*tau = 0.1 the
+    process completes a tenth of a cycle before decaying, and the low-order
+    fits describe it with two real poles instead of a pair.  Reporting the
+    most important *oscillatory* mode then returns whichever high-frequency
+    pair the model happens to hold, which is not an estimate of anything.  In
+    that case the estimator's own reported timescale is used.
+    """
+    best, best_d = np.nan, np.inf
+    for i in range(3):
+        f, t = row.get(f'mode{i}_freq', np.nan), row.get(f'mode{i}_tau', np.nan)
+        if not (np.isfinite(f) and np.isfinite(t)) or f <= 0:
+            continue
+        d = abs(f - f_osc) / f_osc
+        if d < tol and d < best_d:
+            best, best_d = t, d
+    return best if np.isfinite(best) else row.get('tau_relaxation', np.nan)
+
+
 def table_s2():
     d = pd.read_csv(RES / 'damped_grid.csv.gz')
     rows = []
@@ -193,14 +215,21 @@ def table_s2():
         row = [f'{tau*1e3:.0f}', f'{f:.0f}']
         for m, _ in METHODS:
             s = g[g['method'] == m]
-            v = s['top_osc_tau'] if m.startswith('arp') else s['tau']
+            if m.startswith('arp'):
+                v = s.apply(lambda r: _envelope_decay(r, f), axis=1)
+            else:
+                v = s['tau']
             row.append(f'{v.median() / tau:.2f}')
         rows.append(row)
-    caption = ('\\textbf{Damped-oscillator sweep.} Median estimate divided by the true envelope decay '
-               'for AR(2) oscillators with envelope decays of 20, 50 and 150 ms and frequencies of 5 to '
-               '40 Hz, 20 repetitions of 100 s per condition. The AR($p$) estimators report the envelope '
-               'decay of the fitted oscillatory mode, a conjugate pair at the frequency given in the '
-               'second column; the AR(1) estimators report their single real pole.')
+    caption = ('\\textbf{Damped-oscillator sweep.} Whether each estimator recovers the envelope decay '
+               'of an oscillation it was not told about. Every entry is the median estimate divided by '
+               'the true envelope decay, so 1.00 is exact. Twelve AR(2) oscillators, envelope decays of '
+               '20, 50 and 150 ms crossed with frequencies of 5 to 40 Hz, 20 repetitions of 100 s each. '
+               'The AR(1) estimators are wrong by factors of 0.02 to 133, in a direction and size that '
+               'depend on both the decay and the frequency. The AR($p$) estimators are within 4\\% of '
+               'the envelope decay in eleven of the twelve conditions. In the remaining one, 20 ms at '
+               '5 Hz, the envelope decays within a tenth of a cycle and the fits use real poles rather '
+               'than a conjugate pair, so the entry is the timescale the estimator reports.')
     return table('tab:s_damped', caption,
                  [stack('$\\tau$', '(ms)'), stack('$f$', '(Hz)')]
                  + [stack(*m.split(', ')) for _, m in METHODS], rows, 'rrrrrrrr')
@@ -244,7 +273,8 @@ def _realdata_one(key):
            'welch_win_s': float(w0), 'n_dom': {'0.90': [], '0.95': [], '0.99': []},
            'n_res': [], 'dropped': 0, 'total': 0, 'reported_pair': 0, 'reported_tau': [],
            'reported_freq': [], 'tau_by_window': {'0.5': [], '1': [], '2': []},
-           'floor_traces': 0, 'floor_relative': [], 'n_rep': []}
+           'floor_traces': 0, 'floor_relative': [], 'n_rep': [],
+           'reported_modes': [[], [], []]}
     for trace in data['X']:
         for mult, key_w in ((0.5, '0.5'), (1.0, '1'), (2.0, '2')):
             sig = D.prepare_trace(trace, data, welch_win_s=w0 * mult)
@@ -269,7 +299,12 @@ def _realdata_one(key):
             out['total'] += len(fit.modes.modes)
             # Of the resolvable modes, the ones actually reported: those
             # holding at least the library's minimum share of the variance.
-            out['n_rep'].append(len(_reported(fit, sig, len(sig.corrs) - 1)))
+            rep = _reported(fit, sig, len(sig.corrs) - 1)
+            out['n_rep'].append(len(rep))
+            # the three the figure draws, by rank, for tab:s_reported
+            for r, (mode, share) in enumerate(rep[:3]):
+                out['reported_modes'][r].append(
+                    [float(mode.tau), float(mode.freq), float(share)])
             # The reported mode is the one the library's rule picks
             # (ARModes.tau_relaxation), identified by its timescale.
             tau_rep = fit.tau_relaxation
@@ -315,65 +350,89 @@ def table_s3(stats):
     for key, label in RECORDINGS:
         r, st = s.loc[key], stats[key]
         g = fits[fits['dataset'] == key]
+        kind = mode_summary(g['mode0_kind'].tolist(), g['mode0_freq'].tolist())
         rows.append([label, f'{st["n_traces"]}', f'{st["duration_s"]:.0f}',
-                     ms(r['tau_ar1_psd'] * 1e3), ms(r['tau_arp_psd'] * 1e3),
-                     mode_summary(g['mode0_kind'].tolist(), g['mode0_freq'].tolist()),
+                     ms(r['tau_ar1_psd'] * 1e3),
+                     f'{ms(r["tau_arp_psd"] * 1e3)}, {kind}',
                      f'{r["order_arp_psd"]:.0f}',
-                     pct(100 * (1 - r['r2_ar1_psd'])), pct(100 * (1 - r['r2_arp_psd']))])
+                     f'{pct(100 * (1 - r["r2_ar1_psd"]))} / '
+                     f'{pct(100 * (1 - r["r2_arp_psd"]))}'])
     caption = ('\\textbf{Recordings: spectral fits.} Traces per recording and their duration after '
                'cropping, and the median across traces of the AR(1) spectral timescale (a real pole), '
-               'the timescale of the most important mode of the AR($p$) spectral fit with the kind '
-               'of that mode (a real pole or a conjugate pair with its median frequency), the BIC '
-               'order, and the fraction of the $\\log_{10}$ spectrum each model leaves unexplained.')
+               'the timescale of the most important mode of the AR($p$) spectral fit and the kind '
+               'of that mode, a real pole or a conjugate pair with its median frequency. $p$ is the '
+               'median BIC order. The last column is the percentage of the $\\log_{10}$ spectrum '
+               'left unexplained by the AR(1) and the AR($p$) fit.')
     note = ('', f'Over the full 0.05--8 Hz band available for the spike counts, the AR(1) fit leaves '
                 f'{100 * full:.0f}\\% of the log spectrum unexplained.')
     return table('tab:s_recordings', caption,
                  ['Recording', 'Traces', '$T$ (s)', stack('AR(1)', '$\\hat\\tau$ (ms)'),
-                  stack('AR($p$) top', 'mode $\\hat\\tau$ (ms)'), stack('AR($p$) top', 'mode kind'),
-                  '$p$', stack('Unexpl.', 'AR(1) (\\%)'), stack('Unexpl.', 'AR($p$) (\\%)')],
-                 rows, 'lrrrrlrrr', note)
+                  stack('AR($p$) top mode', '$\\hat\\tau$ (ms), kind'), '$p$',
+                  stack('Unexpl. (\\%)', 'AR(1) / AR($p$)')],
+                 rows, 'lrrrlrr', note)
 
 
 def table_s4(stats):
     rows = []
     for key, label in RECORDINGS:
         st = stats[key]
-        n_res = st['n_res']
-        n_rep = st['n_rep']
-        rows.append([label, f'{int(np.median(n_res))} ({min(n_res)}--{max(n_res)})',
-                     f'{int(np.median(n_rep))} ({min(n_rep)}--{max(n_rep)})']
-                    + [f'{int(np.median(st["n_dom"][r2]))}' for r2 in ('0.90', '0.95', '0.99')]
-                    + [pct(100 * st['dropped'] / st['total'], 0),
-                       f'{st["floor_traces"]}/{st["n_traces"]}',
-                       (f'{np.median(st["floor_relative"]):.2f}'
-                        if st['floor_relative'] else '--'),
-                       f'{st["reported_pair"]}/{st["n_traces"]}',
-                       ms(1e3 * np.median(st['reported_tau'])),
-                       f'{np.median(st["reported_freq"]):.1f}'])
-    caption = ('\\textbf{Recordings: modes of the AR($p$) spectral fit.} Resolvable modes per trace '
-               '(median and range), how many of those are reported: the modes holding at least 1\\% '
-               'of the variance, which is the set \\figpanel{fig:realdata}{b,d,e} draws. The number '
-               'of modes needed to reproduce the fitted log spectrum '
-               'at three cutoffs (median across traces), the fraction of fitted modes dropped because '
-               'their characteristic frequency lies outside the fit band, the noise floor, and the aperiodic '
-               'mode selected by the rule in Methods (the most important mode with $f\\tau < 1$): the '
-               'number of traces in which it is a conjugate pair rather than a real pole, and its '
-               'median timescale and frequency (0 for a real pole). The noise floor is the negative '
-               'real pole a fit uses when the spectrum flattens onto a floor inside the band: the '
-               'number of traces with one, and its median level as a fraction of the fitted power at '
-               'the top of the band. It has a level rather than a timescale and is not counted as a '
-               'mode.')
+        res, rep = st['n_res'], st['n_rep']
+        rows.append([label,
+                     f'{int(np.median(res))} ({min(res)}--{max(res)})',
+                     f'{int(np.median(rep))} ({min(rep)}--{max(rep)})',
+                     ' / '.join(f'{int(np.median(st["n_dom"][r2]))}'
+                                for r2 in ('0.90', '0.95', '0.99')),
+                     pct(100 * st['dropped'] / st['total'], 0),
+                     (f'{st["floor_traces"]}/{st["n_traces"]}, '
+                      f'{np.median(st["floor_relative"]):.2f}'
+                      if st['floor_relative'] else f'{st["floor_traces"]}/{st["n_traces"]}'),
+                     f'{st["reported_pair"]}/{st["n_traces"]}'])
+    caption = ('\\textbf{Recordings: mode counts.} Every entry is a count, a fraction or a '
+               'percentage. The timescales themselves are in \\tabpanel{tab:s_reported}. Resolvable '
+               'is the number of modes per trace whose characteristic frequency falls inside the fit '
+               'band, as median and range across traces, and Reported is how many of those hold at '
+               'least 1\\% of the variance. Modes for $R^2$ is how many modes reproduce the fitted '
+               'log spectrum at each cutoff. Dropped is the percentage of fitted modes whose '
+               'characteristic frequency lies outside the band. Noise floor gives the traces holding '
+               'a negative real pole and its median level as a fraction of the fitted power at the '
+               'top of the band. Single $\\hat\\tau$ oscillatory is how often, when the fit is '
+               'summarized by one timescale, the mode the rule in Methods picks is '
+               'oscillatory rather than a relaxation.')
     return table('tab:s_modes', caption,
-                 ['Recording', stack('Modes', 'per trace'), stack('Reported', 'per trace'),
-                  '$R^2 \\ge 0.90$', '$R^2 \\ge 0.95$',
-                  '$R^2 \\ge 0.99$', stack('Dropped', '(\\%)'), stack('Noise', 'floor'),
-                  stack('Floor', 'level'), stack('Aperiodic', 'mode a pair'),
-                  stack('Aperiodic', '$\\hat\\tau$ (ms)'), stack('Aperiodic', '$f$ (Hz)')],
-                 rows, 'lrrrrrrrrrrr')
+                 ['Recording', stack('Resolvable', 'per trace'), stack('Reported', 'per trace'),
+                  stack('Modes for $R^2 \\ge$', '0.90 / 0.95 / 0.99'), stack('Dropped', '(\\%)'),
+                  stack('Noise floor', 'traces, level'), stack('Single $\\hat\\tau$', 'oscillatory')],
+                 rows, 'lrrrrrr')
 
 
 # ---------------------------------------------------------------------------
-# S5: windowing, and the Welch-window sensitivity
+# S5: the modes each recording reports
+# ---------------------------------------------------------------------------
+
+def _mode_cell(entries):
+    """Median timescale, frequency and variance share of one reported rank."""
+    if not entries:
+        return '--'
+    a = np.array(entries, dtype=float)
+    tau, freq, share = np.median(a[:, 0]), np.median(a[:, 1]), np.median(a[:, 2])
+    kind = 'relaxation' if freq < 0.5 else f'{freq:.0f} Hz'
+    return f'{ms(1e3 * tau)} ms, {kind} ({100 * share:.0f}\\%)'
+
+
+def table_s5_reported(stats):
+    rows = [[label] + [_mode_cell(stats[key]['reported_modes'][r]) for r in range(3)]
+            for key, label in RECORDINGS]
+    caption = ('\\textbf{Recordings: the modes.} Median across traces. Modes 1 to 3 are the '
+               'reported modes, those resolvable within the fit band that hold at least 1\\% of '
+               'the variance, ranked by that share and labelled with it. These are the modes '
+               '\\figpanel{fig:realdata}{b,d,e} draws, and a recording with fewer than three has '
+               'fewer entries. `Relaxation\' means a real pole.')
+    return table('tab:s_reported', caption,
+                 ['Recording', 'Mode 1', 'Mode 2', 'Mode 3'], rows, 'llll')
+
+
+# ---------------------------------------------------------------------------
+# S6: windowing, and the Welch-window sensitivity
 # ---------------------------------------------------------------------------
 
 def table_s5(stats):
@@ -388,18 +447,25 @@ def table_s5(stats):
         rows.append([label, f'{med["0.5"] / med["1"]:.2f}', f'{med["2"] / med["1"]:.2f}',
                      f'{p["T_over_tau_bias"]:.0f}', f'{p["shortest_over_longest"]:.2f}',
                      f'{excess.median():.0f}', f'{excess.max():.0f}'])
-    caption = ('\\textbf{Analysis window and recording window.} The first two columns give the '
-               'median AR($p$) spectral timescale with the Welch window halved or doubled, relative to '
-               'its value at the window used. The rest concern the windowing analysis: the window '
-               'duration, in units of the estimated timescale, beyond which the median AR($p$) spectral '
-               'estimate stays within 20\\% of its value in the longest window; the median estimate in '
-               'the shortest window relative to the longest; and the spread of estimates across the '
-               'longest windows divided by the AR(1) sampling bound of eq. \\ref{eq:finite} at that '
-               'duration, its median and maximum across the five estimators.')
+    caption = ('\\textbf{Analysis window and recording window.} No column is a timescale. Every '
+               'entry is a dimensionless ratio. The two Welch columns divide the median AR($p$) '
+               'spectral timescale, with the Welch window halved or doubled, by its value at the '
+               'window used, so 1.00 means the estimate did not move. Stable from is the smallest '
+               'window, as a multiple $n$ of the estimated timescale, beyond which the median '
+               'estimate stays within 20\\% of its value in the longest window. Shortest/longest '
+               'divides the median estimate in the shortest window by the median in the longest. '
+               'The two Excess columns divide the spread of estimates across the longest windows by '
+               'the AR(1) sampling bound of eq. \\ref{eq:finite} at that duration, as the median and '
+               'the maximum across the five estimators, so 1 would mean sampling alone explains the '
+               'spread.')
     return table('tab:s_windows', caption,
-                 ['Recording', stack('Welch', '$\\times\\tfrac12$'), stack('Welch', '$\\times 2$'),
-                  stack('$T/\\hat\\tau$', 'to 20\\%'), stack('Shortest/', 'longest'),
-                  stack('Excess', 'median'), stack('Excess', 'max')],
+                 ['Recording',
+                  stack('Welch $\\times\\tfrac12$', '$\\hat\\tau$ ratio'),
+                  stack('Welch $\\times 2$', '$\\hat\\tau$ ratio'),
+                  stack('Stable from', '$T = n\\hat\\tau$'),
+                  stack('Shortest/longest', '$\\hat\\tau$ ratio'),
+                  stack('Excess median', '$\\times$ bound'),
+                  stack('Excess max', '$\\times$ bound')],
                  rows, 'lrrrrrr')
 
 
@@ -453,10 +519,12 @@ def main():
     stats = realdata_stats(rerun='--rerun' in sys.argv)
     tables = {'tab:s_benchmark': table_s1(), 'tab:s_damped': table_s2(),
               'tab:s_recordings': table_s3(stats), 'tab:s_modes': table_s4(stats),
+              'tab:s_reported': table_s5_reported(stats),
               'tab:s_windows': table_s5(stats), 'tab:s_disagree': table_s6()}
     names = {'tab:s_benchmark': 'tab_s1_benchmark', 'tab:s_damped': 'tab_s2_damped',
              'tab:s_recordings': 'tab_s3_recordings', 'tab:s_modes': 'tab_s4_modes',
-             'tab:s_windows': 'tab_s5_windows', 'tab:s_disagree': 'tab_s6_disagree'}
+             'tab:s_reported': 'tab_s5_reported',
+             'tab:s_windows': 'tab_s6_windows', 'tab:s_disagree': 'tab_s7_disagree'}
     for label, text in tables.items():
         (OUT / f'{names[label]}.tex').write_text(text)
     args = sys.argv[1:]

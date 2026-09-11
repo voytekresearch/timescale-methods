@@ -5,8 +5,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -25,12 +25,12 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/sim/processes.py
       hash: md5
-      md5: 7b0120706aceb3a691070cc0a812c277
-      size: 19354
+      md5: 198b131349c5ffde96343170f7903d4e
+      size: 19334
     - path: scripts/run_01_modes.py
       hash: md5
       md5: 73bb4ae1b7f685125b145aea60344f99
@@ -77,8 +77,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -97,12 +97,12 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/sim/processes.py
       hash: md5
-      md5: 7b0120706aceb3a691070cc0a812c277
-      size: 19354
+      md5: 198b131349c5ffde96343170f7903d4e
+      size: 19334
     - path: scripts/run_02_benchmark.py
       hash: md5
       md5: 85e816774128db308a702364e8e0adfc
@@ -149,8 +149,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -169,12 +169,12 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/sim/processes.py
       hash: md5
-      md5: 7b0120706aceb3a691070cc0a812c277
-      size: 19354
+      md5: 198b131349c5ffde96343170f7903d4e
+      size: 19334
     - path: scripts/run_03_oscillations.py
       hash: md5
       md5: efb00b8ca71a8f359a87f2e9c387e03d
@@ -217,8 +217,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -237,16 +237,16 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/finite.py
       hash: md5
       md5: 221a37254437840446cc783fb281f23e
       size: 5589
     - path: ../timescales/sim/processes.py
       hash: md5
-      md5: 7b0120706aceb3a691070cc0a812c277
-      size: 19354
+      md5: 198b131349c5ffde96343170f7903d4e
+      size: 19334
     - path: scripts/run_04_finite.py
       hash: md5
       md5: ad7571d357bc978cbc4452fb96dcca19
@@ -289,8 +289,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -309,8 +309,8 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: data
       hash: md5
       md5: 7e37323c2f0db252c948b5886c88cc11.dir
@@ -358,8 +358,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -378,8 +378,8 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/finite.py
       hash: md5
       md5: 221a37254437840446cc783fb281f23e
@@ -607,8 +607,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -627,8 +627,8 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/decomposition/select.py
       hash: md5
       md5: f3918d34546bf3b3c7cdc6bb4973bcfe
@@ -639,8 +639,8 @@ stages:
       size: 5589
     - path: ../timescales/sim/processes.py
       hash: md5
-      md5: 7b0120706aceb3a691070cc0a812c277
-      size: 19354
+      md5: 198b131349c5ffde96343170f7903d4e
+      size: 19334
     - path: data
       hash: md5
       md5: 7e37323c2f0db252c948b5886c88cc11.dir
@@ -749,8 +749,8 @@ stages:
     deps:
     - path: ../timescales/ar/core.py
       hash: md5
-      md5: 80da7d214eb810b06ecea3f389cc76ee
-      size: 21164
+      md5: 30538e5115cbea49712607d77a9bc5d8
+      size: 21155
     - path: ../timescales/ar/metrics.py
       hash: md5
       md5: 3bc819ace5494dd10c29a107e9132f03
@@ -769,8 +769,8 @@ stages:
       size: 2709
     - path: ../timescales/decomposition/modes.py
       hash: md5
-      md5: f978eafe489fba609359de597e571589
-      size: 45882
+      md5: b2e501b7bc6afe7e7ce6f0fa6f5a8943
+      size: 45831
     - path: ../timescales/decomposition/select.py
       hash: md5
       md5: f3918d34546bf3b3c7cdc6bb4973bcfe
@@ -802,8 +802,8 @@ stages:
       size: 4785
     - path: scripts/make_tables.py
       hash: md5
-      md5: 491ffa5989f94a7c4c6018f83cdba676
-      size: 23615
+      md5: 53d68873897d3e4e1c2fd1da08206a42
+      size: 26999
     - path: scripts/run_02_benchmark.py
       hash: md5
       md5: 85e816774128db308a702364e8e0adfc
@@ -831,29 +831,33 @@ stages:
     outs:
     - path: results/tables_realdata.json
       hash: md5
-      md5: 5b3c8872a382c8df614068ab4cefccd8
-      size: 26771
+      md5: 81a7e70b11a1d90b4a2f591151ad29d9
+      size: 54760
     - path: tables/tab_s1_benchmark.tex
       hash: md5
-      md5: ae1bf377e05c494d2a39b17526cacd71
+      md5: 909334fcb3623475fb216204015829b5
       size: 2664
     - path: tables/tab_s2_damped.tex
       hash: md5
-      md5: d57e39ef69d1967939ff8553e8b18d56
-      size: 1471
+      md5: 48d19cf7b98943fa029e60801ba3ab31
+      size: 1826
     - path: tables/tab_s3_recordings.tex
       hash: md5
-      md5: 3122b3f2595c5d4bd4577a5c35dc512d
-      size: 1530
+      md5: ea44679a4b93199b6d3908b5635d549e
+      size: 1500
     - path: tables/tab_s4_modes.tex
       hash: md5
-      md5: 8553c6aab48ba1ad4ecec4c8d1399912
-      size: 2229
-    - path: tables/tab_s5_windows.tex
+      md5: 69a259db45c4e8853f963304193cd180
+      size: 1882
+    - path: tables/tab_s5_reported.tex
       hash: md5
-      md5: 7c5a47651ae7a7a390ec890260db0c92
-      size: 1453
-    - path: tables/tab_s6_disagree.tex
+      md5: 580171986240ccbac4d2f76b48f60841
+      size: 1209
+    - path: tables/tab_s6_windows.tex
+      hash: md5
+      md5: ddf9d7bb21114b787e4240537d5fff12
+      size: 1712
+    - path: tables/tab_s7_disagree.tex
       hash: md5
       md5: 313f5d885b0b838d7dd05bd846b3954b
       size: 505
