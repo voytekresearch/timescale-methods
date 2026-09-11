@@ -275,7 +275,7 @@ def test_unconstrained_is_the_default():
     assert ARPSD(fs=FS).require_relaxation is False
 
 
-def test_pure_oscillator_has_no_aperiodic_timescale_but_a_dominant_one():
+def test_pure_oscillator_has_no_reported_timescale_but_a_dominant_one():
     """A model whose every mode is a rhythm has an envelope, not a timescale.
 
     Reporting the envelope as `tau` would misname it, so `tau` is NaN and the

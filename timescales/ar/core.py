@@ -140,7 +140,7 @@ def fit_ar_psd(freqs, powers, fs, order, guess=None, k_bound=K_BOUND,
     the parameters are all O(1), and the fit cannot wander into a region where
     mode timescales are undefined.  Regression is robust (soft-L1) so that a
     narrowband oscillation is treated as an outlier rather than as evidence
-    about the aperiodic timescale.
+    about the slow decay.
 
     ``freqs``/``powers`` are the points actually fit; ``powers_full`` (uniform,
     DC to Nyquist) is used only for initialization.

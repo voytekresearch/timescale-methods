@@ -759,7 +759,7 @@ class ARModes:
             for i, m in enumerate(self.modes)
         ]
 
-    # -- dominant / aperiodic modes ---------------------------------------
+    # -- dominant mode, and the single timescale to report -----------------
     def dominant_mode(self, kinds=None):
         """Highest-importance mode, optionally restricted to ``kinds``."""
         for m in self.modes:
@@ -873,15 +873,16 @@ class ARModes:
 
     @property
     def tau_relaxation(self):
-        """The model's aperiodic timescale: its slowest non-rhythmic mode.
+        """The single timescale reported for this model: its most important
+        short-lived mode.
 
-        A real pole is non-rhythmic by definition.  So, in every practical
-        sense, is a conjugate pair that rings for less than one cycle before
-        its envelope decays: it is a damped relaxation that the optimizer
-        happened to give a small angle rather than exactly zero.  Requiring a
-        *real* pole here is a statement about the algebra rather than about
-        the process, and it left a third of real recordings with no timescale
-        to report even though the fits were good.
+        A mode is one of two things: a relaxation, a real pole, or an
+        oscillatory mode, a conjugate pair.  This picks whichever of them
+        dies out fastest relative to its own period, and that is often not
+        the relaxation: an oscillatory mode damped to less than one cycle
+        behaves like a decay even though its pole is complex.  Restricting
+        the choice to real poles left a third of real recordings with no
+        timescale to report even though the fits were good.
 
         Fitted models are constrained to contain a real pole (see
         ``tsmodes.estimators.REQUIRE_RELAXATION``), so this normally returns
@@ -889,14 +890,13 @@ class ARModes:
         be constrained that way, and this is what covers them.
         """
         finite = [m for m in self.modes if np.isfinite(m.tau) and m.tau > 0]
-        # Every non-rhythmic mode is a candidate: a real pole, and equally a
-        # conjugate pair that rings for less than a cycle, which is a damped
-        # relaxation in all but the algebraic classification.
+        # Every mode that dies within a cycle is a candidate, whether it is a
+        # relaxation or a heavily damped oscillatory mode.
         #
         # Importance decides between them, and it must.  Requiring a real pole
         # guarantees one exists but not that it means anything: on mouse LFP
         # the constrained spectral fit parks its required pole at 0.58 ms with
-        # negligible importance while the aperiodic structure sits in an 88 ms
+        # negligible importance while the real structure sits in an 88 ms
         # pair ringing 0.57 of a cycle.  Preferring the real pole reported the
         # throwaway.
         cand = [m for m in finite if m.n_cycles < 1.0]
@@ -911,12 +911,12 @@ class ARModes:
         cand = [m for m in cand if m.kind != 'oscillatory'
                 or not any(abs(np.log2(m.freq / f)) < 0.5 for f in rhythmic if f > 0)]
         if not cand:
-            # Every mode is a genuine rhythm, so the model has no aperiodic
-            # timescale and we say so.  Substituting a rhythm's envelope here
+            # Every mode is a genuine rhythm, so the model has no timescale
+            # to report and we say so.  Substituting a rhythm's envelope here
             # was actively misleading: an AR(1) with a strong 40 Hz sinusoid
             # is fit at order 2 by a pair pressed against the unit circle,
             # whose envelope decays over 40 s while ringing 1600 times, and
-            # that 40 s was being reported as the aperiodic timescale.
+            # that 40 s was being reported as the model's timescale.
             return np.nan
         # The most important, not the slowest.  A long-memory process is fit
         # with a pole pushed against the unit circle, whose timescale is
@@ -926,14 +926,14 @@ class ARModes:
                                         else -np.inf))
         return best.tau
 
-    #: Half-width of the band around ``f*tau = 1`` in which the aperiodic
+    #: Half-width of the band around ``f*tau = 1`` in which the single-timescale
     #: rule is treated as unresolved, as a factor on the cycle count.
     #: 1.25 makes the band 0.8 to 1.25 cycles.
     CYCLE_BOUNDARY = 1.25
 
     @property
     def tau_is_near_boundary(self):
-        """Whether the aperiodic rule is deciding a near tie.
+        """Whether the single-timescale rule is deciding a near tie.
 
         :attr:`tau_relaxation` keeps modes that ring less than one cycle and
         discards the rest, and the cut is sharp.  A dominant mode sitting near

@@ -189,7 +189,7 @@ class AR1PlusSine(Process):
 
     def tau_integrated(self, fs, max_lag_s=None):
         # The sinusoid contributes no convergent integral; report the
-        # aperiodic component's integrated timescale.
+        # relaxation component's integrated timescale.
         return AR1(tau=self.tau).tau_integrated(fs)
 
 
@@ -305,11 +305,11 @@ class SumAR1(Process):
 
 @dataclass(kw_only=True)
 class AR1PlusAR2(Process):
-    """Aperiodic relaxation plus a *broadband* stochastic rhythm.
+    """Relaxation plus a *broadband* stochastic rhythm.
 
     The closest of these processes to a real recording.  ``AR1PlusSine`` adds
     a line no autoregressive model can represent, and ``AR2Damped`` is a
-    rhythm with no separate aperiodic component; neural data is neither.  It
+    rhythm with no separate background; neural data is neither.  It
     is a broadband background with a broadband peak on top, both stochastic,
     which is what a spectrum with an alpha or beta bump actually looks like.
 
@@ -399,7 +399,7 @@ class ARpModes(Process):
         self.name = 'arp_modes' if self.variant is None else f'arp_modes_{self.variant}'
         order = sum(1 if f == 0 else 2 for _, f in self.modes)
         self.label = f'AR({order}), {len(self.modes)} modes'
-        # The target is the true model's own aperiodic timescale, under the
+        # The target is the timescale the true model itself would report,
         # same definition an estimator would apply to a fitted model, rather
         # than the slowest relaxation by construction.  The two can differ (a
         # rhythm ringing less than a cycle is non-rhythmic by that definition);

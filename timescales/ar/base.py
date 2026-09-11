@@ -37,7 +37,7 @@ class ARBase:
         Loss passed to ``scipy.optimize.curve_fit``.  ``'soft_l1'`` with an
         ``f_scale`` down-weights outlying points, which in the frequency domain
         means treating a narrowband rhythm as an outlier rather than as
-        evidence about the aperiodic decay.
+        evidence about the slow decay.
     f_scale : float, optional
         Soft-loss margin, in the units of the fitted residual.  Required for
         any ``loss`` other than ``'linear'``.
@@ -197,15 +197,18 @@ class ARBase:
 
     @property
     def tau(self):
-        """Aperiodic timescale, seconds: the most important non-rhythmic mode.
+        """The single timescale reported for a fit, seconds: its most
+        important short-lived mode.
 
         For an AR(1) this is the single relaxation time.  At higher orders it
-        is the most important mode that decays before completing one cycle,
-        which is the aperiodic structure.
+        is the most important mode that decays before completing one cycle.
+        That mode is often a relaxation, a real pole, but it need not be: a
+        heavily damped oscillatory mode can dominate, and on field-potential
+        recordings it usually does.
 
         It is NaN when every mode of the fitted model is a genuine rhythm, a
         pure AR(2) oscillator being the simplest case: such a model has an
-        envelope decay but no aperiodic timescale, and reporting the envelope
+        envelope decay but no timescale to report, and reporting the envelope
         here would misname it.  Use :attr:`tau_dominant` for the leading mode
         whatever its kind.
         """
@@ -220,7 +223,7 @@ class ARBase:
 
         Unlike :attr:`tau` this is always defined: for a model whose every
         mode is a rhythm it is that rhythm's envelope decay, which is a decay
-        time but not an aperiodic one.
+        time but not one this rule would report.
         """
         return self._modes().tau_dominant
 
@@ -240,7 +243,7 @@ class ARBase:
         return bool(np.all(np.abs(np.roots(np.r_[1.0, -self.phi])) < 1.0))
 
     def _title(self):
-        """Default plot title: the aperiodic timescale, or the leading mode."""
+        """Default plot title: the reported timescale, or the leading mode."""
         tau = self.tau
         if np.isfinite(tau):
             return f'AR({self.order_}), tau = {tau * 1e3:.1f} ms'

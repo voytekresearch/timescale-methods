@@ -66,12 +66,12 @@ def test_constrained_psd_fit_always_has_a_relaxation_pole(proc, name, order):
 
 
 # ---------------------------------------------------------------------------
-# ... and every estimator must report a finite aperiodic timescale
+# ... and every estimator must report a finite timescale
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize('proc,name', PROCESSES)
 @pytest.mark.parametrize('method', ['arp_direct', 'arp_acf', 'arp_psd'])
-def test_every_arp_estimator_reports_an_aperiodic_timescale(proc, name, method):
+def test_every_arp_estimator_reports_a_timescale(proc, name, method):
     fit = estimate(_signal(proc), method, robust=proc.has_oscillation)
     assert np.isfinite(fit.tau_relaxation), f'{name}/{method}: no timescale'
     assert 1e-4 < fit.tau_relaxation < 100.0
@@ -116,7 +116,7 @@ def test_constrained_fit_matches_the_unconstrained_one_when_a_pole_exists():
     assert abs(np.log(t_held / t_free)) < np.log(1.5)
 
 
-def test_the_added_pole_is_where_the_aperiodic_component_is():
+def test_the_added_pole_is_where_the_slow_component_is():
     """On AR(1)+sine the constrained fit should find the 50 ms decay."""
     signal = _signal(AR1PlusSine(tau=TAU, f_osc=10.0, snr=1.0))
     fit = estimate(signal, 'arp_acf')
@@ -133,7 +133,7 @@ def test_order_selection_buys_the_order_the_constraint_costs():
     At order 2 the constraint leaves a single pole for everything else, so an
     oscillator is unrepresentable there.  Rather than exempting order 2 --
     which let a purely rhythmic model through and had its 1600-cycle envelope
-    reported as an aperiodic timescale -- the constraint applies everywhere
+    reported as its timescale -- the constraint applies everywhere
     and BIC simply selects a higher order.
     """
     for seed in range(3):
@@ -147,12 +147,12 @@ def test_order_selection_buys_the_order_the_constraint_costs():
         assert _n_relaxation(fit.phi) >= 1
 
 
-def test_a_purely_rhythmic_model_reports_no_aperiodic_timescale():
-    """An undamped sinusoid has no aperiodic part, and we must not invent one.
+def test_a_purely_rhythmic_model_reports_no_timescale():
+    """An undamped sinusoid has no relaxation, and we must not invent one.
 
     A strong 40 Hz sinusoid is fit by a pair pressed against the unit circle:
     its envelope decays over 40 s while the mode rings 1600 times.  Reporting
-    that envelope as the aperiodic timescale gave errors of 800x.
+    that envelope as the reported timescale gave errors of 800x.
     """
     fs = 500.0
     r = np.exp(-1.0 / (40.0 * fs))
@@ -167,7 +167,7 @@ def test_a_floor_mode_is_not_mistaken_for_a_relaxation():
     """A negative real pole alternates every sample; it is not a decay.
 
     Its poles are real, so a kind-based test called it non-rhythmic and the
-    aperiodic timescale was read off a mode with tau = 125 s.  n_cycles must
+    reported timescale was read off a mode with tau = 125 s.  n_cycles must
     count it as the fastest rhythm the sampling rate allows.
     """
     fs = 500.0

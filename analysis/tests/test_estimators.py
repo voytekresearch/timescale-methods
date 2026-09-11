@@ -309,7 +309,7 @@ def test_robustness_is_never_applied_in_the_lag_domain():
     assert loss_settings(True, 'acf') == ('linear', None)
 
 
-def test_the_lag_domain_fit_does_not_lose_the_aperiodic_component():
+def test_the_lag_domain_fit_does_not_lose_the_slow_component():
     """An AR(1) with an added sinusoid must still yield its decay.
 
     The component is real and the fit must find it.  It need not appear as a
@@ -323,7 +323,7 @@ def test_the_lag_domain_fit_does_not_lose_the_aperiodic_component():
                      welch_win_s=4.0)
     fit = estimate(signal, 'arp_acf')
     slow = [m for m in fit.modes.modes if m.n_cycles < 1.0]
-    assert slow, 'every mode is a rhythm; the aperiodic component was lost'
+    assert slow, 'every mode is a rhythm; the slow component was lost'
     tau = max(m.tau for m in slow)
     assert 0.02 < tau < 0.3
 
@@ -345,7 +345,7 @@ def test_higher_order_lag_fits_do_not_get_worse():
         best = max(best, r2)
 
 
-def test_robust_fitting_protects_the_aperiodic_estimate_from_a_rhythm():
+def test_robust_fitting_protects_the_reported_estimate_from_a_rhythm():
     rng = np.random.default_rng(7)
     signal = prepare(AR1PlusSine(tau=0.05, f_osc=10.0, snr=2.0).simulate(300.0, FS, rng), FS,
                      welch_win_s=4.0)

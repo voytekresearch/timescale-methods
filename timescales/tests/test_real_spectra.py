@@ -43,7 +43,7 @@ pytestmark = pytest.mark.slow
 
 #: The single configuration under test: the one the paper's figures use
 #: (analysis/tsmodes/estimators.py).  The grid is log-spaced and capped at 20,
-#: the spectral loss is robust so a rhythm does not drag the aperiodic fit,
+#: the spectral loss is robust so a rhythm does not drag the slow-decay fit,
 #: and every model is required to contain a real pole so there is always a
 #: decay time to report.
 ORDERS = (1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20)
@@ -210,7 +210,7 @@ def test_a_short_order_grid_is_caught(psd_fits):
 
 @pytest.mark.parametrize('key', KEYS)
 def test_no_fit_sits_on_the_cycle_boundary(key, psd_fits):
-    """Under this configuration the aperiodic rule is not deciding a tie."""
+    """Under this configuration the single-timescale rule is not deciding a tie."""
     ar = psd_fits[key]
     assert not ar.tau_near_boundary_, (
         f'{key}: leading mode rings {ar.modes.modes[0].n_cycles:.2f} cycles, '
