@@ -1,7 +1,12 @@
 """Matplotlib settings."""
 
+from cycler import cycler
 import matplotlib.pyplot as plt
-import seaborn as sns
+
+#: Seaborn's "colorblind" palette, inlined.  It was the only thing seaborn was
+#: used for, and it is a fixed list of ten colours.
+COLORBLIND = ['#0173b2', '#de8f05', '#029e73', '#d55e00', '#cc78bc',
+              '#ca9161', '#fbafe4', '#949494', '#ece133', '#56b4e9']
 
 
 SMALL_SIZE = 12
@@ -25,4 +30,4 @@ def set_default_rc():
     plt.rc('xtick.major', size=5)
     plt.rc('xtick.minor', size=2.5)
 
-    sns.set_palette('colorblind')
+    plt.rc('axes', prop_cycle=cycler(color=COLORBLIND))

@@ -1,5 +1,0 @@
-
-Figures
-=======
-
-Manuscript figures.

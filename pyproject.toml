@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "timescales"
+description = "Timescale simulation, estimation and interpretation methods."
+readme = "README.rst"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "The Voytek Lab", email = "voyteklab@gmail.com" }]
+maintainers = [{ name = "Ryan Hammonds", email = "rphammonds@ucsd.edu" }]
+keywords = [
+    "neuroscience", "timescales", "power spectra", "autocorrelation",
+    "acf", "autoregressive", "electrophysiology",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3",
+]
+dynamic = ["version"]
+
+# Base: what fitting, decomposing and plotting a model actually needs.
+# `import timescales` pulls nothing beyond numpy and scipy; matplotlib is
+# here because ARPSD.plot and ARACF.plot are part of the documented API.
+dependencies = [
+    "numpy >= 1.18.5",
+    "scipy >= 1.5",
+    "matplotlib >= 3.0.3",
+]
+
+# One extra, `all`: everything needed to run the test suite, reproduce the
+# analysis in the `analysis` branch, and build the documentation site.
+[project.optional-dependencies]
+all = [
+    # test suite
+    "pytest",
+    "pytest-cov",
+    "statsmodels >= 0.12.2",   # independent reference for Burg in test_spectral
+    # simulations outside the core model: spikes, Ornstein-Uhlenbeck, branching
+    "neurodsp >= 2.2.0",
+    # the analysis pipeline
+    "pandas",
+    "dvc",
+    # documentation site, and executing the tutorial notebooks
+    "nbconvert",
+    "ipykernel",
+    "sphinx",
+    "sphinx-gallery",
+    "sphinx-book-theme",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-remove-toctrees",
+    "numpydoc",
+    "nbsphinx",
+]
+
+[project.urls]
+Homepage = "https://github.com/voytekresearch/timescale-methods"
+Source = "https://github.com/voytekresearch/timescale-methods"
+"Bug Reports" = "https://github.com/voytekresearch/timescale-methods/issues"
+
+[tool.setuptools.packages.find]
+include = ["timescales*"]
+
+[tool.setuptools.package-data]
+"timescales.data" = ["*.npz"]
+
+[tool.setuptools.dynamic]
+version = { attr = "timescales.version.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["timescales"]
+markers = [
+    "slow: fits every example recording over a wide order grid (~6 min); skip with -m 'not slow'",
+]

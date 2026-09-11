@@ -4,3 +4,53 @@
 # Ignore cache files
 __pycache__/
 **/__pycache__/
+
+# Revision sub-module: extracted recordings are large and re-derivable
+revision/data/
+revision/figures/*.png
+
+# Scratch debugging: not part of the DVC pipeline, not reproducible output
+analysis/debug/
+
+# Virtual environment
+.env/
+
+# Packaging
+*.egg-info/
+build/
+dist/
+
+# ---------------------------------------------------------------------------
+# Not committed. These are working files, scratch, or DVC-tracked outputs.
+# They were repeatedly swept in by `git add -A`; listing them here makes that
+# impossible rather than relying on remembering.
+# ---------------------------------------------------------------------------
+
+# DVC-tracked outputs: the pipeline writes them, dvc.lock records their hashes
+/analysis/figures/
+/analysis/tables/
+
+# Working notebooks and scratch
+/analysis/notebooks/
+/analysis/scripts/sync_overleaf.py
+/new_figures.ipynb
+/test.ipynb
+
+# Working documents and scratch images
+/todo.md
+/writing_style.md
+/restructure_paper.md
+/overleaf_log.txt
+/references_revision.bib
+/finite_T.png
+/fmri_options.png
+/fmri_parcels.png
+
+# Manuscript exports from Overleaf
+/paper.tex
+/paper_overleaf.tex
+/paper_revised.tex
+/paper_updated.tex
+
+# Editor
+/.vscode/
